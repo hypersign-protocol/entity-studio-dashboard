@@ -324,11 +324,6 @@ export default {
           title: "Dashboard",
           icon: "fas fa-tachometer-alt",
         },
-        // {
-        //   href: "/studio/org",
-        //   title: "Organization",
-        //   icon: "fa fa-university",
-        // },
         {
           href: "/studio/schema",
           title: "Schema",
@@ -343,6 +338,11 @@ export default {
           href: "/studio/presentation",
           title: "Presentation",
           icon: "fa fa-desktop",
+        },
+        {
+          href: "/studio/presentation/verify",
+          title: "Verification",
+          icon: "fa fa-check",
         },
       ]
       return menu

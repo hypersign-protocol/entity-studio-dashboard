@@ -81,6 +81,13 @@ export default new Vuex.Store({
             schemaIdnames = schemaIdnames.filter(x => x)
             schemaIdnames.unshift({ value: null, text: "Please select a schema" })
             return schemaIdnames;
+        },
+        listOfPresentationTemplateOptions(state) {
+            let schemaIdnames = state.templateList.map(x => {
+                return { value: x._id, text: `${x.name} (${x._id})`  }
+            })
+            schemaIdnames.unshift({ value: null, text: "Please select a Presentation Template" })
+            return schemaIdnames;
         }
     },
     mutations: {

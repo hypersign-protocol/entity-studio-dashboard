@@ -10,6 +10,7 @@ import fetch from 'node-fetch'
 import Schema from './views/Schema.vue'
 import Org from './views/Org.vue'
 import store from './store/store'
+import VerifyPresentation from './views/VerifyPresentation.vue'
 Vue.use(Router)
 
 const router =  new Router({
@@ -100,6 +101,16 @@ const router =  new Router({
       meta: {
         requiresAuth: true,
          title: `${config.app.name} - Presentation`
+      } 
+    },
+    {
+      path: '/studio/presentation/verify',
+      name: 'verifyPresentation',
+      component: VerifyPresentation,
+      beforeEnter:guardRouteIfOrgNotSelected,
+      meta: {
+        requiresAuth: true,
+         title: `${config.app.name} - VerifyPresentation`
       } 
     },
       {
