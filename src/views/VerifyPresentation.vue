@@ -1,43 +1,159 @@
 <style scoped>
 
+h5 {
+  width: 80%;
+  text-align: center;
+  border-bottom: 1px solid #80808045;
+  line-height: 0.1em;
+  margin: 10px 0 20px;
+  display: inline-block;
+}
+
+h5 span {
+  background: #fff;
+  padding: 0 10px;
+}
+
+.button-theme {
+ background-color: #f1b319;
+  border-collapse: #f1b319;
+  color: black;
+  border: 0;
+}
+
+.leafygreen-ui-196mwvg {
+  border: 1px solid rgb(232, 237, 235);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.leafygreen-ui-mlc9qv {
+  position: relative;
+  display: grid;
+  grid-template-areas:
+  "code panel";
+  grid-template-columns: auto 38px;
+  border-radius: inherit;
+  z-index: 0;
+}
+
+.css-1sdjnkx {
+  word-break: break-word;
+}
+
+.leafygreen-ui-vbfbru {
+  grid-area: code;
+  overflow-x: auto;
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border: 0px none rgb(232, 237, 235);
+  /* padding-top: 8px;
+  padding-bottom: 8px; */
+  margin: 0px;
+  position: relative;
+  transition: box-shadow 100ms ease-in-out 0s;
+  white-space: pre;
+  background-color: rgb(249, 251, 250);
+  color: rgb(0, 30, 43);
+}
+
+.leafygreen-ui-y7nvfm {
+  color: inherit;
+  font-family: "Source Code Pro", Menlo, monospace;
+  line-height: 12px;
+  font-size: 13px;
+}
+
+
+.leafygreen-ui-16sacod {
+  display: flex;
+  -moz-box-align: center;
+  align-items: center;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 4px;
+  padding: 6px;
+  border-left: 1px solid rgb(232, 237, 235);
+    border-left-color: rgb(232, 237, 235);
+  background-color: rgb(255, 255, 255);
+  border-color: rgb(232, 237, 235);
+  z-index: 2;
+  grid-area: panel;
+}
+
 </style>
 
 <template>
     <div :class="isContainerShift ?'homeShift':'home'">
     <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>
 
+    <div class="row">
+        <div class="col-md-12" style="text-align: left">
+            <div class="form-group" style="display:flex">
+                <h3 class="mt-4" style="text-align: left;">
+                Credential Verification</h3>
+            </div>
+        </div>
+    </div>
     
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group">
-                <label>Select a presentation : </label> 
+                <label>Select a presentation template: </label> 
                 <hf-select-drop-down
                     :options="selectOptions"
                     @selected="e =>{OnTemplateSelectDropDownChange(e)}"
                 ></hf-select-drop-down>
-
-                <label>Or Enter the presentation Id : </label> 
-                <input  class="form-control" type="text" name="" v-model="presentantionTemplateId" />
-
+            </div>  
+            <div class="form-group">
+                <label>Or Enter a presentation template Id : </label> 
+                <input  class="form-control" type="text" name="" v-model="presentantionTemplateId" placeholder="63c518ec4eca295bd017bf57" />
+            </div>
+            <div class="">
                 <hf-buttons 
                     name="Request"
                     class="ml-auto mt-4"
                     @executeAction="requestPresentation()"
                 ></hf-buttons>
-            </div>            
+            </div>
+                     
         </div>
-        <div class="col-md-6" >
-            <div class="d-flex justify-content-center"  id="load-script">
-                <div class="form-group" v-if="presentantionTemplateId != '' && showQR">
-                    <canvas id="studio-qr" class="form-control"></canvas>
-                    <label>Scan the QR code using Hypersign Identity Wallet</label>
-                    <p>OR</p>
-                    <div id="studio-btn"></div>
-                    <!-- <button id="studio-btn" class="form-control"></button> -->
+
+        <div class="col-md-4" v-if="presentantionTemplateId != '' && showQR">
+            <div class="leafygreen-ui-196mwvg">
+                <div class="leafygreen-ui-mlc9qv">
+                    <pre class="css-1sdjnkx e5i1odf0 leafygreen-ui-vbfbru" tabindex="-1">
+                        <code class="lg-highlight-hljs-light none leafygreen-ui-y7nvfm">
+                            {{ getCodeSnippet }}
+                        </code>
+                    </pre>
+                    <div class="leafygreen-ui-16sacod" data-testid="leafygreen-code-panel">
+                        <i class="far fa-copy"
+                            style="cursor:pointer;"
+                            title="Click to copy the code snippet"
+                            @click="copyToClip(getCodeSnippet,'code snippet')"
+                        ></i>
+                    </div>
                 </div>
-            </div> 
+            </div>
+            <div style="text-align: center;">
+                <label style="font-size:small; color:grey;">Read our <a href="https://docs.hypersign.id" target="_blank">documentation </a> for integration</label>
+            </div>
         </div>
+
+        <div class="col-md-4" v-if="presentantionTemplateId != '' && showQR">
+            <div class="justify-content-center" style="text-align: center;">
+                <canvas id="studio-qr"></canvas>
+                <label style="font-size:small; color:grey;">Scan the QR code using Hypersign Identity Wallet</label>
+                <div class="justify-content-center" style="text-align: center;"><h5><span>OR</span></h5></div>
+                <div id="studio-btn" class="justify-content-center" style="text-align: center;"></div>
+            </div>           
+        </div> 
     </div>
+
+    <div id="load-script"></div>
 
     <hf-pop-up  Header="Verification Result">
         <div class="card" v-for="eachcredential in verfiableCredentials">
@@ -66,7 +182,6 @@
 import UtilsMixin from '../mixins/utils';
 import HfPopUp from "../components/element/hfPopup.vue";
 import Loading from "vue-loading-overlay";
-import Info from '@/components/Info.vue'
 import HfSelectDropDown from "../components/element/HfSelectDropDown.vue"
 import VueQr from "vue-qr";
 import HfButtons from "../components/element/HfButtons.vue"
@@ -81,6 +196,21 @@ export default {
         selectOptions(){
             return this.$store.getters.listOfPresentationTemplateOptions;
         },
+        getCodeSnippet(){
+        return `
+                <div>
+                    <div id='studio-btn'><\/div>
+                    <canvas id='studio-qr'><\/canvas>
+                    <script
+                        type="text/javascript"
+                        src="https://cdn.jsdelivr.net/gh/hypersign-protocol/studio/js-sdk/build/index.js"
+                        data-button-text="Present Presentation"
+                        data-button-css-class="btn btn-primary"
+                        data-presentation-template-id="${this.presentantionTemplateId}"
+                    ><\/script>
+                <\/div>
+                `;  
+        }
     },
     mounted() {
         
@@ -163,6 +293,7 @@ export default {
                 let newScript = document.createElement('script');
                 newScript.setAttribute('src', '/hs-sdk.js')
                 newScript.setAttribute('data-button-text', 'Present Credential')
+                newScript.setAttribute('data-button-css-class', 'btn button-theme')
                 newScript.setAttribute('data-hs-wallet-base-url', 'https://wallet-stage.hypersign.id')
                 newScript.setAttribute('data-presentation-request-endpoint', 'https://stage.hypermine.in/studioserver/api/v1/presentation/request/')
                 newScript.setAttribute('data-presentation-template-id', this.presentantionTemplateId)
