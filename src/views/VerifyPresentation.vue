@@ -106,18 +106,19 @@ h5 span {
                     :options="selectOptions"
                     @selected="e =>{OnTemplateSelectDropDownChange(e)}"
                 ></hf-select-drop-down>
-            </div>  
-            <div class="form-group">
-                <label>Or Enter a presentation template Id : </label> 
-                <input  class="form-control" type="text" name="" v-model="presentantionTemplateId" placeholder="63c518ec4eca295bd017bf57" />
-            </div>
-            <div class="">
                 <hf-buttons 
                     name="Request"
                     class="ml-auto mt-4"
                     @executeAction="requestPresentation()"
                 ></hf-buttons>
+            </div>  
+            <!-- <div class="form-group">
+                <label>Or Enter a presentation template Id : </label> 
+                <input  class="form-control" type="text" name="" v-model="presentantionTemplateId" placeholder="63c518ec4eca295bd017bf57" />
             </div>
+            <div class="">
+                
+            </div> -->
                      
         </div>
 
@@ -155,7 +156,11 @@ h5 span {
 
     <div id="load-script"></div>
 
-    <hf-pop-up  Header="Verification Result">
+    <div class="row">
+        
+    </div>
+
+    <hf-pop-up  Header="Verification Result" v-if="verfiableCredentials">
         <div class="card" v-for="eachcredential in verfiableCredentials">
             <div class="card-header">
                 <span>{{eachcredential.type[1]}}</span>
@@ -186,6 +191,9 @@ import HfSelectDropDown from "../components/element/HfSelectDropDown.vue"
 import VueQr from "vue-qr";
 import HfButtons from "../components/element/HfButtons.vue"
 import EventBus from "../eventbus"
+
+
+
 export default {
     name: "VerifyPresentation",
     components: { HfPopUp, Loading, VueQr, HfButtons, HfSelectDropDown }, 
@@ -215,46 +223,64 @@ export default {
     mounted() {
         
         const that = this;
-        
-        document.addEventListener('studio-success', async function (e) {
+        document.addEventListener('studio-success', async  function(e) {
             console.log('inside studio-success')
-            if (e.detail.accessToken) {
-                console.log(e.detail.accessToken)
-                const url = 'https://stage.hypermine.in/studioserver/api/v1/presentation/request/info';
-                const accessToken = e.detail.accessToken;
-                const resp =  await fetch(url, { 
-                    headers: { accessToken },
-                    method: 'GET'
-                });
+                console.log(e.detail)
+                
+                if (e.detail.accessToken) {
+                    const url = 'https://stage.hypermine.in/studioserver/api/v1/presentation/request/info';
+                    const accessToken = e.detail.accessToken;
+                    const resp =  await fetch(url, { 
+                        headers: { accessToken },
+                        method: 'GET'
+                    });
 
-                const json =  await resp.json();
+                    if(resp.status === 200){
+                        const json =  await resp.json();
 
-                console.log(json)
-                const { message, data } = json;
-                if(message == 'success' &&  data != null){
-                    that.verfiableCredentials = data.verifiableCredential;
-                    EventBus.$emit("resetOption",that.presentantionTemplateId)
-                    that.presentantionTemplateId = ""
-                    that.showQR = false;
-                    that.qrData = "";
-                    that.$root.$emit('modal-show');
+                        const { message } = json;
+                        if(message == 'success'){
+                            const { data } = json;
+                            if(data){
+                                console.log(data)
+                                that.verfiableCredentials = data.verifiableCredential;
+                                console.log('Before showing the modal')
+                                if(that.verfiableCredentials) that.$root.$emit('modal-show');
+                                that.cleanQR()
+                            } else {
+                                console.log('data not present')
+                            }
+                        } else {
+                            console.log('Else  message = ' +  message)
+                        }
+                    } else {
+                        console.log(
+                            resp.status
+                        )
+                    }
+
+                    
+                } else if(e.detail === 'Challenge expired') {
+                    that.cleanQR();
                 } else {
-                    console.log('Else  message =' +  message)
+                    console.error('Something went wrong')
                 }
-            } else {
-                console.error('No access token found')
-            }
-        });
+            });
 
-        document.addEventListener('studio-wait', function (e) {
-            console.log('inside studio-wait')
-            console.log(e.detail);
-        });
 
-        document.addEventListener('studio-error', function (e) {
-            console.log('inside studio-error')
-            console.error(e.detail);
-        });
+
+
+            document.addEventListener('studio-wait', function (e) {
+                //console.log('inside studio-wait')
+                console.log(e.detail);
+            });
+
+            document.addEventListener('studio-error', function (e) {
+                //console.log('inside studio-error')
+                console.error(e.detail);
+            });
+        
+       
     },  
     data() {
         return {
@@ -267,27 +293,39 @@ export default {
             verfiableCredentials: null,
             images: {
                 greentick: require("../assets/green-tick.png"),
-            }
+            },
+            successEvntHandler: null
         }
     },
     methods: {
+        cleanQR() {
+            EventBus.$emit("resetOption", this.presentantionTemplateId)
+            this.presentantionTemplateId = ""
+            this.showQR = false;
+            this.qrData = ""
+            const loadScript = document.getElementById('load-script')
+            if(loadScript) loadScript.innerHTML = ""
+        },
         OnTemplateSelectDropDownChange(event) {
             if (event) {     
-                console.log('inside event of OnTemplateSelectDropDownChange eventvalue = '+ event.value)
+                this.cleanQR();
+                console.log('inside event of OnTemplateSelectDropDownChange eventvalue = '+ event)
                 this.presentantionTemplateId = event
             } else {
-                this.presentantionTemplateId = ""
-                this.showQR = false;
-                this.qrData = ""
+                this.cleanQR();
             }
         },
         requestPresentation(){
+            if(this.showQR){
+                return 
+            }
             if(!this.presentantionTemplateId){
                 return  this.notifyErr('Select a presentation or enter presentationId')
             }
             
-
-            this.showQR = true;
+            this.verfiableCredentials = null;
+            //this.cleanQR()
+            
             let divScripts = document.getElementById('load-script');
             if(divScripts){
                 let newScript = document.createElement('script');
@@ -297,7 +335,9 @@ export default {
                 newScript.setAttribute('data-hs-wallet-base-url', 'https://wallet-stage.hypersign.id')
                 newScript.setAttribute('data-presentation-request-endpoint', 'https://stage.hypermine.in/studioserver/api/v1/presentation/request/')
                 newScript.setAttribute('data-presentation-template-id', this.presentantionTemplateId)
-                divScripts.appendChild(newScript);
+                divScripts.innerHTML = ""
+                divScripts.appendChild(newScript)
+                this.showQR = true;
             } else {
                 console.log('divScripts = ' + divScripts)
             }
@@ -305,6 +345,11 @@ export default {
         }
 
     },
+    destroyed(){
+        this.cleanQR()
+        document.cloneNode(true)
+        console.log('Isndie destoryed')
+    },  
     mixins: [UtilsMixin],
 
 }
