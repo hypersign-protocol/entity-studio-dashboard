@@ -61,3 +61,10 @@ a:hover {
     color: #212529 ;
     text-decoration: underline ;
 }
+
+.theme-color{
+    background-color:rgba(241, 179, 25, 0.24);
+    color: #212529;
+  }
+
+

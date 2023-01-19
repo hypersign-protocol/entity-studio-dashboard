@@ -83,17 +83,76 @@
 
 
                     </div> -->
-                    <div class="form-group">
-                      <tool-tip infoMessage="Select Schema to create template"></tool-tip>
-                      <label for="forselectschema"><strong>Select Schema<span style="color: red">*</span>:</strong></label>                      
-                      <hf-select-drop-down
-                      :options="selectOptions"
-                       @selected="e =>{OnSchemaSelectDropDownChange(e)}"
-                      ></hf-select-drop-down>
-                      <div v-if="selectOptions.length === 1">
-                      <span class="goschema" @click="goToSchema()">Create Schema</span>                      
-                      </div>
-                    </div>              
+                    
+
+                    <div class="form-group card">
+                        <b-card-header header-tag="header" class="p-1 border-0 accordin-header theme-color" role="tab">
+                          <b-button block v-b-toggle.accordion-1 style="text-decoration:none; color:#212529;" variant="secondary"
+                          :aria-expanded="visible ? 'true' : 'false'"
+                          @click="visible = !visible"
+                          aria-controls="collapse-1"
+                          class="text-left border-0 bg-transparant theme-color"
+                          title="Create schema configuration">Schema Configurations
+                          <i :class="!visible ? 'fa fa-arrow-down' : 'fa fa-arrow-up'" style="float:right;"></i>
+                          </b-button>
+                        </b-card-header>
+                        <b-collapse id="collapse-1" class="mt-2" v-model="visible" style="padding:10px">
+                          
+                          <div class="form-group">
+                            <tool-tip infoMessage="Select Schema to create template"></tool-tip>
+                            <label for="forselectschema"><strong>Select Schema<span style="color: red">*</span>:</strong></label>                      
+                            
+                            <hf-select-drop-down
+                            :options="selectOptions"
+                            @selected="e =>{OnSchemaSelectDropDownChange(e)}"
+                            ></hf-select-drop-down>
+                            <div v-if="selectOptions.length === 1">
+                              <span class="goschema" @click="goToSchema()">Create Schema</span>                      
+                            </div>
+
+                            <label> OR </label> <br>
+
+                            <tool-tip infoMessage="Select Schema to create template"></tool-tip>
+                            <label ><strong>Enter Comma Seperated SchemaId(s):</strong></label>                      
+                            <input class="form-control" type="text" v-model="presentationTemplate.commaSeperatedSchemaIds" 
+                            placeholder="sch:hid:test...4x38HE:1.0n, sch:hid:test...4x38HE:1.0n, sch:hid:test...4x38HE:1.0n" />
+
+
+                          
+
+                            
+                            <table class="table table-bordered event-card" style="background:#FFFF" v-if="schemaConfigurationsForPresentationComputed.length > 0">
+                              <thead class="thead-light">
+                                <th>Schema Id</th>
+                                <th>Mandatory?</th>
+                                <th>Issuer DID</th>
+                                <th></th>
+                              </thead>
+                              <tr v-for="eachSchemaObj in schemaConfigurationsForPresentationComputed">
+                                <td>{{shorten(eachSchemaObj.schemaId)}}</td>
+                                <!-- <td><hf-select-drop-down
+                            :options="selectOptionsForRequired"
+                            v-model="eachSchemaObj.required"
+                            ></hf-select-drop-down></td> -->
+                            <td>
+                              <select v-model="eachSchemaObj.required" class="custom-select">
+                                  <option value="true">True</option>
+                                  <option value="false">False</option>
+                                </select>
+                            </td>
+                                <!-- <td><input type="text" v-model="eachSchemaObj.required"/></td> -->
+                                <td><input type="text" v-model="eachSchemaObj.issuerDID" class="form-control"/></td>
+                                
+                                <td><span><i class="fa fa-arrow-up" ></i></span></td>
+                              </tr>
+                            </table>    
+                                                   
+                            
+                          </div>   
+                          
+                        </b-collapse>
+                    </div>
+                    
                     <div class="form-group">
                       <tool-tip infoMessage="Reason for the template"></tool-tip>
                       <label><strong>Reason<span style="color: red">*</span>:</strong></label>                      
@@ -255,15 +314,71 @@ export default {
     },
     isContainerShift() {
       return this.$store.state.containerShift
+    },
+    schemaConfigurationsForPresentationComputed(){
+      let commaSepIds = this.presentationTemplate.commaSeperatedSchemaIds || this.presentationTemplate.schemaId; 
+      if(commaSepIds){
+        if(commaSepIds.lastIndexOf(',') == commaSepIds.length-1){
+          commaSepIds = commaSepIds.slice(0, commaSepIds.lastIndexOf(','))
+        }
+
+        const schemaIds = commaSepIds.split(",");
+        if(schemaIds && schemaIds.length > 0){
+
+          if(schemaIds.length > 3){
+            return this.notifyErr("Can not request more than 3 credentials in one presentation")
+          }
+
+          if(this.schemaConfigurationsForPresentation.length < schemaIds.length){
+            schemaIds.forEach(schemaId => {
+              if(!this.schemaConfigurationsForPresentation.find(x => x.schemaId === schemaId)){
+                this.schemaConfigurationsForPresentation.push({
+                  schemaId, required: false, issuerDID: ""
+                })
+              }
+            })
+          } else if(this.schemaConfigurationsForPresentation.length > schemaIds.length){
+            this.schemaConfigurationsForPresentation.forEach(sch => {
+              const index  = schemaIds.find(x => x == sch.schemaId)
+              if(!index){
+                this.schemaConfigurationsForPresentation = this.schemaConfigurationsForPresentation.filter(function(el) { return el.schemaId != sch.schemaId; })
+              }
+            })
+          } else {
+            schemaIds.forEach((schemaId, index) => {
+              if(this.schemaConfigurationsForPresentation.find(x => x.schemaId === schemaId)){
+              } else {
+                this.schemaConfigurationsForPresentation[index] = {
+                  schemaId, required: false, issuerDID: ""
+                }
+              }
+            })
+          }
+
+            
+          
+          return this.schemaConfigurationsForPresentation;
+        } 
+      }
+      return []
     }
   },
   data() {
     return {
+      selectOptionsForRequired: [{ text: "true", value: true }, { text: "false", value: false }],
+      visible:false,
       isEdit:false,
       deleteId:'',
       maxChar:105,
       remainingCharText:'Remaining 105 characters',
       tempToDelete:'',    
+      commaSeperatedSchemaIds: '',
+      schemaConfiguration: {
+        schemaId: "",
+        required: false,
+        issuerDID: ""
+      },
+      schemaConfigurationsForPresentation:[],
       // description: "The subject (or holder) generates verifiable presentation from one or more verifiable \
       // credentials, issued by one or more issuers, that is shared with a specific verifier. \
       // A verifiable presentation is a tamper-evident presentation encoded in such a way that \
