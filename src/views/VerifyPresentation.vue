@@ -252,8 +252,8 @@ export default {
                 `;  
         }
     },
-    mounted() {
-        
+    created() {
+        this.$store.commit('updateSideNavStatus',true)
     },  
     data() {
         return {
