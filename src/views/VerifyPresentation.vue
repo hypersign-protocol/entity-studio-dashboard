@@ -254,65 +254,6 @@ export default {
     },
     mounted() {
         
-        const that = this;
-        document.addEventListener('studio-success', async  function(e) {
-            console.log('inside studio-success')
-                console.log(e.detail)
-                
-                if (e.detail.accessToken) {
-                    const url = that.$config.studioServer.BASE_URL + 'api/v1/presentation/request/info';
-                    const accessToken = e.detail.accessToken;
-                    const resp =  await fetch(url, { 
-                        headers: { accessToken },
-                        method: 'GET'
-                    });
-
-                    if(resp.status === 200){
-                        const json =  await resp.json();
-
-                        const { message } = json;
-                        if(message == 'success'){
-                            const { data } = json;
-                            if(data){
-                                console.log(data)
-                                that.verfiableCredentials = data.verifiableCredential;
-                                console.log('Before showing the modal')
-                                that.$root.$emit('modal-show');
-                                that.cleanQR()
-                            } else {
-                                console.log('data not present')
-                            }
-                        } else {
-                            console.log('Else  message = ' +  message)
-                        }
-                    } else {
-                        console.log(
-                            resp.status
-                        )
-                    }
-
-                    
-                } else if(e.detail === 'Challenge expired') {
-                    that.cleanQR();
-                } else {
-                    console.error('Something went wrong')
-                }
-            });
-
-
-
-
-            document.addEventListener('studio-wait', function (e) {
-                //console.log('inside studio-wait')
-                console.log(e.detail);
-            });
-
-            document.addEventListener('studio-error', function (e) {
-                //console.log('inside studio-error')
-                console.error(e.detail);
-            });
-        
-       
     },  
     data() {
         return {
@@ -330,6 +271,92 @@ export default {
         }
     },
     methods: {
+        addEventListener(){
+            console.log('Adding all event listeneres... binding this')
+            document.addEventListener('studio-success', this.studioSuccess.bind(this));
+            document.addEventListener('studio-wait', this.studioWait);
+            document.addEventListener('studio-error', this.studioError);
+        },
+        removeEventListener(){
+            console.log('Removing all event listeneres...')
+            document.removeEventListener('studio-success', this.studioSuccess.bind(this));
+            document.removeEventListener('studio-wait', this.studioWait);
+            document.removeEventListener('studio-error', this.studioError);
+        },
+        studioError: function (e){
+            console.log('inside studio-error')
+            console.error(e.detail);
+        },
+        studioWait: function (e) {
+            console.log('inside studio-wait')
+            console.log(e.detail);
+        },
+        studioSuccess: async function (e) {
+            console.log('inside studio-success')
+            
+            if (e.detail.accessToken) {
+                const url = this.$config.studioServer.BASE_URL + 'api/v1/presentation/request/info';
+                const accessToken = e.detail.accessToken;
+                
+                let attempts = 0;
+                this.isLoading = true;
+                const doApiCall = async () => {
+                    if(attempts === 3){
+                        console.log('Alredy tried 3 times ...')
+                        this.isLoading = false
+                        return;
+                    } else {
+                        attempts = attempts + 1
+                        console.log('Going for  attempt = ' + attempts + ' at time ' + new Date().getTime())
+                    }
+
+                    const resp =  await fetch(url, { 
+                        headers: { accessToken },
+                        method: 'GET'
+                    });
+                    
+                    if(resp.status === 200){
+                        const json =  await resp.json();
+                        const { message } = json;
+                        if(message == 'success'){
+                            const { data } = json;
+                            if(data){
+                                console.log(data)
+                                this.verfiableCredentials = data.verifiableCredential;
+                                console.log('Before showing the modal')
+                                this.$root.$emit('modal-show');
+                                this.cleanQR()
+                            } else {
+                                console.log('data not present')
+                            }
+                        } else {
+                            console.log('Else  message = ' +  message)
+                        }
+
+                        this.isLoading = false
+                        return;
+                    } else if(resp.status === 400) {
+                        const json =  await resp.json();
+                        console.log({
+                            json, 
+                            status: 400
+                        })
+                        return doApiCall() 
+                    } else {
+                        this.isLoading = false
+                        return this.notifyErr('Some error occured')
+                    }
+                }
+                doApiCall();
+                
+            } else if(e.detail === 'Challenge expired') {
+                this.notifyErr('Challenge expired, reload the QR code')
+                this.cleanQR();
+            } else {
+                this.cleanQR();
+                console.error('Something went wrong')
+            }
+        },
         cleanQR() {
             EventBus.$emit("resetOption", this.presentantionTemplateId)
             this.presentantionTemplateId = ""
@@ -337,6 +364,8 @@ export default {
             this.qrData = ""
             const loadScript = document.getElementById('load-script')
             if(loadScript) loadScript.innerHTML = ""
+            this.removeEventListener()
+            this.isLoading = false
         },
         OnTemplateSelectDropDownChange(event) {
             if (event) {     
@@ -348,6 +377,7 @@ export default {
             }
         },
         requestPresentation(){
+            
             if(this.showQR){
                 return 
             }
@@ -358,6 +388,9 @@ export default {
             this.verfiableCredentials = null;
             //this.cleanQR()
             
+            console.log('adding event listenere time' + new Date())
+            this.addEventListener();
+
             let divScripts = document.getElementById('load-script');
             if(divScripts){
                 let newScript = document.createElement('script');
