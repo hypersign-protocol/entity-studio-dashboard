@@ -106,19 +106,19 @@ h5 span {
                     :options="selectOptions"
                     @selected="e =>{OnTemplateSelectDropDownChange(e)}"
                 ></hf-select-drop-down>
+                
+            </div>  
+            <div class="form-group">
+                <label>Or Enter a presentation template Id : </label> 
+                <input  class="form-control" type="text" name="" v-model="presentantionTemplateId" placeholder="63c518ec4eca295bd017bf57" />
+            </div>
+            <div class="">
                 <hf-buttons 
                     name="Request"
                     class="ml-auto mt-4"
                     @executeAction="requestPresentation()"
                 ></hf-buttons>
-            </div>  
-            <!-- <div class="form-group">
-                <label>Or Enter a presentation template Id : </label> 
-                <input  class="form-control" type="text" name="" v-model="presentantionTemplateId" placeholder="63c518ec4eca295bd017bf57" />
             </div>
-            <div class="">
-                
-            </div> -->
                      
         </div>
 
