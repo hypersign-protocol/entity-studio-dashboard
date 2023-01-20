@@ -13,6 +13,9 @@ import "@mdi/font/css/materialdesignicons.css";
 import "@mdi/light-font/css/materialdesignicons-light.css";
 import './assets/css/gblStyle.css';
 
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
+
 Vue.config.productionTip = false
 Vue.use(VueSidebarMenu);
 Vue.use(BootstrapVue);
@@ -20,6 +23,7 @@ Vue.use(BootstrapVueIcons);
 Vue.use(Notifications)
 Vue.config.devtools = true;
 Vue.prototype.$config = config
+Vue.component("multiselect", Multiselect);
 
 new Vue({
   router,
