@@ -122,7 +122,7 @@ h5 span {
                      
         </div>
 
-        <div class="col-md-4" v-if="presentantionTemplateId != '' && showQR">
+        <!-- <div class="col-md-4" v-if="presentantionTemplateId != '' && showQR">
             <div class="leafygreen-ui-196mwvg">
                 <div class="leafygreen-ui-mlc9qv">
                     <pre class="css-1sdjnkx e5i1odf0 leafygreen-ui-vbfbru" tabindex="-1">
@@ -142,7 +142,7 @@ h5 span {
             <div style="text-align: center;">
                 <label style="font-size:small; color:grey;">Read our <a href="https://docs.hypersign.id" target="_blank">documentation </a> for integration</label>
             </div>
-        </div>
+        </div> -->
 
         <div class="col-md-4" v-if="presentantionTemplateId != '' && showQR">
             <div class="justify-content-center" style="text-align: center;">
@@ -160,22 +160,54 @@ h5 span {
         
     </div>
 
-    <hf-pop-up  Header="Verification Result" v-if="verfiableCredentials">
-        <div class="card" v-for="eachcredential in verfiableCredentials">
+    <hf-pop-up  Header="Credentials Verification Report" >
+        <div style="max-height: 600px; overflow-y: scroll;">
+        <div class="card" v-for="eachcredential in verfiableCredentials" style="margin-bottom: 3%;">
             <div class="card-header">
-                <span>{{eachcredential.type[1]}}</span>
-                <span class="card-title" style="float:right">
-                    <img :src="images.greentick" height="21" width="21"/>
-                </span>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span><i class="fa fa-id-card"></i> {{eachcredential.type[1]}}</span>
+                        <span class="card-title" style="float:right">
+                            <img :src="images.greentick" height="21" width="21"/>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12" style="font-size: 11px; color: #808080b3;">
+                        {{eachcredential.id}} 
+                        <i class="far fa-copy ml-1"
+                            style="cursor:pointer;"
+                            title="Click to copy credential id"
+                        @click="copyToClip(eachcredential.id,'Credential Id')"></i>
+                    </div>
+                </div>
+
+                
             </div>
             <div class="card-body">
-                Issuer: {{ eachcredential.issuer }}
-                <div class="" v-for="eachSubjectField in Object.keys(eachcredential.credentialSubject)">
-                    <span>{{eachSubjectField}} : {{eachcredential.credentialSubject[eachSubjectField]}}</span>
-                </div>
+                <ul class="list-group" style="max-height: 250px;overflow: scroll;">
+                    <li class="list-group-item" ><span style="font-weight: bold;">Issuer : </span> {{ shorten(eachcredential.issuer) }}  <i class="far fa-copy ml-1"
+                            style="cursor:pointer;"
+                            title="Click to copy issuer DID"
+                        @click="copyToClip(eachcredential.issuer,'Issuer DID')"></i></li>
+                    <li class="list-group-item" v-for="eachSubjectField in Object.keys(eachcredential.credentialSubject)">
+                        <span style="font-weight: bold;">{{eachSubjectField}} :</span> 
+                        <span v-if="eachSubjectField === 'id'"> {{ shorten(eachcredential.credentialSubject[eachSubjectField])}} 
+                            <i class="far fa-copy ml-1"
+                            style="cursor:pointer;"
+                            title="Click to copy subject DID"
+                            @click="copyToClip(eachcredential.issuer,'Subject DID')"></i>
+                        </span>
+                        <span v-else>
+                            {{eachcredential.credentialSubject[eachSubjectField]}}
+                        </span>
+                    </li>
+                </ul>
             </div>
             <!-- <div class="card-footer"></div> -->
         </div>
+    </div>
     </hf-pop-up>
 
 
@@ -228,7 +260,7 @@ export default {
                 console.log(e.detail)
                 
                 if (e.detail.accessToken) {
-                    const url = 'https://stage.hypermine.in/studioserver/api/v1/presentation/request/info';
+                    const url = that.$config.studioServer.BASE_URL + 'api/v1/presentation/request/info';
                     const accessToken = e.detail.accessToken;
                     const resp =  await fetch(url, { 
                         headers: { accessToken },
@@ -245,7 +277,7 @@ export default {
                                 console.log(data)
                                 that.verfiableCredentials = data.verifiableCredential;
                                 console.log('Before showing the modal')
-                                if(that.verfiableCredentials) that.$root.$emit('modal-show');
+                                that.$root.$emit('modal-show');
                                 that.cleanQR()
                             } else {
                                 console.log('data not present')
@@ -332,7 +364,7 @@ export default {
                 newScript.setAttribute('src', '/hs-sdk.js')
                 newScript.setAttribute('data-button-text', 'Present Credential')
                 newScript.setAttribute('data-button-css-class', 'btn button-theme')
-                newScript.setAttribute('data-hs-wallet-base-url', 'https://wallet-stage.hypersign.id')
+                newScript.setAttribute('data-hs-wallet-base-url', this.$config.webWalletAddress)
                 newScript.setAttribute('data-presentation-request-endpoint', 'https://stage.hypermine.in/studioserver/api/v1/presentation/request/')
                 newScript.setAttribute('data-presentation-template-id', this.presentantionTemplateId)
                 divScripts.innerHTML = ""
