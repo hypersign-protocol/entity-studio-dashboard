@@ -115,7 +115,6 @@
                         :taggable="false"
                         :close-on-select="false"
                         :clear-on-select="false"
-                        :style="buttonThemeCss"
                         @input="onInputTag"
                       >
                       </multiselect>
@@ -181,7 +180,7 @@
           </thead>
 
           <tbody>
-            <tr v-for="row in templateList" :key="row">
+            <tr v-for="row in templateList" :key="row._id">
               <td class="align-middle">
                 <div class="align-middle" style="display:flex;">
                 <span class="mr-1">{{row._id}}</span>
@@ -298,7 +297,6 @@ export default {
     isContainerShift() {
       return this.$store.state.containerShift
     }
-    
   },
   data() {
     return {

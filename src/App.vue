@@ -117,10 +117,10 @@ cursor: pointer;
       <div slot="header" style="background:#363740">
           <div class="mt-3">
             <div>
-            <center><img v-if="!isSidebarCollapsed" :src="`${getProfileIcon(selectedOrg.name)}`" alt="avatar" width="130px" style="" /></center>
-            <center><img v-if="isSidebarCollapsed" :src="`${getProfileIcon(selectedOrg.name)}`" class="mr-1" alt="center" width="35px"/></center>
+            <center><img v-if="!isSidebarCollapsed" :src="`${getProfileIcon(selectedOrg? selectedOrg.name: '')}`" alt="avatar" width="130px" style="" /></center>
+            <center><img v-if="isSidebarCollapsed" :src="`${getProfileIcon(selectedOrg? selectedOrg.name: '')}`" class="mr-1" alt="center" width="35px"/></center>
             </div>
-            <center><p class="mt-3 orgNameCss">{{ selectedOrg.name }}</p></center>
+            <center><p class="mt-3 orgNameCss">{{ selectedOrg? selectedOrg.name: '' }}</p></center>
           </div>
         </div>
       </sidebar-menu>

@@ -33,7 +33,9 @@ const config = {
     app: {
         name: EnvProvider.value('TITLE') || "Hypersign Studio",
         decription: EnvProvider.value('DESC'),
-        version: EnvProvider.value('VERSION') || "v1.0.0"
+        version: EnvProvider.value('VERSION') || "v1.0.0",
+        buttonBgColor: process.env.VUE_APP_BTN_BACKGROUND || "#f1b319",
+        buttonTextColor: process.env.VUE_APP_BTN_TXT_COLOR || "black",
     },
 
 }

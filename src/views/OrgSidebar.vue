@@ -226,6 +226,7 @@ export default {
       edit: false,
       flash: null,
       isAdd: true,
+      controllerValue: "",
       orgStore: {
         name: "Hypermine Pvt Ltd",
         domain: "hypermine.in",
