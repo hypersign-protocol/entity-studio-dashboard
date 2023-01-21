@@ -281,7 +281,7 @@ export default {
         countDownTimer () {
 
             const interval = setInterval(() =>{
-                if(this.countDown > 0){
+                if(this.countDown > 0 && this.challenge){
                     this.countDown -= 1    
                 } else {
                     this.cleanQR()
@@ -330,8 +330,8 @@ export default {
                 return;
             }
 
-            console.log(e.detail);
         },
+
         studioSuccessListenerCB: async function (e) {
             
             console.log('inside studio-sucess')
@@ -357,67 +357,40 @@ export default {
                     return new Promise(resolve => setTimeout(resolve, delayInms));
                 }
 
-                const doApiCall = async () => {
-                    if(this.attempts <= 3){
-                            setTimeout(async () => {
-                                this.attempts = this.attempts + 1;
-                                console.log('Going for  attempt = ' + this.attempts + ' for ' + this.challenge)
-
-
-                                const resp =  await fetch(url, { 
-                                headers: { accessToken },
-                                method: 'GET'
+                const resp =  await fetch(url, { 
+                                    headers: { accessToken },
+                                    method: 'GET'
                                 });
                             
-                                
-                                if(resp.status === 200){
-                                    const json =  await resp.json();
-                                    const { message } = json;
-                                    if(message == 'success'){
-                                        const { data } = json;
-                                        if(data){
-                                            console.log(data)
-                                            this.verfiableCredentials = data.verifiableCredential;
-                                            console.log('Before showing the modal')
-                                            this.$root.$emit('modal-show');
-                                            this.cleanQR()
-                                        } else {
-                                            console.log('data not present')
-                                        }
-                                    } else {
-                                        console.log('Else  message = ' +  message)
-                                    }
-
-                                    this.isLoading = false
-                                    return;
-                                } else if(resp.status === 400) {
-                                    const json =  await resp.json();
-                                    console.log({
-                                        json, 
-                                        status: 400
-                                    })
-                                } else {
-                                    this.isLoading = false
-                                    return this.notifyErr('Some error occured')
-                                }
-
-                            }, 1000)
+                if(resp.status === 200){
+                    const json =  await resp.json();
+                    const { message } = json;
+                    if(message == 'success'){
+                        const { data } = json;
+                        if(data){
+                            this.verfiableCredentials = data.verifiableCredential; 
+                            this.$root.$emit('modal-show');
+                            this.cleanQR()
+                        } else {
+                            console.log('data not present')
+                        }
                     } else {
-                        console.log('Alredy tried ' + this.attempts + ' times ...')
-                        this.isLoading = false
+                        console.log('Else  message = ' +  message)
                     }
-                }
 
-                doApiCall();
-
-                // const interval = setInterval(() => {
-                   
-                //     console.log('Going for  attempt = ' + this.attempts + ' for ' + this.challenge)
-                //     this.attempts = this.attempts + 1;  
-                //     doApiCall()
-                // }, 1000)
-                
-                
+                    this.isLoading = false
+                    return;
+                } else if(resp.status === 400) {
+                    const json =  await resp.json();
+                    console.log({
+                        json, 
+                        status: 400
+                    })
+                } else {
+                    this.isLoading = false
+                    this.notifyErr('Some error occured')
+                }                
+                this.cleanQR()
             } else if(message === 'Challenge expired') {
                 this.notifyErr('Challenge expired, reload the QR code')
                 this.cleanQR();
