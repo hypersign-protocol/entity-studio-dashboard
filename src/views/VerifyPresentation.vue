@@ -353,9 +353,13 @@ export default {
                 
                 
                 this.isLoading = true;
+                const delayTime = 3000; // 3s
                 const delay = (delayInms) => {
                     return new Promise(resolve => setTimeout(resolve, delayInms));
                 }
+                console.log('waiting for ' + delayTime + ' ms...')
+                await delay(delayTime)
+
 
                 const resp =  await fetch(url, { 
                                     headers: { accessToken },
