@@ -257,6 +257,7 @@ export default {
     },  
     data() {
         return {
+            challenge: "",
             showQR: false,
             presentantionTemplateId: "",
             fullPage: true,
@@ -273,30 +274,59 @@ export default {
     methods: {
         addEventListener(){
             console.log('Adding all event listeneres... binding this')
-            document.addEventListener('studio-success', this.studioSuccess.bind(this));
-            document.addEventListener('studio-wait', this.studioWait);
-            document.addEventListener('studio-error', this.studioError);
+            document.addEventListener('studio-init', this.studioInitListenerCB.bind(this));
+            document.addEventListener('studio-success', this.studioSuccessListenerCB.bind(this));
+            document.addEventListener('studio-wait', this.studioWaitListenerCB);
+            document.addEventListener('studio-error', this.studioErrorListenerCB);
         },
         removeEventListener(){
             console.log('Removing all event listeneres...')
-            document.removeEventListener('studio-success', this.studioSuccess.bind(this));
-            document.removeEventListener('studio-wait', this.studioWait);
-            document.removeEventListener('studio-error', this.studioError);
+            document.removeEventListener('studio-success', this.studioSuccessListenerCB.bind(this));
+            document.removeEventListener('studio-wait', this.studioWaitListenerCB);
+            document.removeEventListener('studio-error', this.studioErrorListenerCB);
         },
-        studioError: function (e){
+        studioInitListenerCB: function (e){
+            console.log('New QR initiated ...' + e.detail.id)
+
+            if(!this.challenge){
+                this.challenge = e.detail.id;
+                console.log('studio-init:: setting gbl challenge '+ this.challenge)
+                return;
+            }
+        },
+        studioErrorListenerCB: function (e){
+
             console.log('inside studio-error')
             console.error(e.detail);
+
         },
-        studioWait: function (e) {
+        studioWaitListenerCB: function (e) {
+
             console.log('inside studio-wait')
+            const { id } = e.detail;
+            if(this.challenge != id){
+                console.log('studio-wait:: Not doing anything .. For some other challenge '+ id)
+                return;
+            }
+
             console.log(e.detail);
         },
-        studioSuccess: async function (e) {
-            console.log('inside studio-success')
+        studioSuccessListenerCB: async function (e) {
             
-            if (e.detail.accessToken) {
+            console.log('inside studio-sucess')
+            
+            const { message, id } = e.detail;
+            
+            if(this.challenge != id){
+                console.log('studio-success:: Not doing anything .. For some other challenge '+ id)
+                return;
+            }
+
+            console.log('inside studio-success id = '+  id)
+            
+            if (message.accessToken) {
                 const url = this.$config.studioServer.BASE_URL + 'api/v1/presentation/request/info';
-                const accessToken = e.detail.accessToken;
+                const accessToken = message.accessToken;
                 
                 let attempts = 0;
                 this.isLoading = true;
@@ -349,7 +379,7 @@ export default {
                 }
                 doApiCall();
                 
-            } else if(e.detail === 'Challenge expired') {
+            } else if(message === 'Challenge expired') {
                 this.notifyErr('Challenge expired, reload the QR code')
                 this.cleanQR();
             } else {
@@ -366,6 +396,7 @@ export default {
             if(loadScript) loadScript.innerHTML = ""
             this.removeEventListener()
             this.isLoading = false
+            this.challenge = ""
         },
         OnTemplateSelectDropDownChange(event) {
             if (event) {     
