@@ -255,7 +255,7 @@ export default {
   
     created() {
         this.$store.commit('updateSideNavStatus',true)
-
+        this.addEventListener()
     },  
     data() {
         return {  
@@ -406,7 +406,7 @@ export default {
             this.qrData = ""
             const loadScript = document.getElementById('load-script')
             if(loadScript) loadScript.innerHTML = ""
-            this.removeEventListener()
+            // this.removeEventListener()
             this.isLoading = false
             this.challenge = ""
             this.countDown = 60
@@ -433,7 +433,7 @@ export default {
             //this.cleanQR()
             
             console.log('adding event listenere time' + new Date())
-            this.addEventListener();
+            //this.addEventListener();
 
             let divScripts = document.getElementById('load-script');
             if(divScripts){
