@@ -146,6 +146,7 @@ h5 span {
 
         <div class="col-md-4" v-if="presentantionTemplateId != '' && showQR">
             <div class="justify-content-center" style="text-align: center;">
+                This QR code will expire in <span class="badge badge-danger">{{ this.countDown }}</span> seconds
                 <canvas id="studio-qr"></canvas>
                 <label style="font-size:small; color:grey;">Scan the QR code using Hypersign Identity Wallet</label>
                 <div class="justify-content-center" style="text-align: center;"><h5><span>OR</span></h5></div>
@@ -225,7 +226,6 @@ import HfButtons from "../components/element/HfButtons.vue"
 import EventBus from "../eventbus"
 
 
-
 export default {
     name: "VerifyPresentation",
     components: { HfPopUp, Loading, VueQr, HfButtons, HfSelectDropDown }, 
@@ -252,11 +252,16 @@ export default {
                 `;  
         }
     },
+  
     created() {
         this.$store.commit('updateSideNavStatus',true)
+
     },  
     data() {
-        return {
+        return {  
+            attempts: 0,          
+            expiredAfterSec: 60,
+            countDown: 60,            
             challenge: "",
             showQR: false,
             presentantionTemplateId: "",
@@ -272,6 +277,21 @@ export default {
         }
     },
     methods: {
+
+        countDownTimer () {
+
+            const interval = setInterval(() =>{
+                if(this.countDown > 0){
+                    this.countDown -= 1    
+                } else {
+                    this.cleanQR()
+                    clearInterval(interval)
+                }
+            }, 1000)
+
+          
+                
+        },
         addEventListener(){
             console.log('Adding all event listeneres... binding this')
             document.addEventListener('studio-init', this.studioInitListenerCB.bind(this));
@@ -286,26 +306,27 @@ export default {
             document.removeEventListener('studio-error', this.studioErrorListenerCB);
         },
         studioInitListenerCB: function (e){
-            console.log('New QR initiated ...' + e.detail.id)
-
+            //console.log('New QR initiated ...' + e.detail.id)
+            
             if(!this.challenge){
                 this.challenge = e.detail.id;
+                this.countDownTimer()
                 console.log('studio-init:: setting gbl challenge '+ this.challenge)
                 return;
             }
+
         },
         studioErrorListenerCB: function (e){
 
-            console.log('inside studio-error')
+            //console.log('inside studio-error')
             console.error(e.detail);
 
         },
         studioWaitListenerCB: function (e) {
 
-            console.log('inside studio-wait')
+            //console.log('inside studio-wait')
             const { id } = e.detail;
             if(this.challenge != id){
-                console.log('studio-wait:: Not doing anything .. For some other challenge '+ id)
                 return;
             }
 
@@ -316,6 +337,8 @@ export default {
             console.log('inside studio-sucess')
             
             const { message, id } = e.detail;
+
+            
             
             if(this.challenge != id){
                 console.log('studio-success:: Not doing anything .. For some other challenge '+ id)
@@ -324,67 +347,83 @@ export default {
 
             console.log('inside studio-success id = '+  id)
             
-            if (message.accessToken) {
+            if (message.accessToken && this.challenge) {
                 const url = this.$config.studioServer.BASE_URL + 'api/v1/presentation/request/info';
                 const accessToken = message.accessToken;
                 
-                let attempts = 0;
+                
                 this.isLoading = true;
+                const delay = (delayInms) => {
+                    return new Promise(resolve => setTimeout(resolve, delayInms));
+                }
+
                 const doApiCall = async () => {
-                    if(attempts === 3){
-                        console.log('Alredy tried 3 times ...')
-                        this.isLoading = false
-                        return;
-                    } else {
-                        attempts = attempts + 1
-                        console.log('Going for  attempt = ' + attempts + ' at time ' + new Date().getTime())
-                    }
+                    if(this.attempts <= 3){
+                            setTimeout(async () => {
+                                this.attempts = this.attempts + 1;
+                                console.log('Going for  attempt = ' + this.attempts + ' for ' + this.challenge)
 
-                    const resp =  await fetch(url, { 
-                        headers: { accessToken },
-                        method: 'GET'
-                    });
-                    
-                    if(resp.status === 200){
-                        const json =  await resp.json();
-                        const { message } = json;
-                        if(message == 'success'){
-                            const { data } = json;
-                            if(data){
-                                console.log(data)
-                                this.verfiableCredentials = data.verifiableCredential;
-                                console.log('Before showing the modal')
-                                this.$root.$emit('modal-show');
-                                this.cleanQR()
-                            } else {
-                                console.log('data not present')
-                            }
-                        } else {
-                            console.log('Else  message = ' +  message)
-                        }
 
-                        this.isLoading = false
-                        return;
-                    } else if(resp.status === 400) {
-                        const json =  await resp.json();
-                        console.log({
-                            json, 
-                            status: 400
-                        })
-                        return doApiCall() 
+                                const resp =  await fetch(url, { 
+                                headers: { accessToken },
+                                method: 'GET'
+                                });
+                            
+                                
+                                if(resp.status === 200){
+                                    const json =  await resp.json();
+                                    const { message } = json;
+                                    if(message == 'success'){
+                                        const { data } = json;
+                                        if(data){
+                                            console.log(data)
+                                            this.verfiableCredentials = data.verifiableCredential;
+                                            console.log('Before showing the modal')
+                                            this.$root.$emit('modal-show');
+                                            this.cleanQR()
+                                        } else {
+                                            console.log('data not present')
+                                        }
+                                    } else {
+                                        console.log('Else  message = ' +  message)
+                                    }
+
+                                    this.isLoading = false
+                                    return;
+                                } else if(resp.status === 400) {
+                                    const json =  await resp.json();
+                                    console.log({
+                                        json, 
+                                        status: 400
+                                    })
+                                } else {
+                                    this.isLoading = false
+                                    return this.notifyErr('Some error occured')
+                                }
+
+                            }, 1000)
                     } else {
+                        console.log('Alredy tried ' + this.attempts + ' times ...')
                         this.isLoading = false
-                        return this.notifyErr('Some error occured')
                     }
                 }
+
                 doApiCall();
+
+                // const interval = setInterval(() => {
+                   
+                //     console.log('Going for  attempt = ' + this.attempts + ' for ' + this.challenge)
+                //     this.attempts = this.attempts + 1;  
+                //     doApiCall()
+                // }, 1000)
+                
                 
             } else if(message === 'Challenge expired') {
                 this.notifyErr('Challenge expired, reload the QR code')
                 this.cleanQR();
             } else {
                 this.cleanQR();
-                console.error('Something went wrong')
+                console.error('Something went wrong or challenge is blank, try again')
             }
         },
         cleanQR() {
@@ -397,6 +436,7 @@ export default {
             this.removeEventListener()
             this.isLoading = false
             this.challenge = ""
+            this.countDown = 60
         },
         OnTemplateSelectDropDownChange(event) {
             if (event) {     
