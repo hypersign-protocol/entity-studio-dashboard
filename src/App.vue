@@ -242,7 +242,6 @@ export default {
   components: { HfButtons },
   computed: {
     ...mapGetters("playgroundStore", ["userDetails", "getSelectedOrg"]),
-
     selectedOrg() {
       return this.getSelectedOrg;
     },
@@ -284,6 +283,7 @@ export default {
    this.initializeStore()
   },
   methods: {
+    ...mapActions("mainStore", ["fetchAppsListFromServer"]),
     ...mapActions("playgroundStore", ["insertAnOrg", 'insertAschema', "insertAcredential"]),
     ...mapMutations("playgroundStore", ["insertApresentationTemplate",  'selectAnOrg', 'shiftContainer', 'resetStore']),
     route(name){
@@ -323,14 +323,17 @@ export default {
         this.shiftContainer(true)        
       }
     },
-     initializeStore() {
+    initializeStore() {
       this.authToken = localStorage.getItem('authToken'); 
       if (this.authToken) {
        this.showIcon = true
-       this.fetchAllOrgs()
-    }else{
-      console.log("else");
-     }
+       // TODO: This should only execute when playground is selected, otherwise not...
+       this.fetchAllOrgs();
+       
+       this.fetchAppsListFromServer();
+      }else{
+        console.log("else");
+      }
     },
     
     getSideMenu() {
@@ -363,6 +366,7 @@ export default {
       ]
       return menu
     },
+
     fetchAllOrgs() {
       // TODO: Get list of orgs 
       const url = `${this.$config.studioServer.BASE_URL}api/v1/org`

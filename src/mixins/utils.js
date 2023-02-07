@@ -1,5 +1,19 @@
 export default {
     methods: {
+        getHeader(authToken = ''){
+            if(authToken != ''){
+                // TODO: Remove this userId later
+                return {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${authToken}`,
+                    "userId": "123",
+                }    
+            } else {
+                return {
+                    "Content-Type": "application/json",
+                }
+            }
+        },
         copyToClip(textToCopy,contentType) {
             if (textToCopy) {
                 navigator.clipboard

@@ -12,20 +12,6 @@ const mainStore = {
     mixin: [UtilsMixin],
     state: {
         appList: [
-            {
-              "appName": "demo app",
-              "appId": "93cda113-66ba-4ac5-9055-aaa32d42e72c",
-              "edvId": "hs:apiservice:edv:6bdcbcfd-a998-4959-93b2-278f0ac76915",
-              "walletAddress": "hid1a7up029duz8aghq50cflzadcuaxxejp4pzyuy0",
-              "appSecret": "71bf4ff7-2848-4546-9dd2-90a2140b5ff1",
-            },
-            {
-              "appName": "demo app2",
-              "appId": "0c06ea65-2a8e-4911-bca8-105300ee72a5",
-              "edvId": "hs:apiservice:edv:69709a85-afc1-410f-8c03-f5b177931d8b",
-              "walletAddress": "hid1wuzcm2r00p6c4545g9zxea87s6j8392hnx0yq4",
-              "appSecret": "71bf4ff7-2848-4546-9dd2-90a2140b5ff1",
-            }
           ]
     },
     getters: {
@@ -34,8 +20,93 @@ const mainStore = {
         },
 
     },
-    mutations: {},
-    actions: {}
+    mutations: {
+        insertAllApps(state, payload){
+            state.appList = payload;
+        },
+        insertAnApp(state, payload) {
+            if (!state.appList.find(x => x.appId === payload.appId)) {
+                state.appList.push(payload);
+            } else {
+                console.log('already exists appId id =' + payload.appId);
+                this.commit('updateAnApp', payload);
+            }
+        },
+        updateAnApp(state,payload) {
+            const tempToUpdateIndex = state.appList.findIndex(x => x.appId === payload.appId);
+            Object.assign(state.appList[tempToUpdateIndex], {...payload});
+        },
+    },
+    actions: {
+        saveAnAppOnServer: ({ commit }, payload) => {
+            return new Promise((resolve, reject) => {
+                const url = `${apiServerBaseUrl}/app`;
+                // TODO: // use proper authToken
+                const headers = UtilsMixin.methods.getHeader('xyz');
+                fetch(url, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(payload)
+                }).then(response => response.json()).then(json => {
+                    // TODO: remoe this dummy app secret..
+                    if(!json.appSecret){
+                        json.appSecret = "71bf4ff7-2848-4546-9dd2-90a2140b5ff1"
+                    }
+                    commit('insertAnApp', json);
+                    resolve(true)
+                }).catch((e) => {
+                    reject(new Error(`while updating an app  ${e}`))
+                })
+            })
+        },
+        updateAnAppOnServer: ({ commit }, payload) => {
+            return new Promise((resolve, reject) => {
+                const { appId } = payload;
+                if(!appId) {
+                    reject(new Error(`appId is not specified`))
+                }
+                const url = `${apiServerBaseUrl}/app/${appId}`;
+                // TODO: // use proper authToken
+                const headers = UtilsMixin.methods.getHeader('xyz');
+                fetch(url, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(payload)
+                }).then(response => response.json()).then(json => {
+                    // TODO: remoe this dummy app secret..
+                    if(!json.appSecret){
+                        json.appSecret = "71bf4ff7-2848-4546-9dd2-90a2140b5ff1"
+                    }
+                    commit('updateAnApp', json);
+                    resolve(true)
+                }).catch(e => {
+                    reject(new Error(`while updating an app   ${e}`))
+                })
+            })
+            
+        },
+        fetchAppsListFromServer: ({commit }) => {
+            console.log('inside fetchAppsListFromServer .... ')
+            // TODO: Get list of orgs 
+            const url = `${apiServerBaseUrl}/app`;
+            // TODO: // use proper authToken
+            const headers = UtilsMixin.methods.getHeader('xyz');
+            fetch(url, {
+                headers
+            }).then(response => response.json()).then(json => {
+                const appList = json.map(x => {
+                    if(!x.appSecret){
+                        // TODO: remoe this dummy app secret..
+                        x.appSecret = "71bf4ff7-2848-4546-9dd2-90a2140b5ff1"
+                    }
+                    return x;
+                })
+                commit('insertAllApps', appList);
+            }).catch((e) => {
+                console.error(`Error while fetching apps ` + e.message);
+            })
+        }
+    }
 }
 
 export default mainStore;
