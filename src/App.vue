@@ -71,10 +71,10 @@ cursor: pointer;
     <b-collapse id="nav-collapse" is-nav style="width: 30%;">
       <b-navbar-nav class="ml-auto">
 
-        <a class="mr-4" href="#" @click.prevent="route('playgroundDashboard')"
+        <!-- <a class="mr-4" href="#" @click.prevent="route('playgroundDashboard')"
           style="color:grey; margin-top:0.8em;" title="Playground">
           <i class="fa fa-rocket" style="font-size:36px;"></i>
-        </a>
+        </a> -->
 
         <a class="mr-3" href="https://docs.hypersign.id/entity-studio/introduction" target="blank" 
           style="color:grey; margin-top:0.8em;" title="Documentation">
