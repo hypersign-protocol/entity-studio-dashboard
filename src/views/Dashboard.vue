@@ -2,12 +2,11 @@
     <div class="home">
       <h2>Hi {{user.name}}, Welcome to the Entity Dashboard!</h2>
 
-      <!-- <img src="../assets/2_.jpeg"></img> -->
       <div class="row">
         <div class="col-md-4">
             <div class="card" style="width: 25rem;">
                 <div class="card-body">
-                    <h2 class="card-title"><i class="fa fa-rocket" style="font-size:36px;"></i></h2>
+                    <h2 class="card-title"><i class="fa fa-gamepad" style="font-size:36px;"></i></h2>
                     <p class="card-text">
                         Try our Entity Studio Playground and get hands on with self sovereign identity concepts.</p>
                     <a href="#" @click.prevent="gotosubpage('playgroundDashboard')" class="btn btn-outline-primary rounded-pill">Playground <i class="fa fa-arrow-right"></i></a>
@@ -35,21 +34,18 @@
         </div>
       </div>
 
-      <div class="row">
-        
-      </div>
-
-
+      <apps/>
     </div>
  </template>
  
  
  <script>
+import Apps from './Apps.vue';
  
 export default {
    name: "dashboard",
    components: { 
-     
+    Apps,
    },
    data() {
      return {
