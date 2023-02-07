@@ -322,16 +322,16 @@ h5 span {
 <script>
 import fetch from "node-fetch";
 // import Info from '@/components/Info.vue'
-import UtilsMixin from '../mixins/utils';
-import HfPopUp from "../components/element/hfPopup.vue";
+import UtilsMixin from '../../mixins/utils';
+import HfPopUp from "../../components/element/hfPopup.vue";
 import Loading from "vue-loading-overlay";
-import StudioSideBar from "../components/element/StudioSideBar.vue";
-import HfButtons from "../components/element/HfButtons.vue"
-import HfSelectDropDown from "../components/element/HfSelectDropDown.vue"
-import EventBus from "../eventbus"
-import ToolTip from "../components/element/ToolTip.vue"
-import { isEmpty, isValidDid, isValidURL, isFloat } from '../mixins/fieldValidation'
-import message from '../mixins/messages'
+import StudioSideBar from "../../components/element/StudioSideBar.vue";
+import HfButtons from "../../components/element/HfButtons.vue"
+import HfSelectDropDown from "../../components/element/HfSelectDropDown.vue"
+import EventBus from "../../eventbus"
+import ToolTip from "../../components/element/ToolTip.vue"
+import { isEmpty, isValidDid, isValidURL, isFloat } from '../../mixins/fieldValidation'
+import message from '../../mixins/messages'
 import Datepicker from 'vuejs-datetimepicker'
 import VueQr from "vue-qr"
 export default {
@@ -556,7 +556,7 @@ export default {
       return chars[0]
     },
     goToSchema() {
-      this.$router.push('schema')
+      this.$router.push('playgroundSchema')
     },
     openSlider() {
       this.isEdit = false

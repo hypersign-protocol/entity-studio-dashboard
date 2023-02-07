@@ -217,13 +217,13 @@ h5 span {
 </template>
 
 <script>
-import UtilsMixin from '../mixins/utils';
-import HfPopUp from "../components/element/hfPopup.vue";
+import UtilsMixin from '../../mixins/utils';
+import HfPopUp from "../../components/element/hfPopup.vue";
 import Loading from "vue-loading-overlay";
-import HfSelectDropDown from "../components/element/HfSelectDropDown.vue"
+import HfSelectDropDown from "../../components/element/HfSelectDropDown.vue"
 import VueQr from "vue-qr";
-import HfButtons from "../components/element/HfButtons.vue"
-import EventBus from "../eventbus"
+import HfButtons from "../../components/element/HfButtons.vue"
+import EventBus from "../../eventbus"
 
 
 export default {
@@ -271,7 +271,7 @@ export default {
             qrData: "",
             verfiableCredentials: null,
             images: {
-                greentick: require("../assets/green-tick.png"),
+                greentick: require("../../assets/green-tick.png"),
             },
             successEvntHandler: null
         }

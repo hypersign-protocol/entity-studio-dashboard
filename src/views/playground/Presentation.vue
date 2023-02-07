@@ -120,7 +120,7 @@
                       </multiselect>
 
                       <div v-if="selectOptions.length === 1">
-                      <span class="goschema" @click="goToSchema()">Create Schema</span>                      
+                      <span class="goschema" @click="gotosubpage('playgroundSchema')">Create Schema</span>                      
                       </div>
                     </div>              
                     <div class="form-group">
@@ -265,22 +265,22 @@
 </template>
 
 <script>
-import HfPopUp from "../components/element/hfPopup.vue"
+import HfPopUp from "../../components/element/hfPopup.vue"
 import fetch from "node-fetch";
-import UtilsMixin from '../mixins/utils';
-import StudioSideBar from "../components/element/StudioSideBar.vue";
-import HfButtons from "../components/element/HfButtons.vue"
-import conf from '../config';
+import UtilsMixin from '../../mixins/utils';
+import StudioSideBar from "../../components/element/StudioSideBar.vue";
+import HfButtons from "../../components/element/HfButtons.vue"
+import conf from '../../config';
 const { hypersignSDK } = conf;
 import QrcodeVue from "qrcode.vue";
 // import Info from '@/components/Info.vue'
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
-import HfSelectDropDown from "../components/element/HfSelectDropDown.vue"
-import EventBus from "../eventbus"
-import ToolTip from "../components/element/ToolTip.vue"
-import message from '../mixins/messages'
-import { isEmpty, isValidURL, isValidDid } from '../mixins/fieldValidation'
+import HfSelectDropDown from "../../components/element/HfSelectDropDown.vue"
+import EventBus from "../../eventbus"
+import ToolTip from "../../components/element/ToolTip.vue"
+import message from '../../mixins/messages'
+import { isEmpty, isValidURL, isValidDid } from '../../mixins/fieldValidation'
 export default {
   name: "Presentation",
   components: { QrcodeVue , StudioSideBar, HfButtons, Loading, HfSelectDropDown, ToolTip, HfPopUp},
@@ -462,9 +462,6 @@ export default {
       }
 
     },
-    goToSchema() {
-      this.$router.push('schema')
-    },
     clearAll() {
       EventBus.$emit("resetOption",this.selected)
       this.presentationTemplate.issuerDid = ''
@@ -514,8 +511,8 @@ export default {
         })
         .catch((e) => this.notifyErr(`Error: ${e.message}`));
     },
-    gotosubpage: (id) => {
-      this.$router.push(`${id}`);
+    gotosubpage: (name) => {
+      this.$router.push({ name });
     },
     addBlankAttrBox() {
       if (this.attributeName != " ") {

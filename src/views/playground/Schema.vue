@@ -349,15 +349,15 @@
 import fetch from "node-fetch";
 import QrcodeVue from "qrcode.vue";
 // import Info from '@/components/Info.vue';
-import UtilsMixin from '../mixins/utils';
+import UtilsMixin from '../../mixins/utils';
 import Loading from "vue-loading-overlay";
-import StudioSideBar from "../components/element/StudioSideBar.vue";
-import HfButtons from "../components/element/HfButtons.vue"
-import HfSelectDropDown from "../components/element/HfSelectDropDown.vue"
-import EventBus from "../eventbus"
-import ToolTip from "../components/element/ToolTip.vue"
-import { isValidURL, isEmpty, ifSpaceExists, isValidSchemaAttrName } from '../mixins/fieldValidation'
-import message from '../mixins/messages'
+import StudioSideBar from "../../components/element/StudioSideBar.vue";
+import HfButtons from "../../components/element/HfButtons.vue"
+import HfSelectDropDown from "../../components/element/HfSelectDropDown.vue"
+import EventBus from "../../eventbus"
+import ToolTip from "../../components/element/ToolTip.vue"
+import { isValidURL, isEmpty, ifSpaceExists, isValidSchemaAttrName } from '../../mixins/fieldValidation'
+import message from '../../mixins/messages'
 export default {
   name: "Schema",
   components: { QrcodeVue, Loading, StudioSideBar, HfButtons, HfSelectDropDown, ToolTip },
@@ -491,9 +491,6 @@ export default {
       this.counter = 0
       this.clearAll();
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
-    },
-    gotosubpage: (id) => {
-      this.$router.push(`${id}`);
     },
     clearAll(){
       this.visible=false

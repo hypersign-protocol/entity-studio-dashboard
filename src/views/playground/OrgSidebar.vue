@@ -204,16 +204,16 @@
 </style>
 
 <script>
-import HfPopUp from "../components/element/hfPopup.vue";
-import StudioSideBar from "../components/element/StudioSideBar.vue";
-import UtilsMixin from '../mixins/utils';
-import { isEmpty, isValidURL } from '../mixins/fieldValidation'
+import HfPopUp from "../../components/element/hfPopup.vue";
+import StudioSideBar from "../../components/element/StudioSideBar.vue";
+import UtilsMixin from '../../mixins/utils';
+import { isEmpty, isValidURL } from '../../mixins/fieldValidation'
 import 'vue-loading-overlay/dist/vue-loading.css';
 import validator from 'validator';
 import Loading from "vue-loading-overlay";
-import HfButtons from '../components/element/HfButtons.vue'
-import ToolTip from '../components/element/ToolTip.vue'
-import messages from '../mixins/messages'
+import HfButtons from '../../components/element/HfButtons.vue'
+import ToolTip from '../../components/element/ToolTip.vue'
+import messages from '../../mixins/messages'
 export default {
   computed: {
     orgList() {
@@ -242,9 +242,9 @@ export default {
       isLoading: true,
       isProcessFinished: true,
       images: {
-        greentick: require("../assets/green-tick.png"),
-        redcross: require("../assets/red-cross.png"),
-        loader: require("../assets/small-loader.gif"),
+        greentick: require("../../assets/green-tick.png"),
+        redcross: require("../../assets/red-cross.png"),
+        loader: require("../../assets/small-loader.gif"),
       }
     }
   },
@@ -333,7 +333,7 @@ export default {
       localStorage.setItem('selectedOrg', orgDid)
       this.$store.commit('updateSideNavStatus', true)
       this.$store.commit('selectAnOrg', orgDid)
-      this.$router.push('/studio/credential')
+      this.$router.push({ name: 'playgroundCredential' })
       this.$store.dispatch('fetchAllOrgDataOnOrgSelect')
       this.$store.commit('shiftContainer', false)
 

@@ -116,11 +116,5 @@ export default {
     })
     .catch(e => alert(`Error: ${e.message}`))
   },
-  
-  methods: {
-    gotosubpage: id => {
-      this.$router.push(`${id}`);
-    }
-  }
 };
 </script>

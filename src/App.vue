@@ -64,19 +64,28 @@ cursor: pointer;
   <div id="app">
    <b-navbar toggleable="lg" type="dark" variant="white" class="navStyle" v-if="showIcon" sticky>
     <b-navbar-brand href="#" style="display:flex; width: 80%; margin-left: 0.2em;">
-      <img src="./assets/Entity_full.png" alt="" style="height:5vh; opacity: 80%;">
+      <a href="#" @click.prevent="route('dashboard')">
+        <img src="./assets/Entity_full.png" alt="" style="height:5vh; opacity: 80%;">
+      </a>
     </b-navbar-brand>
     <b-collapse id="nav-collapse" is-nav style="width: 30%;">
       <b-navbar-nav class="ml-auto">
-        <a class="mr-3" href="https://docs.hypersign.id/entity-studio/introduction"
-        target="blank" style="color:grey; margin-top:1.3em;" title="Documentation"><b-icon  scale="3" icon="file-earmark-text"></b-icon></a>
-        <b-nav-item-dropdown right v-if="showIcon">
+
+        <a class="mr-4" href="#" @click.prevent="route('playgroundDashboard')"
+          style="color:grey; margin-top:0.8em;" title="Playground">
+          <i class="fa fa-rocket" style="font-size:36px;"></i>
+        </a>
+
+        <a class="mr-3" href="https://docs.hypersign.id/entity-studio/introduction" target="blank" 
+          style="color:grey; margin-top:0.8em;" title="Documentation">
+          <i class='fas fa-book-open' style='font-size:36px'></i>
+        </a>
+
+        <b-nav-item-dropdown right v-if="showIcon" title="Profile">
           <template #button-content>
-            <b-iconstack font-scale="3">
-            <b-icon stacked icon="circle" variant="secondary"></b-icon>
-            <b-icon stacked icon="person" scale="0.6" variant="secondary"></b-icon>
-          </b-iconstack>
+            <i class='fas fa-user-circle' style='font-size:40px; color: grey'></i>  
           </template>
+          
           <div style="display:inline;">
           <div class="hov"
           style="display:flex;"
@@ -86,14 +95,16 @@ cursor: pointer;
           <i class="far fa-copy mt-1"
           @click="copyToClip(userDetails.email,'Email')"></i>
           </div><hr>
+
           <div class="hov" style="display:flex;"
-          :title="userDetails.did">{{shorten(userDetails.did)}}
+            :title="userDetails.did">
+            {{shorten(userDetails.did)}}
             <i class="far fa-copy"
             @click="copyToClip(userDetails.did,'DID')"></i>
           </div><hr>
           <div class="hov" @click="logoutAll()"
           title="Logout">
-          <i class="fas fa-sign-out-alt"
+          Logout <i class="fas fa-sign-out-alt"
             style="cursor:pointer; font-size:1.3rem;"                        
           ></i>
           </div>
@@ -273,6 +284,9 @@ export default {
    this.initializeStore()
   },
   methods: {
+    route(name){
+      this.$router.push({ name })
+    },
     copyToClip(textToCopy,contentType) {
         if (textToCopy) {
             navigator.clipboard
@@ -320,28 +334,28 @@ export default {
     getSideMenu() {
       const menu = [
         {
-          href: "/studio/dashboard",
-          title: "Dashboard",
+          href: "/studio/playground/dashboard",
+          title: "Play Dashboard",
           icon: "fas fa-tachometer-alt",
         },
         {
-          href: "/studio/schema",
-          title: "Schema",
+          href: "/studio/playground/schema",
+          title: "Play Schema",
           icon: "fa fa-table",
         },
         {
-          href: "/studio/credential",
-          title: "Credentials",
+          href: "/studio/playground/credential",
+          title: "Play Credentials",
           icon: "fa fa-id-card",
         },
         {
-          href: "/studio/presentation",
-          title: "Presentation",
+          href: "/studio/playground/presentation",
+          title: "Play Presentation",
           icon: "fa fa-desktop",
         },
         {
-          href: "/studio/presentation/verify",
-          title: "Verification",
+          href: "/studio/playground/presentation/verify",
+          title: "Play Verification",
           icon: "fa fa-check",
         },
       ]
@@ -436,49 +450,6 @@ export default {
           this.$store.dispatch('insertAcredential', credential)
         })
     },
-    // async getList(type) {
-    //   let url = "";
-    //   let options = {}
-    //   if (type === "SCHEMA") {
-    //     url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.SCHEMA_LIST_EP}/${this.selectedOrg._id}/?page=${this.schema_page}&limit=10`
-
-    //     options = {
-    //       method: "GET",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         "Authorization": `Bearer ${this.authToken}`
-    //       }
-    //     }
-    //   } else {
-    //     url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.CRED_LIST_EP}/${this.selectedOrg._id}`;
-    //     options = {
-    //       method: "GET",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         "Authorization": `Bearer ${this.authToken}`
-    //       }
-    //     }
-    //   }
-
-    //   const resp = await fetch(url, options);
-    //   const j = await resp.json();
-    //   console.log(j)
-    //   if (j && j.status == 500) {
-    //     return this.notifyErr(`Error:  ${j.error}`);
-    //   }
-    //   if (type === "SCHEMA") {
-    //     console.log(j);
-    //     const schemaList = j.schemaList
-    //     schemaList.forEach(schema => {
-    //       this.$store.dispatch('insertAschema', schema)
-    //     })
-    //   } else {
-    //     j.credList.forEach(credential => {
-    //       this.$store.dispatch('insertAcredential', credential)
-    //     })
-    //   }
-    // },
-
     logout() {
       this.authToken = null
       localStorage.removeItem('authToken')

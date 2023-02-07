@@ -29,9 +29,9 @@
   </style>
 
   <script>
-import HfPopUp from "../components/element/hfPopup.vue";
-import StudioSideBar from "../components/element/StudioSideBar.vue";
-import UtilsMixin from '../mixins/utils';
+import HfPopUp from "../../components/element/hfPopup.vue";
+import StudioSideBar from "../../components/element/StudioSideBar.vue";
+import UtilsMixin from '../../mixins/utils';
 import 'vue-loading-overlay/dist/vue-loading.css';
 import Loading from "vue-loading-overlay";
 import OrgContent from './OrgSidebar.vue';
@@ -60,9 +60,9 @@ export default {
       isLoading: true,
       isProcessFinished: true,
       images: {
-        greentick: require("../assets/green-tick.png"),
-        redcross: require("../assets/red-cross.png"),
-        loader: require("../assets/small-loader.gif"),
+        greentick: require("../../assets/green-tick.png"),
+        redcross: require("../../assets/red-cross.png"),
+        loader: require("../../assets/small-loader.gif"),
       }
     }
   },

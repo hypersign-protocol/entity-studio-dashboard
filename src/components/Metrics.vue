@@ -151,40 +151,6 @@ export default {
       const j = await resp.json();
      this.$store.commit('addCountDataToProfile',j.data)
     },
-    // fetchData(url,options){
-    //   return fetch(url, options)
-    //         .then((res) => res.json())
-    //         .then((j) => {              
-    //           return j.message
-    //         })
-    //         .catch((e) => alert(`Error: ${e.message}`));
-    // },
-    // pollData(){
-    //   let url = `${this.$config.nodeServer.BASE_URL}${this.$config.nodeServer.SCHEMA_LIST_EP}`;
-    //   let options = {}
-    //   this.fetchData(url).then(data => {
-    //     if (data && data.length > 0) {
-    //       data = data.filter(
-    //         (x) => x.owner === this.user.id
-    //       );
-    //       this.schemaCount = data.length;
-    //     }
-    //   })
-
-    //   url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.CRED_LIST_EP}`;
-    //   options  = {
-    //       method: "GET",
-    //       headers: {'x-auth-token': this.authToken}
-    //     }
-    //   this.fetchData(url,options).then(data => {
-    //     if (data) {
-    //       this.credentialCount = data.count;
-    //     }
-    //   })
-    // },
-    gotosubpage: (id) => {
-      this.$router.push(`${id}`);
-    },
   },
 };
 </script>

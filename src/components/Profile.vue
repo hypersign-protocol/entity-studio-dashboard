@@ -169,9 +169,6 @@ export default {
         }
       })
     },
-    gotosubpage: (id) => {
-      this.$router.push(`${id}`);
-    },
   },
 };
 </script>
