@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import fetch from 'node-fetch'
 import config from './config'
-import store from './store/store'
+import store from './store'
 
 import PKIIdLogin from './views/PKIIdLogin.vue'
 
@@ -14,8 +14,6 @@ import Dashboard from './views/playground/Dashboard.vue'
 import Schema from './views/playground/Schema.vue'
 import Org from './views/playground/Org.vue'
 import VerifyPresentation from './views/playground/VerifyPresentation.vue'
-
-
 
 Vue.use(Router)
 
@@ -165,7 +163,7 @@ router.beforeEach((to, from, next) => {
           })  
         }else{
           localStorage.setItem("user", JSON.stringify(json.message));
-          store.commit('addUserDetailsToProfile',json.message)
+          store.commit('playgroundStore/addUserDetailsToProfile',json.message)
           next()
         }
       })

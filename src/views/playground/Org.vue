@@ -35,13 +35,12 @@ import UtilsMixin from '../../mixins/utils';
 import 'vue-loading-overlay/dist/vue-loading.css';
 import Loading from "vue-loading-overlay";
 import OrgContent from './OrgSidebar.vue';
-
+import { mapActions, mapState, mapMutations } from "vuex";
 export default {
   computed: {
-    orgList() {
-      return this.$store.state.orgList;
-    },
-
+    ...mapState({
+      orgList: state =>state.playgroundStore.orgList  
+    })
   },
   data() {
     return {
@@ -68,9 +67,10 @@ export default {
   },
   components: { HfPopUp, Loading, StudioSideBar, OrgContent },
   created() {
-    this.$store.commit('updateSideNavStatus',true)
+    this.updateSideNavStatus(true)
   },
   methods: {
+    ...mapMutations('playgroundStore', ['updateSideNavStatus', 'selectAnOrg', 'insertAnOrg','updateAnOrg']),
     ssePopulateOrg(id, store) {
       const sse = new EventSource(`${this.$config.studioServer.ORG_SSE}${id}`);
       sse.onmessage = (event) => {
@@ -110,7 +110,7 @@ export default {
       }
     },
     switchOrg(orgDid) {
-      this.$store.commit('selectAnOrg', orgDid)
+      this.selectAnOrg(orgDid)
       this.$store.dispatch('fetchAllOrgDataOnOrgSelect')
     },
     openSlider() {
@@ -160,14 +160,14 @@ export default {
           }
           if (j.status === 200) {
 
-            this.$store.commit('insertAnOrg', j.org);
-            this.$store.commit('selectAnOrg', j.org._id)
+            this.insertAnOrg(j.org);
+            this.selectAnOrg(j.org._id)
             this.isProcessFinished = true;
             this.openSlider();
 
             this.notifySuccess("Org Created successfull");
             if (this.edit) {
-              this.$store.commit('updateAnOrg', j.org)
+              this.updateAnOrg(j.org)
               this.notifySuccess("Org Edited successfull");
             }
 

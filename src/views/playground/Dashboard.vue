@@ -11,7 +11,8 @@
 import Dashboard from '@/components/Dashboard.vue'
 import Metrics from '@/components/Metrics.vue'
 import OrgSidebar from './OrgSidebar.vue';
-import EventBus from '../../eventbus'
+import EventBus from '../../eventbus';
+import { mapMutations } from 'vuex';
 export default {
   name: "playgroundDashboard",
   components: { 
@@ -30,12 +31,13 @@ export default {
   created() {
     const usrStr = localStorage.getItem('user')
     this.user = JSON.parse(usrStr);
-    this.$store.commit('updateSideNavStatus',false)
-    this.$store.commit('selectAnOrg', '')
+    this.updateSideNavStatus(false)
+    this.selectAnOrg('')
     localStorage.removeItem('selectedOrg')
     EventBus.$emit('closeSideNav')
   },
   methods: {
+    ...mapMutations('playgroundStore', ['updateSideNavStatus', 'selectAnOrg']),
     gotosubpage(id) {
       this.$router.push(`${id}`);
     },

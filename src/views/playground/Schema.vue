@@ -358,18 +358,19 @@ import EventBus from "../../eventbus"
 import ToolTip from "../../components/element/ToolTip.vue"
 import { isValidURL, isEmpty, ifSpaceExists, isValidSchemaAttrName } from '../../mixins/fieldValidation'
 import message from '../../mixins/messages'
+import { mapGetters, mapState } from "vuex";
 export default {
   name: "Schema",
   components: { QrcodeVue, Loading, StudioSideBar, HfButtons, HfSelectDropDown, ToolTip },
   computed: {
-    schemaList() {
-      return this.$store.state.schemaList;
-    },
-    selectedOrg() {
-      return this.$store.getters.getSelectedOrg;
-    },
+    ...mapState({
+      schemaList: state => state.playgroundStore.schemaList,
+      containerShift: state => state.playgroundStore.containerShift,
+      selectedOrgDid: state => state.playgroundStore.selectedOrgDid
+    }),
+    ...mapGetters('playgroundStore', ['getSelectedOrg']),
     isContainerShift() {
-      return this.$store.state.containerShift
+      return this.containerShift
     }
   },
   data() {
@@ -427,7 +428,7 @@ export default {
   created() {
     const usrStr = localStorage.getItem("user");
     this.user = JSON.parse(usrStr);
-    this.$store.commit('updateSideNavStatus',true)
+    this.$store.commit('playgroundStore/updateSideNavStatus',true)
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -601,14 +602,14 @@ export default {
           return this.notifyErr(message.SCHEMA.EMPTY_SCHEMA_ATTRIBUTE)
         }
         const url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.SAVE_SCHEMA_EP}`;
-        const {orgDid}=this.$store.getters.getSelectedOrg;
+        const {orgDid}=this.getSelectedOrg;
         const schemaData = {
           name: this.credentialName,
           author: orgDid,
           fields: this.attributes,
           description: this.credentialDescription,
           // additionalProperties: this.additionalProperties,
-          orgDid: this.$store.state.selectedOrgDid
+          orgDid: this.selectedOrgDid
         };
         this.QrData.data = schemaData
         let headers = {
@@ -626,13 +627,13 @@ export default {
             if (j.message === 'success') {
               this.notifySuccess("Schema creation initiated. Please approve the transaction from your wallet");
               // Store the information in store.
-              this.$store.dispatch('insertAschema', j.data.schema);
+              this.$store.dispatch('playgroundStore/insertAschema', j.data.schema);
               // Open the wallet for trasanctional approval.
               const URL = `${this.$config.webWalletAddress}/deeplink?url=${JSON.stringify(QR_DATA)}`
               this.openWallet(URL)
               this.ssePopulateSchema(j.data.schema._id, this.$store)
               this.openSlider();
-              this.$store.commit('increaseOrgDataCount','schemasCount')
+              this.$store.commit('playgroundStore/increaseOrgDataCount','schemasCount')
             } else {
               throw new Error(`${j.error}`);
             }

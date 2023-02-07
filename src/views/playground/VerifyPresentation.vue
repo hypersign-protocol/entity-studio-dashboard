@@ -224,17 +224,21 @@ import HfSelectDropDown from "../../components/element/HfSelectDropDown.vue"
 import VueQr from "vue-qr";
 import HfButtons from "../../components/element/HfButtons.vue"
 import EventBus from "../../eventbus"
-
+import { mapState, mapGetters } from "vuex"
 
 export default {
     name: "VerifyPresentation",
     components: { HfPopUp, Loading, VueQr, HfButtons, HfSelectDropDown }, 
     computed:{
+        ...mapState({
+            containerShift: state => state.playgroundStore.containerShift,
+        }),
+        ...mapGetters('playgroundStore', ['listOfPresentationTemplateOptions']),
         isContainerShift() {
-            return this.$store.state.containerShift
+            return this.containerShift
         },
         selectOptions(){
-            return this.$store.getters.listOfPresentationTemplateOptions;
+            return this.listOfPresentationTemplateOptions;
         },
         getCodeSnippet(){
         return `
@@ -254,7 +258,7 @@ export default {
     },
   
     created() {
-        this.$store.commit('updateSideNavStatus',true)
+        this.$store.commit('playgroundStore/updateSideNavStatus',true)
         this.addEventListener()
     },  
     data() {

@@ -199,13 +199,15 @@ import validator from 'validator';
 import Loading from "vue-loading-overlay";
 import HfButtons from '../../components/element/HfButtons.vue'
 import ToolTip from '../../components/element/ToolTip.vue'
-import messages from '../../mixins/messages'
+import messages from '../../mixins/messages';
+import  { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 export default {
   computed: {
-    orgList() {
-      return this.$store.state.orgList;
-    },
-
+    ...mapState({
+      userProfile: state => state.playgroundStore.userProfile,
+      orgList: state => state.playgroundStore.orgList,
+    }),
+    ...mapGetters("playgroundStore", ["findOrgByOrgID"])
   },
   data() {
     return {
@@ -236,7 +238,8 @@ export default {
   },
   components: { HfPopUp, Loading, StudioSideBar, HfButtons, ToolTip },
   methods: {
-
+    ...mapActions('playgroundStore', ['fetchAllOrgDataOnOrgSelect']),
+    ...mapMutations('playgroundStore', ['updateSideNavStatus', 'selectAnOrg']),
     selectController(id) {
       this.isAdd=false
       this.flash = id
@@ -315,25 +318,28 @@ export default {
           });
       }
     },
-    switchOrg(orgDid) {
+    async switchOrg(orgDid) {
       localStorage.setItem('selectedOrg', orgDid)
-      this.$store.commit('updateSideNavStatus', true)
-      this.$store.commit('selectAnOrg', orgDid)
+      this.updateSideNavStatus(true)
+
+      this.selectAnOrg(orgDid)
       this.$router.push({ name: 'playgroundCredential' })
-      this.$store.dispatch('fetchAllOrgDataOnOrgSelect')
-      this.$store.commit('shiftContainer', false)
+    
+      await this.fetchAllOrgDataOnOrgSelect();
+
+      this.$store.commit('playgroundStore/shiftContainer', false)
 
     },
     openSlider() {
       this.edit = false
       this.clearAll();
-      this.orgStore.controller = [this.$store.state.userProfile.details.did]
+      this.orgStore.controller = [this.userProfile.details.did]
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
     },
     editOrg(orgDid) {
       this.edit = true
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
-      Object.assign(this.orgStore, { ...this.$store.getters.findOrgByOrgID(orgDid) })
+      Object.assign(this.orgStore, { ...this.findOrgByOrgID(orgDid) })
     },
     createAnOrg() {
       if (isEmpty(this.orgStore.name)) {
@@ -386,8 +392,8 @@ export default {
           this.openWallet(URL)
           if (j.error === false) {
             if (!this.edit) {
-              this.$store.commit('insertAnOrg', j.data.org);
-              this.$store.commit('selectAnOrg', j.data.org._id)
+              this.$store.commit('playgroundStore/insertAnOrg', j.data.org);
+              this.$store.commit('playgroundStore/selectAnOrg', j.data.org._id)
               this.isProcessFinished = true;
               this.openSlider();
 
@@ -396,7 +402,7 @@ export default {
             }
 
             if (this.edit === true) {
-              this.$store.commit('updateAnOrg', j.data.org)
+              this.$store.commit('playgroundStore/updateAnOrg', j.data.org)
               this.notifySuccess("Org Edited successfull");
               this.$root.$emit("bv::toggle::collapse", "sidebar-right");
             }

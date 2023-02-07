@@ -281,21 +281,25 @@ import EventBus from "../../eventbus"
 import ToolTip from "../../components/element/ToolTip.vue"
 import message from '../../mixins/messages'
 import { isEmpty, isValidURL, isValidDid } from '../../mixins/fieldValidation'
+import { mapGetters, mapState  } from "vuex";
 export default {
   name: "Presentation",
   components: { QrcodeVue , StudioSideBar, HfButtons, Loading, HfSelectDropDown, ToolTip, HfPopUp},
   computed:{
-    templateList(){
-      return this.$store.state.templateList;
-    },
+    ...mapGetters('playgroundStore', ['listOfAllSchemaOptions', 'getSelectedOrg']),
+    ...mapState({
+      templateList: state => state.playgroundStore.templateList,
+      containerShift: state => state.playgroundStore.containerShift,
+      selectedOrgDid: state => state.playgroundStore.selectedOrgDid
+    }),
     selectedOrg(){
-      return this.$store.getters.getSelectedOrg;
+      return this.getSelectedOrg;
     },
     selectOptions(){
-      return this.$store.getters.listOfAllSchemaOptions;
+      return this.listOfAllSchemaOptions;
     },
     isContainerShift() {
-      return this.$store.state.containerShift
+      return this.containerShift
     }
   },
   data() {
@@ -365,7 +369,7 @@ export default {
   created() {
     const usrStr = localStorage.getItem("user");
     this.user = JSON.parse(usrStr);
-    this.$store.commit('updateSideNavStatus',true)
+    this.$store.commit('playgroundStore/updateSideNavStatus',true)
     // this.fetchTemplates()
   },
   beforeRouteEnter(to, from, next) {
@@ -446,10 +450,10 @@ export default {
                 console.log(json.data._id)
                 if(json.data._id){
                   const id = json.data._id
-                  this.$store.commit('deleteTemplate',id)
+                  this.$store.commit('playgroundStore/deleteTemplate',id)
                   this.notifySuccess(`Template with ${id} id deleted successfully`)
                   this.$root.$emit('modal-close')
-                  this.$store.commit('DecreaseOrgTemplateCount','templatesCount')
+                  this.$store.commit('playgroundStore/DecreaseOrgTemplateCount','templatesCount')
                 }          
           } else {
             this.notifyErr('Please enter correct template id')
@@ -477,7 +481,7 @@ export default {
     },
     openSlider() {
       this.clearAll()
-      this.presentationTemplate.issuerDid=this.$store.getters.getSelectedOrg.orgDid
+      this.presentationTemplate.issuerDid= this.getSelectedOrg.orgDid
       // this.presentationTemplate.issuerDid = JSON.parse(localStorage.getItem("user")).id
       this.presentationTemplate.domain = this.selectedOrg.domain;
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
@@ -591,7 +595,7 @@ export default {
           reason: this.presentationTemplate.reason,
           // required: this.presentationTemplate.required,
           callbackUrl: this.presentationTemplate.callbackUrl,
-          orgDid:this.$store.state.selectedOrgDid
+          orgDid:this.selectedOrgDid
         }
         if(this.isEdit === true) {
           body = {
@@ -603,7 +607,7 @@ export default {
           reason: this.presentationTemplate.reason,
           // required: this.presentationTemplate.required,
           callbackUrl: this.presentationTemplate.callbackUrl,
-          orgDid:this.$store.state.selectedOrgDid
+          orgDid:this.selectedOrgDid
         }
         method = "PUT"
         }
@@ -614,12 +618,12 @@ export default {
           headers: headers,
         }).then((res) => res.json()).then(json => {
           if(this.isEdit === true) {
-            this.$store.commit('updateTemplate',json.data)
+            this.$store.commit('playgroundStore/updateTemplate',json.data)
             this.notifySuccess('Template Successfully updated')
           } else{
-            this.$store.commit('insertApresentationTemplate', json.data.presentationTemplateObj)
+            this.$store.commit('playgroundStore/insertApresentationTemplate', json.data.presentationTemplateObj)
             this.notifySuccess('Template Successfully created')
-            this.$store.commit('increaseOrgDataCount','templatesCount')
+            this.$store.commit('playgroundStore/increaseOrgDataCount','templatesCount')
           }
           // this.openSlider();
           this.clearAll()

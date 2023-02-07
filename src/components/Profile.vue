@@ -111,10 +111,10 @@ export default {
   components: {},
   computed:{
     credentialCount(){
-      return this.$store.getters.totalCredentials;
+      return this.$store.getters.playgroundStore.totalCredentials;
     },
     schemaCount(){
-      return this.$store.getters.totalSchemas;
+      return this.$store.getters.playgroundStore.totalSchemas;
     }
   },
   data() {

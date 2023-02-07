@@ -11,17 +11,17 @@
 export default {
     computed: {
         orgList(){
-            return this.$store.state.orgList
+            return this.$store.state.playgroundStore.orgList
         },
         selectedOrg(){
-            return this.$store.getters.getSelectedOrg;
+            return this.$store.getters.playgroundStore.getSelectedOrg;
         }
     },
     methods: {
         switchOrg(event){
-                this.$store.commit('selectAnOrg', event.target.value)
+                this.$store.commit('playgroundStore/selectAnOrg', event.target.value)
                
-                 this.$store.dispatch('fetchAllOrgDataOnOrgSelect')
+                 this.$store.dispatch('playgroundStore/fetchAllOrgDataOnOrgSelect')
         },
     }
 }

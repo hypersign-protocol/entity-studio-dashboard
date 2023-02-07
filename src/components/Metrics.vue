@@ -102,15 +102,13 @@ display: flex;
 
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
   name: "Metrics",
   mounted() {},
   components: {},
   computed:{
-    allMetricsData() {
-      return this.$store.getters.allMetricsData;
-    }
-
+    ...mapGetters("playgroundStore", ["allMetricsData"]),
   },
   data() {
     return {
@@ -149,7 +147,7 @@ export default {
         }
       const resp = await fetch(url, options);
       const j = await resp.json();
-     this.$store.commit('addCountDataToProfile',j.data)
+     this.$store.commit('playgroundStore/addCountDataToProfile',j.data)
     },
   },
 };

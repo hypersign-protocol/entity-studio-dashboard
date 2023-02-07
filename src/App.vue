@@ -237,17 +237,17 @@ cursor: pointer;
 import UtilsMixin from './mixins/utils';
 import EventBus from './eventbus'
 import HfButtons from "./components/element/HfButtons.vue"
+import { mapActions, mapMutations, mapGetters } from 'vuex';
 export default {
   components: { HfButtons },
   computed: {
-    userDetails() {
-      return this.$store.getters.userDetails;
-    },
+    ...mapGetters("playgroundStore", ["userDetails", "getSelectedOrg"]),
+
     selectedOrg() {
-      return this.$store.getters.getSelectedOrg;
+      return this.getSelectedOrg;
     },
     showSideNavbar() {
-      return this.$store.state.showSideNavbar
+      return this.$store.state.playgroundStore.showSideNavbar
     },
   },
   data() {
@@ -275,7 +275,7 @@ export default {
     }
    if(localStorage.getItem('selectedOrg')){
     const selectedOrgId = localStorage.getItem('selectedOrg')
-    this.$store.commit('selectAnOrg', selectedOrgId)
+    this.selectAnOrg(selectedOrgId)
     this.getList(selectedOrgId)
     this.getCredList(selectedOrgId)
     this.fetchTemplates(selectedOrgId)
@@ -284,6 +284,8 @@ export default {
    this.initializeStore()
   },
   methods: {
+    ...mapActions("playgroundStore", ["insertAnOrg", 'insertAschema', "insertAcredential"]),
+    ...mapMutations("playgroundStore", ["insertApresentationTemplate",  'selectAnOrg', 'shiftContainer', 'resetStore']),
     route(name){
       this.$router.push({ name })
     },
@@ -315,10 +317,10 @@ export default {
     onToggleCollapse(collapsed) {
       if (collapsed) {
         this.isSidebarCollapsed = true;
-        this.$store.commit('shiftContainer',false)        
+        this.shiftContainer(false)        
       } else {
         this.isSidebarCollapsed = false;
-        this.$store.commit('shiftContainer',true)        
+        this.shiftContainer(true)        
       }
     },
      initializeStore() {
@@ -335,27 +337,27 @@ export default {
       const menu = [
         {
           href: "/studio/playground/dashboard",
-          title: "Play Dashboard",
+          title: "Dashboard",
           icon: "fas fa-tachometer-alt",
         },
         {
           href: "/studio/playground/schema",
-          title: "Play Schema",
+          title: "Schema",
           icon: "fa fa-table",
         },
         {
           href: "/studio/playground/credential",
-          title: "Play Credentials",
+          title: "Credentials",
           icon: "fa fa-id-card",
         },
         {
           href: "/studio/playground/presentation",
-          title: "Play Presentation",
+          title: "Presentation",
           icon: "fa fa-desktop",
         },
         {
           href: "/studio/playground/presentation/verify",
-          title: "Play Verification",
+          title: "Verification",
           icon: "fa fa-check",
         },
       ]
@@ -377,7 +379,8 @@ export default {
         if (data) {
           data.forEach(org => {
             // Store them in the store.
-            this.$store.commit('insertAnOrg', org)
+            // this.$store.commit('playgroundStore/insertAnOrg', org)
+            this.insertAnOrg(org);
           })
         }
         if (data && data.length > 0) {
@@ -400,7 +403,7 @@ export default {
         headers
       }).then(response => response.json()).then(json => {
         json.data.forEach(template => {
-          this.$store.commit('insertApresentationTemplate', template)
+          this.insertApresentationTemplate(template)
         })
       })
     },
@@ -424,7 +427,7 @@ export default {
       }
       const schemaList = j.data.schemaList
         schemaList.forEach(schema => {
-          this.$store.dispatch('insertAschema', schema)
+          this.insertAschema(schema)
         })
     },
 
@@ -447,7 +450,7 @@ export default {
       }
       const credList = j.data.credList
       credList.forEach(credential => {
-          this.$store.dispatch('insertAcredential', credential)
+          this.insertAcredential(credential)
         })
     },
     logout() {
@@ -459,7 +462,7 @@ export default {
       this.isSidebarCollapsed=true,
       this.collapsed= true
       localStorage.removeItem('selectedOrg')
-      this.$store.commit('resetStore')
+      this.resetStore()
     },
   },
   mixins: [UtilsMixin]
