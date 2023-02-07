@@ -1,33 +1,4 @@
 <style scoped>
-.addmargin {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.vue-logo-back {
-  background-color: black;
-}
-
-.logo {
-  width: 144px;
-}
-
-.fullbody {
-  width: 100%;
-}
-.floatLeft{
-  float: left;
-}
-
-.noBullet{
-  list-style-type:none;
-}
-
-.title {
-  color: grey;
-  font-size: 18px;
-}
-
 .leftAlign{
   text-align: left;
 }
@@ -43,12 +14,6 @@
   display: inline-block;
   margin-top:5px;
   float:right;
-}
-
-.tile{
-  font-size: xxx-large;
-  background: aliceblue;
-  border-bottom: 1px solid #8080802b;
 }
 
 .fVal{
