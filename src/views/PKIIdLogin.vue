@@ -294,7 +294,7 @@ export default {
         text: msg,
       });
     },
-    gotosubpage: (id) => {
+    gotosubpage(id){
       this.$router.push(`${id}`);
     },
     ///////////////////////////////////////////////////////////////////// Commenting below code since no use//////////////////////////////

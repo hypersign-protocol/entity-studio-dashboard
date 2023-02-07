@@ -1,39 +1,3 @@
-<style scoped>
-.addmargin {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.vue-logo-back {
-  background-color: black;
-}
-
-.logo {
-  width: 144px;
-}
-
-.fullbody {
-  width: 100%;
-}
-.floatLeft{
-  float: left;
-}
-
-.floatRight{
-  float: right;
-}
-
-.noBullet{
-  list-style-type:none;
-}
-
-.title {
-  color: grey;
-  font-size: 18px;
-}
-
-
-</style>
 <template>
    <div class="home">
      <h2>Welcome {{user.name}}, to the Entity Playground !</h2>
@@ -49,7 +13,7 @@ import Metrics from '@/components/Metrics.vue'
 import OrgSidebar from './OrgSidebar.vue';
 import EventBus from '../../eventbus'
 export default {
-  name: "PanelPage",
+  name: "playgroundDashboard",
   components: { 
     Dashboard,
     Metrics,
@@ -72,7 +36,7 @@ export default {
     EventBus.$emit('closeSideNav')
   },
   methods: {
-    gotosubpage: id => {
+    gotosubpage(id) {
       this.$router.push(`${id}`);
     },
     logout(){

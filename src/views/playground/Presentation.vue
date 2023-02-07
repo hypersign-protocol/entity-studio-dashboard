@@ -511,7 +511,7 @@ export default {
         })
         .catch((e) => this.notifyErr(`Error: ${e.message}`));
     },
-    gotosubpage: (name) => {
+    gotosubpage (name){
       this.$router.push({ name });
     },
     addBlankAttrBox() {

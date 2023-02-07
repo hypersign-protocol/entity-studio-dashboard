@@ -71,20 +71,6 @@
 
 
         </div>
-        <!-- <div class="form-group">
-          <label for="logo"><strong>Logo URL:</strong></label>
-          <input type="text" class="form-control" id="logo" v-model="orgStore.logo" aria-describedby="logoHelp"
-            placeholder="Enter logo URL">
-        </div> -->
-        <!-- <div class="form-group">
-          <label for="region"><strong>Region:</strong></label>
-          <input type="text" class="form-control" id="region" v-model="orgStore.region" aria-describedby="regionHelp"
-            placeholder="Select your region">
-        </div> -->
-        <!-- <div class="form-group">
-                      <label for="region"><strong>Network:</strong></label>
-                      <input type="text" class="form-control" id="region" v-model="orgStore.network" aria-describedby="regionHelp" placeholder="Select your region">
-                  </div> -->
         <hr />
         <div class="form-group" v-if="edit">
           <hf-buttons name="Update" class="btn btn-primary" @executeAction="createAnOrg()"></hf-buttons>
