@@ -14,7 +14,7 @@ export default {
                 }
             }
         },
-        copyToClip(textToCopy,contentType) {
+        copyToClip(textToCopy,contentType, isAppSecret = false) {
             if (textToCopy) {
                 navigator.clipboard
                     .writeText(textToCopy)

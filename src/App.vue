@@ -284,6 +284,7 @@ export default {
   },
   methods: {
     ...mapActions("mainStore", ["fetchAppsListFromServer"]),
+    ...mapMutations("mainStore", ["resetMainStore"]),
     ...mapActions("playgroundStore", ["insertAnOrg", 'insertAschema', "insertAcredential"]),
     ...mapMutations("playgroundStore", ["insertApresentationTemplate",  'selectAnOrg', 'shiftContainer', 'resetStore']),
     route(name){
@@ -467,6 +468,7 @@ export default {
       this.collapsed= true
       localStorage.removeItem('selectedOrg')
       this.resetStore()
+      this.resetMainStore()
     },
   },
   mixins: [UtilsMixin]

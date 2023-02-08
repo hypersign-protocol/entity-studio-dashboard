@@ -11,8 +11,7 @@ const mainStore = {
     namespaced: true,
     mixin: [UtilsMixin],
     state: {
-        appList: [
-          ]
+        appList: []
     },
     getters: {
         getAppByAppId: (state) => (appId) =>{
@@ -21,12 +20,15 @@ const mainStore = {
 
     },
     mutations: {
+        resetMainStore(state){
+            state.appList = [];
+        },
         insertAllApps(state, payload){
             state.appList = payload;
         },
         insertAnApp(state, payload) {
             if (!state.appList.find(x => x.appId === payload.appId)) {
-                state.appList.push(payload);
+                state.appList.unshift(payload);
             } else {
                 console.log('already exists appId id =' + payload.appId);
                 this.commit('updateAnApp', payload);
@@ -48,12 +50,8 @@ const mainStore = {
                     headers,
                     body: JSON.stringify(payload)
                 }).then(response => response.json()).then(json => {
-                    // TODO: remoe this dummy app secret..
-                    if(!json.appSecret){
-                        json.appSecret = "71bf4ff7-2848-4546-9dd2-90a2140b5ff1"
-                    }
                     commit('insertAnApp', json);
-                    resolve(true)
+                    resolve(json)
                 }).catch((e) => {
                     reject(new Error(`while updating an app  ${e}`))
                 })
@@ -74,9 +72,9 @@ const mainStore = {
                     body: JSON.stringify(payload)
                 }).then(response => response.json()).then(json => {
                     // TODO: remoe this dummy app secret..
-                    if(!json.appSecret){
-                        json.appSecret = "71bf4ff7-2848-4546-9dd2-90a2140b5ff1"
-                    }
+                    // if(!json.appSecret){
+                    //     json.appSecret = "71bf4ff7-2848-4546-9dd2-90a2140b5ff1"
+                    // }
                     commit('updateAnApp', json);
                     resolve(true)
                 }).catch(e => {
@@ -94,14 +92,14 @@ const mainStore = {
             fetch(url, {
                 headers
             }).then(response => response.json()).then(json => {
-                const appList = json.map(x => {
-                    if(!x.appSecret){
-                        // TODO: remoe this dummy app secret..
-                        x.appSecret = "71bf4ff7-2848-4546-9dd2-90a2140b5ff1"
-                    }
-                    return x;
-                })
-                commit('insertAllApps', appList);
+                // const appList = json.map(x => {
+                //     if(!x.appSecret){
+                //         // TODO: remoe this dummy app secret..
+                //         x.appSecret = "71bf4ff7-2848-4546-9dd2-90a2140b5ff1"
+                //     }
+                //     return x;
+                // })
+                commit('insertAllApps', json);
             }).catch((e) => {
                 console.error(`Error while fetching apps ` + e.message);
             })

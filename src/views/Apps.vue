@@ -11,7 +11,7 @@
       </hf-buttons>
     </div>
     
-    <StudioSideBar :title="edit ? 'Edit Organization' : 'Add Organization'">
+    <StudioSideBar :title="edit ? 'Edit Application' : 'Add Application'">
       <div class="container">
 
         <div class="form-group">
@@ -28,13 +28,19 @@
             disabled>
         </div>
 
-        <div class="form-group" v-if="edit === true">
-          <tool-tip infoMessage="Your Application Name"></tool-tip>
+        <div class="form-group" v-if="(edit === true) && appModel.appSecret !=''">
+          <tool-tip infoMessage="Your Application Secret. Make sure to copy it."></tool-tip>
           <label for="orgName"><strong>App Secret<span style="color: red">*</span>:</strong></label>
-          <input type="text" class="form-control" id="orgName" v-model="appModel.appSecret" aria-describedby="orgNameHelp"
-            placeholder="Enter your app name" disabled>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" v-model="appModel.appSecret" aria-label="Recipient's username" aria-describedby="basic-addon2" disabled style="background-color: #e6ffec;">
+            <div class="input-group-append">
+              <span class="input-group-text" id="basic-addon2" @click="copyToClip(appModel.appSecret,'Appliction Secret', true)"><i class="far fa-copy"></i></span>
+            </div>
+          </div>
+          <!-- <small style="color: #007bff">Your Application Secret. Make sure to copy it</small> -->
+          
         </div>
-
+        
         <div class="form-group" v-if="edit === true">
           <tool-tip infoMessage="Your Encrypted Data Vault id"></tool-tip>
           <label for="orgDid"><strong>Encrypted Data Vault<span style="color: red">*</span>: </strong></label>
@@ -64,10 +70,10 @@
           <img style="float:right;" :src="`${getProfileIcon(eachOrg.appName)}`" class="mr-2" alt="center" width="70px"/>            
           <ul style="list-style-type: none;padding-left: 0px;min-height: 80px;">
             <li>
-              <small style="color: #007bff">APP Secret:</small>
+              <small style="color: #007bff">Appliction Id:</small>
               <p class="appSecret" >
-                <span @click="copyToClip(eachOrg.appSecret,'APP secret')" title="Copy App Secret">
-                  {{truncate(eachOrg.appSecret, 32)}}  
+                <span @click="copyToClip(eachOrg.appId,'Appliction Id')" title="Copy Appliction Id">
+                  {{truncate(eachOrg.appId, 32)}}  
                   <i class="far fa-copy" style="float:right"></i>
                 </span>
               </p>
@@ -228,6 +234,7 @@ export default {
     },
     closeSlider(){
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
+      this.clearAll()
     },
     editOrg(appId) {
       this.edit = true
@@ -244,7 +251,8 @@ export default {
           appName: this.appModel.appName
         })
         if(t){
-          this.closeSlider();
+          Object.assign(this.appModel, { ...t })
+          this.edit = true;
           this.notifySuccess(messages.APPLICATION.APP_CREATE_SUCCESS)
         } else {
           throw new Error('Something went wrong')
