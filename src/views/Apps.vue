@@ -13,6 +13,9 @@
     
     <StudioSideBar :title="edit ? 'Edit Application' : 'Add Application'">
       <div class="container">
+        <div v-if="(edit === true) && appModel.appSecret !=''" @click="onHfFlashClick()">
+          <HfFlashNotification :text='`${appModel.appSecret}`' type='Application Secret' description="Your Application Secret Key. Make sure to copy it."></HfFlashNotification>
+        </div>
 
         <div class="form-group">
           <tool-tip infoMessage="Your Application Name"></tool-tip>
@@ -22,13 +25,15 @@
         </div>
 
         <div class="form-group" v-if="edit === true">
-          <tool-tip infoMessage="Your Organization DID"></tool-tip>
-          <label for="orgDid"><strong>App Id<span style="color: red">*</span>: </strong></label>
+          <tool-tip infoMessage="Your Application Id"></tool-tip>
+          <label for="orgDid"><strong>Application Id<span style="color: red">*</span>: </strong></label>
           <input type="text" class="form-control" id="orgDid" v-model="appModel.appId" aria-describedby="orgNameHelp"
             disabled>
         </div>
 
-        <div class="form-group" v-if="(edit === true) && appModel.appSecret !=''">
+        
+
+        <!-- <div class="form-group" v-if="(edit === true) && appModel.appSecret !=''">
           <tool-tip infoMessage="Your Application Secret. Make sure to copy it."></tool-tip>
           <label for="orgName"><strong>App Secret<span style="color: red">*</span>:</strong></label>
           <div class="input-group mb-3">
@@ -37,9 +42,7 @@
               <span class="input-group-text" id="basic-addon2" @click="copyToClip(appModel.appSecret,'Appliction Secret', true)"><i class="far fa-copy"></i></span>
             </div>
           </div>
-          <!-- <small style="color: #007bff">Your Application Secret. Make sure to copy it</small> -->
-          
-        </div>
+        </div> -->
         
         <div class="form-group" v-if="edit === true">
           <tool-tip infoMessage="Your Encrypted Data Vault id"></tool-tip>
@@ -56,7 +59,7 @@
         </div>
 
         <div class="form-group" v-if="edit">
-          <hf-buttons name="Update" class="btn btn-primary" @executeAction="updateAnApp()"></hf-buttons>
+          <hf-buttons name="Update" class="btn btn-primary" @executeAction="updateAnAppAPIServer()"></hf-buttons>
         </div>
         <div class="form-group" v-else>
           <hf-buttons name="Save" @executeAction="createAnApp()"></hf-buttons>
@@ -70,9 +73,9 @@
           <img style="float:right;" :src="`${getProfileIcon(eachOrg.appName)}`" class="mr-2" alt="center" width="70px"/>            
           <ul style="list-style-type: none;padding-left: 0px;min-height: 80px;">
             <li>
-              <small style="color: #007bff">Appliction Id:</small>
+              <small style="color: #007bff">Application Id:</small>
               <p class="appSecret" >
-                <span @click="copyToClip(eachOrg.appId,'Appliction Id')" title="Copy Appliction Id">
+                <span @click="copyToClip(eachOrg.appId,'Application Id')" title="Copy Application Id">
                   {{truncate(eachOrg.appId, 32)}}  
                   <i class="far fa-copy" style="float:right"></i>
                 </span>
@@ -164,6 +167,7 @@ import HfButtons from '../components/element/HfButtons.vue'
 import ToolTip from '../components/element/ToolTip.vue'
 import messages from '../mixins/messages';
 import  { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
+import HfFlashNotification from "../components/element/HfFlashNotification.vue"; 
 export default {
   computed: {
     ...mapState({
@@ -192,12 +196,17 @@ export default {
       }
     }
   },
-  components: { HfPopUp, Loading, StudioSideBar, HfButtons, ToolTip },
+  components: { HfPopUp, Loading, StudioSideBar, HfButtons, ToolTip, HfFlashNotification },
   methods: {
+    ...mapMutations('mainStore', ['updateAnApp']),
     ...mapActions('mainStore', ['saveAnAppOnServer', 'updateAnAppOnServer']),
     getProfileIcon(name) {
       return "https://avatars.dicebear.com/api/identicon/" + name + ".svg"
     },
+    onHfFlashClick(){
+      this.appModel.appSecret = "";
+      this.updateAnApp(this.appModel)
+    },  
     copyToClip(textToCopy, contentType) {
       if (textToCopy) {
         navigator.clipboard
@@ -263,7 +272,7 @@ export default {
         this.isLoading = false;
       }
     },
-    async updateAnApp() {
+    async updateAnAppAPIServer() {
       try{
         if (isEmpty(this.appModel.appName)) {
           throw new Error(messages.APPLICATION.INVALID_APP_NAME)

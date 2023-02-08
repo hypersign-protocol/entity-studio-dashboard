@@ -76,7 +76,7 @@ const mainStore = {
                     //     json.appSecret = "71bf4ff7-2848-4546-9dd2-90a2140b5ff1"
                     // }
                     commit('updateAnApp', json);
-                    resolve(true)
+                    resolve(json)
                 }).catch(e => {
                     reject(new Error(`while updating an app   ${e}`))
                 })
@@ -92,13 +92,6 @@ const mainStore = {
             fetch(url, {
                 headers
             }).then(response => response.json()).then(json => {
-                // const appList = json.map(x => {
-                //     if(!x.appSecret){
-                //         // TODO: remoe this dummy app secret..
-                //         x.appSecret = "71bf4ff7-2848-4546-9dd2-90a2140b5ff1"
-                //     }
-                //     return x;
-                // })
                 commit('insertAllApps', json);
             }).catch((e) => {
                 console.error(`Error while fetching apps ` + e.message);
