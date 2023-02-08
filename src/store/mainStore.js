@@ -17,7 +17,6 @@ const mainStore = {
         getAppByAppId: (state) => (appId) =>{
             return state.appList.find(x => x.appId === appId);
         },
-
     },
     mutations: {
         resetMainStore(state){
@@ -30,7 +29,6 @@ const mainStore = {
             if (!state.appList.find(x => x.appId === payload.appId)) {
                 state.appList.unshift(payload);
             } else {
-                console.log('already exists appId id =' + payload.appId);
                 this.commit('updateAnApp', payload);
             }
         },
@@ -64,6 +62,8 @@ const mainStore = {
                     reject(new Error(`appId is not specified`))
                 }
                 const url = `${apiServerBaseUrl}/app/${appId}`;
+
+                payload.whitelistedCors = payload.whitelistedCors.split(',').filter(x => x != " ")
                 // TODO: // use proper authToken
                 const headers = UtilsMixin.methods.getHeader('xyz');
                 fetch(url, {
@@ -71,10 +71,6 @@ const mainStore = {
                     headers,
                     body: JSON.stringify(payload)
                 }).then(response => response.json()).then(json => {
-                    // TODO: remoe this dummy app secret..
-                    // if(!json.appSecret){
-                    //     json.appSecret = "71bf4ff7-2848-4546-9dd2-90a2140b5ff1"
-                    // }
                     commit('updateAnApp', json);
                     resolve(json)
                 }).catch(e => {

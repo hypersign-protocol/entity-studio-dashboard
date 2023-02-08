@@ -17,13 +17,6 @@
           <HfFlashNotification :text='`${appModel.appSecret}`' type='Application Secret' description="Your Application Secret Key. Make sure to copy it."></HfFlashNotification>
         </div>
 
-        <div class="form-group">
-          <tool-tip infoMessage="Your Application Name"></tool-tip>
-          <label for="orgName"><strong>Name<span style="color: red">*</span>:</strong></label>
-          <input type="text" class="form-control" id="orgName" v-model="appModel.appName" aria-describedby="orgNameHelp"
-            placeholder="Enter your app name">
-        </div>
-
         <div class="form-group" v-if="edit === true">
           <tool-tip infoMessage="Your Application Id"></tool-tip>
           <label for="orgDid"><strong>Application Id<span style="color: red">*</span>: </strong></label>
@@ -31,19 +24,31 @@
             disabled>
         </div>
 
-        
 
-        <!-- <div class="form-group" v-if="(edit === true) && appModel.appSecret !=''">
-          <tool-tip infoMessage="Your Application Secret. Make sure to copy it."></tool-tip>
-          <label for="orgName"><strong>App Secret<span style="color: red">*</span>:</strong></label>
+        <div class="form-group">
+          <tool-tip infoMessage="Name of the application"></tool-tip>
+          <label for="orgName"><strong>Name<span style="color: red">*</span>:</strong></label>
+          <input type="text" class="form-control" id="orgName" v-model="appModel.appName"
+            placeholder="Enter name of your app">
+        </div>
+
+        <div class="form-group">
+          <tool-tip infoMessage="Give a description for application"></tool-tip>
+          <label for="orgName"><strong>Description:</strong></label>
+          <textarea class="form-control" v-model="appModel.description" rows="3" placeholder="Enter meaningful description for your app, max 300 chars"></textarea>
+        </div>
+
+        <div class="form-group">
+          <tool-tip infoMessage="Logo URL, recomended size 160*160"></tool-tip>
+          <label for="orgName"><strong>Logo URL:</strong></label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" v-model="appModel.appSecret" aria-label="Recipient's username" aria-describedby="basic-addon2" disabled style="background-color: #e6ffec;">
-            <div class="input-group-append">
-              <span class="input-group-text" id="basic-addon2" @click="copyToClip(appModel.appSecret,'Appliction Secret', true)"><i class="far fa-copy"></i></span>
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1"><i class="fa fa-link"></i></span>
             </div>
+            <input type="text" class="form-control" v-model="appModel.logoUrl"  placeholder="https://path-to-my-logo.png" aria-label="Username" aria-describedby="basic-addon1">
           </div>
-        </div> -->
-        
+        </div>
+
         <div class="form-group" v-if="edit === true">
           <tool-tip infoMessage="Your Encrypted Data Vault id"></tool-tip>
           <label for="orgDid"><strong>Encrypted Data Vault<span style="color: red">*</span>: </strong></label>
@@ -57,6 +62,30 @@
           <input type="text" class="form-control" id="orgDid" v-model="appModel.walletAddress" aria-describedby="orgNameHelp"
             disabled>
         </div>
+
+        
+
+        <div class="form-group">
+          <tool-tip infoMessage="Listed origins allowed to make cross-origin resource sharing (CORS) requests"></tool-tip>
+          <label for="orgName"><strong>Allowed Origins (CORS):</strong></label>
+          <textarea class="form-control" v-model="appModel.whitelistedCors" rows="3" placeholder="Enter comman seperated URLs to whitelist"></textarea>
+        </div>
+
+        
+        
+
+        <!-- <div class="form-group" v-if="(edit === true) && appModel.appSecret !=''">
+          <tool-tip infoMessage="Your Application Secret. Make sure to copy it."></tool-tip>
+          <label for="orgName"><strong>App Secret<span style="color: red">*</span>:</strong></label>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" v-model="appModel.appSecret" aria-label="Recipient's username" aria-describedby="basic-addon2" disabled style="background-color: #e6ffec;">
+            <div class="input-group-append">
+              <span class="input-group-text" id="basic-addon2" @click="copyToClip(appModel.appSecret,'Appliction Secret', true)"><i class="far fa-copy"></i></span>
+            </div>
+          </div>
+        </div> -->
+        
+       
 
         <div class="form-group" v-if="edit">
           <hf-buttons name="Update" class="btn btn-primary" @executeAction="updateAnAppAPIServer()"></hf-buttons>
@@ -192,7 +221,10 @@ export default {
         appSecret: "",
         appName:"",
         walletAddress: "",
-        edvId: ""
+        edvId: "",
+        description: "",
+        whitelistedCors: [],
+        logoUrl: "",
       }
     }
   },
@@ -298,6 +330,8 @@ export default {
         appSecret: "",
         walletAddress: "",
         edvId: "",
+        whitelistedCors: [],
+        logoUrl: "",
       }
     },
   },
