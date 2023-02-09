@@ -42,13 +42,25 @@ const mainStore = {
         saveAnAppOnServer: ({ commit }, payload) => {
             return new Promise((resolve, reject) => {
                 const url = `${apiServerBaseUrl}/app`;
+
+                // Sanatize the payload
+                // payload = UtilsMixin.methods.removeEmpty(payload);
+                console.log(payload)
+                
                 // TODO: // use proper authToken
                 const headers = UtilsMixin.methods.getHeader(localStorage.getItem('authToken'));
                 fetch(url, {
                     method: 'POST',
                     headers,
                     body: JSON.stringify(payload)
-                }).then(response => response.json()).then(json => {
+                })
+                .then(response => response.json())
+                .then(json => {
+                    
+                    if(json.error) {
+                        reject(json)
+                    }
+
                     commit('insertAnApp', json);
                     resolve(json)
                 }).catch((e) => {
@@ -56,6 +68,7 @@ const mainStore = {
                 })
             })
         },
+
         updateAnAppOnServer: ({ commit }, payload) => {
             return new Promise((resolve, reject) => {
                 const { appId } = payload;
@@ -65,17 +78,26 @@ const mainStore = {
                 const url = `${apiServerBaseUrl}/app/${appId}`;
                 console.log(payload.whitelistedCors);
 
-                payload.whitelistedCors = payload.whitelistedCors.filter(x => x != " ")
                 // TODO: // use proper authToken
                 const headers = UtilsMixin.methods.getHeader(localStorage.getItem('authToken'));
                 delete payload.edvId
                 delete payload.apiKeyScecret
-                console.log(payload);
+                
+                // Sanatize the payload
+                // payload = UtilsMixin.methods.removeEmpty(payload);
+                
                 fetch(url, {
                     method: 'PUT',
                     headers,
                     body: JSON.stringify(payload)
-                }).then(response =>response.json()).then(json => {
+                }).then(response => {                    
+                    return response.json()
+                }).then(json => {
+
+                    if(json.error) {
+                        reject(json)
+                    }
+
                     commit('updateAnApp', json);
                     resolve(json)
                 }).catch(e => {
@@ -93,6 +115,9 @@ const mainStore = {
             fetch(url, {
                 headers
             }).then(response => response.json()).then(json => {
+                if(json.error) {
+                    reject(json)
+                }
                 commit('insertAllApps', json);
             }).catch((e) => {
                 console.error(`Error while fetching apps ` + e.message);

@@ -17,6 +17,12 @@
           <HfFlashNotification :text='`${appModel.apiKeySecret}`' type='Application Secret' description="Your Application Secret Key. Make sure to copy it."></HfFlashNotification>
         </div>
 
+        <!-- <div style="margin-bottom: 20px;" v-if="errorMessages && errorMessages.length > 0" >
+          <div v-for="m in errorMessages">
+            <HFErrorMessages :message="m"></HFErrorMessages>
+          </div>
+        </div> -->
+        
         <div class="form-group" v-if="edit === true">
           <tool-tip infoMessage="Your Application Id"></tool-tip>
           <label for="orgDid"><strong>Application Id<span style="color: red">*</span>: </strong></label>
@@ -26,14 +32,14 @@
 
 
         <div class="form-group">
-          <tool-tip infoMessage="Name of the application"></tool-tip>
+          <tool-tip infoMessage="Name of the application, upto 20 chars"></tool-tip>
           <label for="orgName"><strong>Name<span style="color: red">*</span>:</strong></label>
           <input type="text" class="form-control" id="orgName" v-model="appModel.appName"
             placeholder="Enter name of your app">
         </div>
 
         <div class="form-group">
-          <tool-tip infoMessage="Give a description for application"></tool-tip>
+          <tool-tip infoMessage="Give a description for application, upto 100 chars"></tool-tip>
           <label for="orgName"><strong>Description:</strong></label>
           <textarea class="form-control" v-model="appModel.description" rows="3" placeholder="Enter meaningful description for your app, max 300 chars"></textarea>
         </div>
@@ -45,7 +51,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon1"><i class="fa fa-link"></i></span>
             </div>
-            <input type="text" class="form-control" v-model="appModel.logoUrl"  placeholder="https://path-to-my-logo.png" aria-label="Username" aria-describedby="basic-addon1">
+            <input type="text" class="form-control" v-model="appModel.logoUrl"  placeholder="https://path-to-my-logo.png" aria-label="Username" aria-describedby="basic-addon1"> 
           </div>
         </div>
 
@@ -66,9 +72,9 @@
         
 
         <div class="form-group">
-          <tool-tip infoMessage="Listed origins allowed to make cross-origin resource sharing (CORS) requests"></tool-tip>
+          <tool-tip infoMessage="Listed origins allowed to make CORS requests. Enter comman seperated URLs to whitelist"></tool-tip>
           <label for="orgName"><strong>Allowed Origins (CORS):</strong></label>
-          <textarea class="form-control" v-model="appModel.whitelistedCors" rows="3" placeholder="Enter comman seperated URLs to whitelist"></textarea>
+          <textarea class="form-control" v-model="appModel.whitelistedCors" rows="3" placeholder="*, http://your-domain.com, http://test.com"></textarea>
         </div>
 
         
@@ -162,7 +168,8 @@
 
 <style scoped>
 .appCard{
-  max-width: 30rem; margin-top: 10px; height:13rem
+  max-width: 30rem; margin-top: 10px; height:13rem;
+  min-height: 100px;
 }
 .apiKeySecret{
   width: 70%;
@@ -237,7 +244,6 @@ export default {
       fullPage: true,
       isLoading: false,
       isProcessFinished: true,
-      
       appModel: {
         appId: "",
         apiKeySecret: "",
@@ -304,19 +310,46 @@ export default {
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
       Object.assign(this.appModel, { ...this.getAppByAppId(appId) })
     },
+    validateFields(){
+      const m = [];
+      const isAppNameEmpty = isEmpty(this.appModel.appName);
+      if (isAppNameEmpty) {
+        m.push(messages.APPLICATION.INVALID_APP_NAME)
+      }
+
+      if(!isAppNameEmpty && (this.appModel.appName.length < 5)){
+        m.push(messages.APPLICATION.CHAR_LESS_APP_NAME)
+      }
+
+      if(!isAppNameEmpty && this.appModel.appName.length > 50){
+        m.push(messages.APPLICATION.CHAR_EXCEED_APP_NAME)
+      }
+
+      const isAppDescriptionEmpty = isEmpty(this.appModel.description);
+      if(!isAppDescriptionEmpty && (this.appModel.description.length < 20)){
+        m.push(messages.APPLICATION.CHAR_LESS_APP_DES)
+      }
+
+      if(!isAppDescriptionEmpty && (this.appModel.description.length > 100)){
+        m.push(messages.APPLICATION.CHAR_EXCEED_APP_DES)
+      }
+      return {
+        message: m
+      };
+    },
     async createAnApp() {
       try{
-        if (isEmpty(this.appModel.appName)) {
-          throw new Error(messages.APPLICATION.INVALID_APP_NAME)
-        } 
+        const errorMessages = this.validateFields(); 
+        if(errorMessages && errorMessages.message.length > 0){
+          throw errorMessages;
+        }
+
         this.isLoading = true;
-      
         const t =await this.saveAnAppOnServer({
           appName: this.appModel.appName,
-          whitelistedCors:this.appModel.whitelistedCors.split(','),
-          description:this.appModel.description,
-          logoUrl:this.appModel.logoUrl
-
+          whitelistedCors: this.appModel.whitelistedCors != '' ? this.appModel.whitelistedCors.split(',').filter(x => x != " "): [],
+          description: this.appModel.description,
+          logoUrl: this.appModel.logoUrl
         })
         if(t){
           Object.assign(this.appModel, { ...t })
@@ -326,6 +359,12 @@ export default {
           throw new Error('Something went wrong')
         }
       }catch(e){
+        if(Array.isArray(e.message)){
+          e.message.forEach(m => {
+            this.notifyErr(m)      
+          })
+          return;
+        }
         this.notifyErr(e.message)
       } finally {
         this.isLoading = false;
@@ -333,11 +372,19 @@ export default {
     },
     async updateAnAppAPIServer() {
       try{
-        if (isEmpty(this.appModel.appName)) {
-          throw new Error(messages.APPLICATION.INVALID_APP_NAME)
-        } 
+
+        const errorMessages = this.validateFields(); 
+        if(errorMessages && errorMessages.message.length > 0){
+          throw errorMessages;
+        }
+
         this.isLoading = true;
-        const t = await this.updateAnAppOnServer({...this.appModel})
+        const t = await this.updateAnAppOnServer({
+          appName: this.appModel.appName,
+          whitelistedCors: this.appModel.whitelistedCors != '' ? this.appModel.whitelistedCors.split(',').filter(x => x != " "): [],
+          description: this.appModel.description,
+          logoUrl: this.appModel.logoUrl
+        })
         if(t){
           this.closeSlider();
           this.notifySuccess(messages.APPLICATION.APP_UPDATE_SUCCESS)
@@ -345,6 +392,12 @@ export default {
           throw new Error('Something went wrong')
         }
       }catch(e){
+        if(Array.isArray(e.message)){
+          e.message.forEach(m => {
+            this.notifyErr(m)      
+          })
+          return;
+        }
         this.notifyErr(e.message)
       } finally {
         this.isLoading = false;
