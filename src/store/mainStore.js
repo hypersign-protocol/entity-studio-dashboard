@@ -15,6 +15,7 @@ const mainStore = {
     },
     getters: {
         getAppByAppId: (state) => (appId) =>{
+            console.log(appId);
             return state.appList.find(x => x.appId === appId);
         },
     },
@@ -42,7 +43,7 @@ const mainStore = {
             return new Promise((resolve, reject) => {
                 const url = `${apiServerBaseUrl}/app`;
                 // TODO: // use proper authToken
-                const headers = UtilsMixin.methods.getHeader('xyz');
+                const headers = UtilsMixin.methods.getHeader(localStorage.getItem('authToken'));
                 fetch(url, {
                     method: 'POST',
                     headers,
@@ -62,15 +63,19 @@ const mainStore = {
                     reject(new Error(`appId is not specified`))
                 }
                 const url = `${apiServerBaseUrl}/app/${appId}`;
+                console.log(payload.whitelistedCors);
 
-                payload.whitelistedCors = payload.whitelistedCors.split(',').filter(x => x != " ")
+                payload.whitelistedCors = payload.whitelistedCors.filter(x => x != " ")
                 // TODO: // use proper authToken
-                const headers = UtilsMixin.methods.getHeader('xyz');
+                const headers = UtilsMixin.methods.getHeader(localStorage.getItem('authToken'));
+                delete payload.edvId
+                delete payload.apiKeyScecret
+                console.log(payload);
                 fetch(url, {
                     method: 'PUT',
                     headers,
                     body: JSON.stringify(payload)
-                }).then(response => response.json()).then(json => {
+                }).then(response =>response.json()).then(json => {
                     commit('updateAnApp', json);
                     resolve(json)
                 }).catch(e => {
@@ -84,7 +89,7 @@ const mainStore = {
             // TODO: Get list of orgs 
             const url = `${apiServerBaseUrl}/app`;
             // TODO: // use proper authToken
-            const headers = UtilsMixin.methods.getHeader('xyz');
+            const headers = UtilsMixin.methods.getHeader(localStorage.getItem('authToken'));
             fetch(url, {
                 headers
             }).then(response => response.json()).then(json => {

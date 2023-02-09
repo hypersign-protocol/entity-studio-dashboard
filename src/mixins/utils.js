@@ -6,7 +6,6 @@ export default {
                 return {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${authToken}`,
-                    "userId": "123",
                 }    
             } else {
                 return {
@@ -14,7 +13,7 @@ export default {
                 }
             }
         },
-        copyToClip(textToCopy,contentType, isAppSecret = false) {
+        copyToClip(textToCopy,contentType, isapiKeySecret = false) {
             if (textToCopy) {
                 navigator.clipboard
                     .writeText(textToCopy)

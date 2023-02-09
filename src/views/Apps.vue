@@ -13,8 +13,8 @@
     
     <StudioSideBar :title="edit ? 'Edit Application' : 'Add Application'">
       <div class="container">
-        <div v-if="(edit === true) && appModel.appSecret !=''" @click="onHfFlashClick()">
-          <HfFlashNotification :text='`${appModel.appSecret}`' type='Application Secret' description="Your Application Secret Key. Make sure to copy it."></HfFlashNotification>
+        <div v-if="(edit === true) && appModel.apiKeySecret !=''" @click="onHfFlashClick()">
+          <HfFlashNotification :text='`${appModel.apiKeySecret}`' type='Application Secret' description="Your Application Secret Key. Make sure to copy it."></HfFlashNotification>
         </div>
 
         <div class="form-group" v-if="edit === true">
@@ -74,13 +74,13 @@
         
         
 
-        <!-- <div class="form-group" v-if="(edit === true) && appModel.appSecret !=''">
+        <!-- <div class="form-group" v-if="(edit === true) && appModel.apiKeySecret !=''">
           <tool-tip infoMessage="Your Application Secret. Make sure to copy it."></tool-tip>
           <label for="orgName"><strong>App Secret<span style="color: red">*</span>:</strong></label>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" v-model="appModel.appSecret" aria-label="Recipient's username" aria-describedby="basic-addon2" disabled style="background-color: #e6ffec;">
+            <input type="text" class="form-control" v-model="appModel.apiKeySecret" aria-label="Recipient's username" aria-describedby="basic-addon2" disabled style="background-color: #e6ffec;">
             <div class="input-group-append">
-              <span class="input-group-text" id="basic-addon2" @click="copyToClip(appModel.appSecret,'Appliction Secret', true)"><i class="far fa-copy"></i></span>
+              <span class="input-group-text" id="basic-addon2" @click="copyToClip(appModel.apiKeySecret,'Appliction Secret', true)"><i class="far fa-copy"></i></span>
             </div>
           </div>
         </div> -->
@@ -99,26 +99,26 @@
     <div class="row scroll" v-if="appList.length > 0">
       <div class="col-lg-4" v-for="eachOrg in appList" :key="eachOrg.appId">
         <b-card :title="truncate(eachOrg.appName,20)" tag="article" class="mb-2 eventCard appCard" img-top>
-          <img style="float:right;" :src="`${getProfileIcon(eachOrg.appName)}`" class="mr-2" alt="center" width="70px"/>            
+          <img style="float:right;" :src="`${eachOrg.logoUrl}`" class="mr-2" alt="center" width="70px"/>            
           <ul style="list-style-type: none;padding-left: 0px;min-height: 80px;">
             <li>
               <small style="color: #007bff">Application Id:</small>
-              <p class="appSecret" >
+              <p class="apiKeySecret" >
                 <span @click="copyToClip(eachOrg.appId,'Application Id')" title="Copy Application Id">
                   {{truncate(eachOrg.appId, 32)}}  
                   <i class="far fa-copy" style="float:right"></i>
                 </span>
               </p>
             </li>         
-            <!-- <li>
+            <li>
               <small style="color: #007bff">Wallet Address:</small>
-              <p class="appSecret" >
+              <p class="apiKeySecret" >
                 <span @click="copyToClip(eachOrg.walletAddress,'Wallet Address')" title="Copy App Secret">
                   {{truncate(eachOrg.walletAddress, 33)}}  
                   <i class="far fa-copy" style="float:right"></i>
                 </span>
               </p>
-            </li>          -->
+            </li>         
           </ul>
           <footer>
             <div class="form-group row" style="margin-bottom: 0rem;">
@@ -164,7 +164,7 @@
 .appCard{
   max-width: 30rem; margin-top: 10px; height:13rem
 }
-.appSecret{
+.apiKeySecret{
   width: 70%;
   padding: 5px;
   
@@ -174,7 +174,7 @@
   border: 1px solid #99caff;
   padding-right:10px;
 }
-.appSecret:hover{
+.apiKeySecret:hover{
   font-weight:bolder;
   background: #f1f1f1;
   border: 1px solid #007bff;
@@ -240,7 +240,7 @@ export default {
       
       appModel: {
         appId: "",
-        appSecret: "",
+        apiKeySecret: "",
         appName:"",
         walletAddress: "",
         edvId: "",
@@ -258,7 +258,7 @@ export default {
       return "https://avatars.dicebear.com/api/identicon/" + name + ".svg"
     },
     onHfFlashClick(){
-      this.appModel.appSecret = "";
+      this.appModel.apiKeySecret = "";
       this.updateAnApp(this.appModel)
     },  
     copyToClip(textToCopy, contentType) {
@@ -310,8 +310,13 @@ export default {
           throw new Error(messages.APPLICATION.INVALID_APP_NAME)
         } 
         this.isLoading = true;
+      
         const t =await this.saveAnAppOnServer({
-          appName: this.appModel.appName
+          appName: this.appModel.appName,
+          whitelistedCors:this.appModel.whitelistedCors.split(','),
+          description:this.appModel.description,
+          logoUrl:this.appModel.logoUrl
+
         })
         if(t){
           Object.assign(this.appModel, { ...t })
@@ -349,7 +354,7 @@ export default {
       this.appModel = {
         appId: "",
         appName: "",
-        appSecret: "",
+        apiKeySecret: "",
         walletAddress: "",
         edvId: "",
         whitelistedCors: [],
