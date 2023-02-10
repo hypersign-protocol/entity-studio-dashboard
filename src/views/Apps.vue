@@ -102,87 +102,49 @@
       </div>
     </StudioSideBar>
 
-    <div class="scroll" v-if="appList.length > 0">
-      <div class="">      
-            <b-card no-body class="overflow-hidden bcard" border-variant="warning" v-for="eachOrg in appList" :key="eachOrg.appId" >
-                <b-row no-gutters style="min-height:172px">
-                  <b-col md="8">
-                    <b-card-body :title="formattedAppName(eachOrg.appName)">
-                      <b-card-text>
-                        {{truncate(eachOrg.description || "No description for this app..", 50)}} 
-                      </b-card-text>
-                      <b-card-text>
-                        <small class="card-field-label">Application Id:</small>
-                        <div class="apiKeySecret" @click="copyToClip(eachOrg.appId,'Application Id')" title="Copy Application Id">
-                            {{truncate(eachOrg.appId, 25)}}  
-                            <i class="far fa-copy" style="float:right"></i>
-                        </div>
-                      </b-card-text>
-                    </b-card-body>
-                  </b-col>
-                  <b-col md="4" class="center">
-                    <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appName))" alt="Image" class="rounded-0 logoImg"></b-card-img>
-                  </b-col>
-                </b-row>
-                <b-row no-gutters>
-                  <b-col md="2"></b-col>
-                  <b-col md="10" style="text-align: right;">
-                    <span class="icons  danger">
-                    <i class="fa fa-key"
-                      @click="generateSecretKey(eachOrg.appId)" title="Click to generate a new API Secret Key"
-                    ></i>
-                    </span>
-                    <span class="ml-3"></span>
-                    <span class="icons">
-                    <i class="fas fa-pencil-alt"
-                      @click="editOrg(eachOrg.appId)" title="Click to edit the app"
-                    ></i>
-                  </span>
-                    <span class="ml-3"></span>
-                  </b-col>
-                </b-row>
-            </b-card>
-        
-
-        <!-- <b-card :title="formattedAppName(eachOrg.appName)" tag="article" class="mb-2 eventCard appCard" img-top>
-          <img style="float:right;" :src="`${eachOrg.logoUrl}`" class="mr-2" alt="center" width="70px"/>            
-          <ul style="list-style-type: none;padding-left: 0px;min-height: 80px;">
-            <li>
-              <small style="color: #007bff">Application Id:</small>
-              <p class="apiKeySecret" >
-                <span @click="copyToClip(eachOrg.appId,'Application Id')" title="Copy Application Id">
-                  {{truncate(eachOrg.appId, 32)}}  
-                  <i class="far fa-copy" style="float:right"></i>
-                </span>
-              </p>
-            </li>         
-            <li>
-              <small style="color: #007bff">Wallet Address:</small>
-              <p class="apiKeySecret" >
-                <span @click="copyToClip(eachOrg.walletAddress,'Wallet Address')" title="Copy App Secret">
-                  {{truncate(eachOrg.walletAddress, 33)}}  
-                  <i class="far fa-copy" style="float:right"></i>
-                </span>
-              </p>
-            </li>         
-          </ul>
-          <footer>
-            <div class="form-group row" style="margin-bottom: 0rem;">
-              <div class="col-sm-10"></div>
-                <div class="pl-2">            
-                <span class="ml-3"></span>
-                <i class="fas fa-pencil-alt"
-                  @click="editOrg(eachOrg.appId)" title="Click to edit the app" style="cursor: pointer"
-                ></i>
-              </div>
-            </div>
-          </footer>
-        </b-card> -->
-      </div>
+    <div class="scroll" v-if="appList.length > 0">   
+      <b-card no-body class="overflow-hidden bcard" border-variant="warning" v-for="eachOrg in appList" :key="eachOrg.appId" >
+          <b-row no-gutters style="min-height:172px">
+            <b-col md="8">
+              <b-card-body :title="formattedAppName(eachOrg.appName)">
+                <b-card-text>
+                  {{truncate(eachOrg.description || "No description for this app..", 41)}} 
+                </b-card-text>
+                <b-card-text>
+                  <small class="card-field-label">Application Id:</small>
+                  <div class="apiKeySecret" @click="copyToClip(eachOrg.appId,'Application Id')" title="Copy Application Id">
+                      {{truncate(eachOrg.appId, 25)}}  
+                      <i class="far fa-copy" style="float:right"></i>
+                  </div>
+                </b-card-text>
+              </b-card-body>
+            </b-col>
+            <b-col md="4" class="center">
+              <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appName))" alt="Image" class="rounded-0 logoImg"></b-card-img>
+            </b-col>
+          </b-row>
+          <b-row no-gutters>
+            <b-col md="2"></b-col>
+            <b-col md="10" style="text-align: right;">
+              <span class="icons  danger">
+              <i class="fa fa-key"
+                @click="generateSecretKey(eachOrg.appId)" title="Click to generate a new API Secret Key"
+              ></i>
+              </span>
+              <span class="ml-3"></span>
+              <span class="icons">
+              <i class="fas fa-pencil-alt"
+                @click="editOrg(eachOrg.appId)" title="Click to edit the app"
+              ></i>
+            </span>
+              <span class="ml-3"></span>
+            </b-col>
+          </b-row>
+      </b-card>
     </div>
 
-    <!-- <div style="    padding: 5px;">
-      <nav aria-label="Page navigation example" style="margin: 0 auto; width: 50px;">
+    <!-- <div style="padding: 5px;">
+      <nav aria-label="Page navigation example" style="margin: 0 auto; width: 50px; ">
         <ul class="pagination">
           <li class="page-item">
             <a class="page-link" href="#" aria-label="Previous">
@@ -190,9 +152,10 @@
               <span class="sr-only">Previous</span>
             </a>
           </li>
-          <li class="page-item"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
+
+          <li class="page-item" v-if="pages > 1"><a class="page-link" href="#">1</a></li>
+          <li class="page-item" v-if="pages > 2"><a class="page-link" href="#">2</a></li>
+          
           <li class="page-item">
             <a class="page-link" href="#" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
@@ -303,9 +266,12 @@ export default {
   computed: {
     ...mapState({
       appList: state => state.mainStore.appList,
+      totalAppCount: state =>  state.mainStore.totalAppCount
     }),
     ...mapGetters("mainStore", ["getAppByAppId"]),
-   
+    pages(){
+      return Math.ceil(parseInt(this.totalAppCount) / 10)
+    }
   },
   data() {
     return {
@@ -374,7 +340,9 @@ export default {
     editOrg(appId) {
       this.edit = true
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
-      Object.assign(this.appModel, { ...this.getAppByAppId(appId) })
+      const appModel =  this.getAppByAppId(appId);
+      console.log(appModel)
+      Object.assign(this.appModel, { ...appModel })
     },
     validateFields(){
       const m = [];
@@ -413,7 +381,7 @@ export default {
         this.isLoading = true;
         const t =await this.saveAnAppOnServer({
           appName: this.appModel.appName,
-          whitelistedCors: this.appModel.whitelistedCors != '' ? this.appModel.whitelistedCors.split(',').filter(x => x != " "): [],
+          whitelistedCors: !Array.isArray(this.appModel.whitelistedCors) ? this.appModel.whitelistedCors.split(',').filter(x => x != " "): this.appModel.whitelistedCors,
           description: this.appModel.description,
           logoUrl: this.appModel.logoUrl
         })
@@ -441,7 +409,7 @@ export default {
     },
     async updateAnAppAPIServer() {
       try{
-
+        console.log('updateAnAppAPIServer')
         const errorMessages = this.validateFields(); 
         if(errorMessages && errorMessages.message.length > 0){
           throw errorMessages;
@@ -449,8 +417,9 @@ export default {
 
         this.isLoading = true;
         const t = await this.updateAnAppOnServer({
+          appId: this.appModel.appId,
           appName: this.appModel.appName,
-          whitelistedCors: this.appModel.whitelistedCors != '' ? this.appModel.whitelistedCors.split(',').filter(x => x != " "): [],
+          whitelistedCors: !Array.isArray(this.appModel.whitelistedCors) ? this.appModel.whitelistedCors.split(',').filter(x => x != " "): this.appModel.whitelistedCors,
           description: this.appModel.description,
           logoUrl: this.appModel.logoUrl
         })

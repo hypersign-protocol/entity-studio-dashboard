@@ -26,7 +26,7 @@ const mainStore = {
         },
         insertAllApps(state, payload){
             state.appList = payload.data;
-            state.totalAppCount = payload.totalAppCount;
+            state.totalAppCount = payload.totalCount;
         },
         insertAnApp(state, payload) {
             if (!state.appList.find(x => x.appId === payload.appId)) {
@@ -44,12 +44,7 @@ const mainStore = {
         saveAnAppOnServer: ({ commit }, payload) => {
             return new Promise((resolve, reject) => {
                 const url = `${apiServerBaseUrl}/app`;
-
-                // Sanatize the payload
-                // payload = UtilsMixin.methods.removeEmpty(payload);
-                console.log(payload)
                 
-                // TODO: // use proper authToken
                 const headers = UtilsMixin.methods.getHeader(localStorage.getItem('authToken'));
                 fetch(url, {
                     method: 'POST',
@@ -78,16 +73,9 @@ const mainStore = {
                     reject(new Error(`appId is not specified`))
                 }
                 const url = `${apiServerBaseUrl}/app/${appId}`;
-                console.log(payload.whitelistedCors);
-
-                // TODO: // use proper authToken
                 const headers = UtilsMixin.methods.getHeader(localStorage.getItem('authToken'));
                 delete payload.edvId
                 delete payload.apiKeyScecret
-                
-                // Sanatize the payload
-                // payload = UtilsMixin.methods.removeEmpty(payload);
-                
                 fetch(url, {
                     method: 'PUT',
                     headers,
