@@ -1,7 +1,7 @@
 <template>
   <div>
     <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>
-    <div style="display:flex">
+    <div style="display:flex" class="">
       <h3 v-if="appList.length > 0" class="mt-4" style="text-align: left;">
         <i class="fa fa-rocket mr-2" aria-hidden="true"></i>Your Applications
       </h3>
@@ -102,48 +102,91 @@
       </div>
     </StudioSideBar>
 
-    <div class="scroll" v-if="appList.length > 0">   
-      <b-card no-body class="overflow-hidden bcard" border-variant="warning" v-for="eachOrg in appList" :key="eachOrg.appId" >
-          <b-row no-gutters style="min-height:172px">
+    <div class="scroll row" v-if="appList.length > 0">   
+      <div class="col-md-4 mb-4" v-for="eachOrg in appList" :key="eachOrg.appId">
+        <div class="card bg-gradient-primary">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <h5 class="card-title text-uppercase text-muted mb-0">{{ formattedAppName(eachOrg.appName) }}</h5>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col">
+                <!-- <span class="text-nowrap">{{truncate(eachOrg.description || "No description for this app..", 41)}}</span> -->
+                <span class="h6 font-weight-bold mb-0">{{truncate(eachOrg.description || "No description for this app..", 41)}} </span>
+              </div>
+              <div class="col-auto">
+                <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appName))" alt="Image"
+                  class="rounded-0 logoImg"></b-card-img>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <b-card-text>
+                  <small class="card-field-label">Application Id:</small>
+                  <div class="apiKeySecret" @click="copyToClip(eachOrg.appId,'Application Id')" title="Copy Application Id">
+                    {{truncate(eachOrg.appId, 35)}}
+                    <i class="far fa-copy" style="float:right"></i>
+                  </div>
+                </b-card-text>
+              </div>
+            </div>
+            <p class="mt-3 mb-0 text-sm">
+              <span class="text-default mr-2 " style="float:right">
+                <span class="  danger">
+                  <i class="fa fa-key" @click="generateSecretKey(eachOrg.appId)" title="Click to generate a new API Secret Key"></i>
+                </span>
+                <span class="ml-3"></span>
+                <span class="">
+                  <i class="fas fa-pencil-alt" @click="editOrg(eachOrg.appId)" title="Click to edit the app"></i>
+                </span>
+                </span>
+                
+            </p>
+          </div>
+        </div>
+        <!-- <b-card no-body class="overflow-hidden " border-variant="warning" >
+          <b-row no-gutters>
             <b-col md="8">
               <b-card-body :title="formattedAppName(eachOrg.appName)">
                 <b-card-text>
-                  {{truncate(eachOrg.description || "No description for this app..", 41)}} 
+                  {{truncate(eachOrg.description || "No description for this app..", 41)}}
                 </b-card-text>
                 <b-card-text>
                   <small class="card-field-label">Application Id:</small>
                   <div class="apiKeySecret" @click="copyToClip(eachOrg.appId,'Application Id')" title="Copy Application Id">
-                      {{truncate(eachOrg.appId, 25)}}  
-                      <i class="far fa-copy" style="float:right"></i>
+                    {{truncate(eachOrg.appId, 25)}}
+                    <i class="far fa-copy" style="float:right"></i>
                   </div>
                 </b-card-text>
               </b-card-body>
             </b-col>
-            <b-col md="4" class="center">
-              <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appName))" alt="Image" class="rounded-0 logoImg"></b-card-img>
+            <b-col md="4" class="">
+              <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appName))" alt="Image"
+                class="rounded-0 logoImg"></b-card-img>
             </b-col>
           </b-row>
           <b-row no-gutters>
             <b-col md="2"></b-col>
             <b-col md="10" style="text-align: right;">
               <span class="icons  danger">
-              <i class="fa fa-key"
-                @click="generateSecretKey(eachOrg.appId)" title="Click to generate a new API Secret Key"
-              ></i>
+                <i class="fa fa-key" @click="generateSecretKey(eachOrg.appId)"
+                  title="Click to generate a new API Secret Key"></i>
               </span>
               <span class="ml-3"></span>
               <span class="icons">
-              <i class="fas fa-pencil-alt"
-                @click="editOrg(eachOrg.appId)" title="Click to edit the app"
-              ></i>
-            </span>
+                <i class="fas fa-pencil-alt" @click="editOrg(eachOrg.appId)" title="Click to edit the app"></i>
+              </span>
               <span class="ml-3"></span>
             </b-col>
           </b-row>
-      </b-card>
+        </b-card> -->
+      </div>
+      
     </div>
 
-    <!-- <div style="padding: 5px;">
+    <div style="padding: 5px;">
       <nav aria-label="Page navigation example" style="margin: 0 auto; width: 50px; ">
         <ul class="pagination">
           <li class="page-item">
@@ -164,12 +207,15 @@
           </li>
         </ul>
       </nav>
-    </div> -->
+    </div>
 
   </div>
 </template>
 
 <style scoped>
+.card {
+  box-shadow: 0 0 2rem 0 rgb(136 152 170 / 15%);
+}
 .icons{
   cursor: pointer;
   padding: 4px;
@@ -303,7 +349,7 @@ export default {
     ...mapActions('mainStore', ['saveAnAppOnServer', 'updateAnAppOnServer', 'generateAPISecretKey']),
     formattedAppName(appName){
       if(appName == '' || appName == undefined) appName = 'No app name'
-      return this.truncate(appName,20)
+      return this.truncate(appName,25)
     },
     getProfileIcon(name) {
       return "https://avatars.dicebear.com/api/identicon/" + name + ".svg"

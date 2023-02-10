@@ -38,7 +38,7 @@ const config = {
         buttonTextColor: process.env.VUE_APP_BTN_TXT_COLOR || "black",
     },
     apiServer: {
-        host: EnvProvider.value('ENTITY_STUDIO_API_SERVER_HOST') || 'http://localhost:3001',
+        host: process.env.VUE_APP_ENTITY_STUDIO_API_SERVER_HOST || 'http://localhost:3001',
         basePath: '/api/v1',
     }
 

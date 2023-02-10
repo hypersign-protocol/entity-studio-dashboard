@@ -119,7 +119,8 @@ cursor: pointer;
           ? 'container-collapsed-not'
           : 'container-collapsed',
     ]">
-    <router-view class="containerData"/>
+    
+    <router-view class="container containerData"/>
   </div>
     <notifications group="foo" />
     <sidebar-menu class="sidebar-wrapper" v-if="showSideNavbar" @toggle-collapse="onToggleCollapse" :collapsed="isSidebarCollapsed" :theme="'white-theme'" width="220px"
