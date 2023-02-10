@@ -17,7 +17,7 @@
           </p>
           <p>Use this key to authenticate your server. See '<a href="https://docs.hypersign.id/entity-studio/api-doc/authentication" target="_blank">API reference</a>' documentation for more.</p>
           <HfFlashNotification :text='`${apiKeySecret}`' type='API Secret Key' 
-          description="Your API Secret Key"></HfFlashNotification>
+          description="Your API Secret Key" @click="onHfFlashClick()"></HfFlashNotification>
         </div>
     </hf-pop-up>
     
@@ -336,7 +336,6 @@ export default {
     ...mapMutations('mainStore', ['updateAnApp']),
     ...mapActions('mainStore', ['saveAnAppOnServer', 'updateAnAppOnServer', 'generateAPISecretKey']),
     formattedAppName(appName){
-      console.log(appName)
       if(appName == '' || appName == undefined) appName = 'No app name'
       return this.truncate(appName,20)
     },
@@ -344,8 +343,7 @@ export default {
       return "https://avatars.dicebear.com/api/identicon/" + name + ".svg"
     },
     onHfFlashClick(){
-      this.appModel.apiKeySecret = "";
-      this.updateAnApp(this.appModel)
+      this.apiKeySecret = "";
     },  
     copyToClip(textToCopy, contentType) {
       if (textToCopy) {
@@ -509,7 +507,7 @@ export default {
         whitelistedCors: [],
         logoUrl: "",
       }
-      this.apiKeySecret = ''
+      // this.apiKeySecret = ''
     },
   },
   mixins: [UtilsMixin]
