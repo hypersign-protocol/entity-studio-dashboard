@@ -108,7 +108,7 @@
             <b-col md="8">
               <b-card-body :title="formattedAppName(eachOrg.appName)">
                 <b-card-text>
-                  {{truncate(eachOrg.description || "No description for this app..", 41)}} 
+                  {{truncate(eachOrg.description || "No description for this app..", 30)}} 
                 </b-card-text>
                 <b-card-text>
                   <small class="card-field-label">Application Id:</small>
@@ -120,7 +120,7 @@
               </b-card-body>
             </b-col>
             <b-col md="4" class="center">
-              <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appName))" alt="Image" class="rounded-0 logoImg"></b-card-img>
+              <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appId))" alt="logoImg" class="rounded-0 logoImg"></b-card-img>
             </b-col>
           </b-row>
           <b-row no-gutters>
