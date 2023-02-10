@@ -2,7 +2,7 @@
    <div class="">
         <div class="row">
             <div class="col-md-12">
-            <h1>Hi {{user.name}}, Welcome to the Entity Dashboard!</h1>
+            <h1 class="mb-6 text-2xl">Hi {{user.name}}, Welcome to the Entity Dashboard!</h1>
             </div>
         </div>
      <div class="row">

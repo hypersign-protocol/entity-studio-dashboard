@@ -112,13 +112,11 @@
               </div>
             </div>
             <div class="row mt-2">
-              <div class="col">
-                <!-- <span class="text-nowrap">{{truncate(eachOrg.description || "No description for this app..", 41)}}</span> -->
-                <span class="h6 font-weight-bold mb-0">{{truncate(eachOrg.description || "No description for this app..", 41)}} </span>
+              <div class="col-md-8">
+                <span class="card-text">{{truncate(eachOrg.description || "No description for this app..", 41)}} </span>
               </div>
-              <div class="col-auto">
-                <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appName))" alt="Image"
-                  class="rounded-0 logoImg"></b-card-img>
+              <div class="col-md-4">
+                <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appId))" alt="logoImg" class="rounded-0" style="max-height: 60px;"></b-card-img>
               </div>
             </div>
             <div class="row">
@@ -132,18 +130,19 @@
                 </b-card-text>
               </div>
             </div>
-            <p class="mt-3 mb-0 text-sm">
-              <span class="text-default mr-2 " style="float:right">
-                <span class="  danger">
-                  <i class="fa fa-key" @click="generateSecretKey(eachOrg.appId)" title="Click to generate a new API Secret Key"></i>
+            <div class="row mt-2">
+              <div class="col">
+                <span class=" " style="float:right">
+                  <b-badge pill variant="danger" @click="generateSecretKey(eachOrg.appId)"
+                    title="Click to generate a new API Secret Key" class="mr-2" style="cursor: pointer;">
+                    <i class="fa fa-key"></i>
+                    Api</b-badge>
+                  <b-badge pill variant="info" @click="editOrg(eachOrg.appId)" title="Click to edit the app" style="cursor: pointer;">
+                    <i class="fas fa-pencil-alt" ></i>
+                    Edit</b-badge>
                 </span>
-                <span class="ml-3"></span>
-                <span class="">
-                  <i class="fas fa-pencil-alt" @click="editOrg(eachOrg.appId)" title="Click to edit the app"></i>
-                </span>
-                </span>
-                
-            </p>
+              </div>
+            </div>
           </div>
         </div>
         <!-- <b-card no-body class="overflow-hidden " border-variant="warning" >
@@ -162,9 +161,8 @@
                 </b-card-text>
               </b-card-body>
             </b-col>
-            <b-col md="4" class="">
-              <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appName))" alt="Image"
-                class="rounded-0 logoImg"></b-card-img>
+            <b-col md="4" class="center">
+              <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appId))" alt="logoImg" class="rounded-0 logoImg"></b-card-img>
             </b-col>
           </b-row>
           <b-row no-gutters>
