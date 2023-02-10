@@ -62,6 +62,7 @@ export default {
   created() {
    const usrStr = localStorage.getItem('user')
    this.user = JSON.parse(usrStr);
+   EventBus.$emit('closeSideNav')
   },
   methods: {
    gotosubpage(name){
