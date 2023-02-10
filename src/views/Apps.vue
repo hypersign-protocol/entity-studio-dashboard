@@ -10,19 +10,19 @@
       <hf-buttons name="+ Create" style="text-align: right;" class="ml-auto mt-4" @executeAction="openSlider()">
       </hf-buttons>
     </div>
+
+    <hf-pop-up Header="API Secret Key"> 
+        <div v-if="apiKeySecret !=''">
+          <p>Make sure to copy and save it securely. If lost, this key can not be recovered. However, you can regenerate a new one. 
+          </p>
+          <p>Use this key to authenticate your server. See '<a href="https://docs.hypersign.id/entity-studio/api-doc/authentication" target="_blank">API reference</a>' documentation for more.</p>
+          <HfFlashNotification :text='`${apiKeySecret}`' type='API Secret Key' 
+          description="Your API Secret Key"></HfFlashNotification>
+        </div>
+    </hf-pop-up>
     
     <StudioSideBar :title="edit ? 'Edit Application' : 'Add Application'">
-      <div class="container">
-        <div v-if="(edit === true) && appModel.apiKeySecret !=''" @click="onHfFlashClick()">
-          <HfFlashNotification :text='`${appModel.apiKeySecret}`' type='Application Secret' description="Your Application Secret Key. Make sure to copy it."></HfFlashNotification>
-        </div>
-
-        <!-- <div style="margin-bottom: 20px;" v-if="errorMessages && errorMessages.length > 0" >
-          <div v-for="m in errorMessages">
-            <HFErrorMessages :message="m"></HFErrorMessages>
-          </div>
-        </div> -->
-        
+      <div class="container"> 
         <div class="form-group" v-if="edit === true">
           <tool-tip infoMessage="Your Application Id"></tool-tip>
           <label for="orgDid"><strong>Application Id<span style="color: red">*</span>: </strong></label>
@@ -102,9 +102,49 @@
       </div>
     </StudioSideBar>
 
-    <div class="row scroll" v-if="appList.length > 0">
-      <div class="col-lg-4" v-for="eachOrg in appList" :key="eachOrg.appId">
-        <b-card :title="truncate(eachOrg.appName,20)" tag="article" class="mb-2 eventCard appCard" img-top>
+    <div class="scroll" v-if="appList.length > 0">
+      <div class="">      
+            <b-card no-body class="overflow-hidden bcard" border-variant="warning" v-for="eachOrg in appList" :key="eachOrg.appId" >
+                <b-row no-gutters style="min-height:172px">
+                  <b-col md="8">
+                    <b-card-body :title="formattedAppName(eachOrg.appName)">
+                      <b-card-text>
+                        {{truncate(eachOrg.description || "No description for this app..", 50)}} 
+                      </b-card-text>
+                      <b-card-text>
+                        <small class="card-field-label">Application Id:</small>
+                        <div class="apiKeySecret" @click="copyToClip(eachOrg.appId,'Application Id')" title="Copy Application Id">
+                            {{truncate(eachOrg.appId, 25)}}  
+                            <i class="far fa-copy" style="float:right"></i>
+                        </div>
+                      </b-card-text>
+                    </b-card-body>
+                  </b-col>
+                  <b-col md="4" class="center">
+                    <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appName))" alt="Image" class="rounded-0 logoImg"></b-card-img>
+                  </b-col>
+                </b-row>
+                <b-row no-gutters>
+                  <b-col md="2"></b-col>
+                  <b-col md="10" style="text-align: right;">
+                    <span class="icons  danger">
+                    <i class="fa fa-key"
+                      @click="generateSecretKey(eachOrg.appId)" title="Click to generate a new API Secret Key"
+                    ></i>
+                    </span>
+                    <span class="ml-3"></span>
+                    <span class="icons">
+                    <i class="fas fa-pencil-alt"
+                      @click="editOrg(eachOrg.appId)" title="Click to edit the app"
+                    ></i>
+                  </span>
+                    <span class="ml-3"></span>
+                  </b-col>
+                </b-row>
+            </b-card>
+        
+
+        <!-- <b-card :title="formattedAppName(eachOrg.appName)" tag="article" class="mb-2 eventCard appCard" img-top>
           <img style="float:right;" :src="`${eachOrg.logoUrl}`" class="mr-2" alt="center" width="70px"/>            
           <ul style="list-style-type: none;padding-left: 0px;min-height: 80px;">
             <li>
@@ -137,7 +177,7 @@
               </div>
             </div>
           </footer>
-        </b-card>
+        </b-card> -->
       </div>
     </div>
 
@@ -167,14 +207,47 @@
 </template>
 
 <style scoped>
+.icons{
+  cursor: pointer;
+  padding: 4px;
+}
+
+.icons.danger{
+  color: rgba(255, 0, 0, 0.589)
+}
+.icons:hover{
+  border-radius: 10px;
+  font-weight: bold;
+  background-color: rgb(155, 153, 153);
+  color: white;
+}
+.card-field-label {
+  color: grey;
+  font-weight: bold;
+}
+.bcard{
+  min-height: 210px;max-height: 200px;min-width: 400px; max-width: 450px; float: left; margin: 10px;
+}
+
+.bcard:hover{
+  box-shadow: 0 0 2px 5px rgba(251, 161, 82, 0.268);
+  cursor: pointer;
+}
+.logoImg{
+  width: 60px; height: 60px;
+}
+.center{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .appCard{
   max-width: 30rem; margin-top: 10px; height:13rem;
   min-height: 100px;
 }
 .apiKeySecret{
-  width: 70%;
+  cursor: pointer;
   padding: 5px;
-  
   font-size: larger;
   margin-top: 5px;
   border-radius: 5px;
@@ -231,7 +304,8 @@ export default {
     ...mapState({
       appList: state => state.mainStore.appList,
     }),
-    ...mapGetters("mainStore", ["getAppByAppId"])
+    ...mapGetters("mainStore", ["getAppByAppId"]),
+   
   },
   data() {
     return {
@@ -244,6 +318,7 @@ export default {
       fullPage: true,
       isLoading: false,
       isProcessFinished: true,
+      apiKeySecret: "",
       appModel: {
         appId: "",
         apiKeySecret: "",
@@ -259,7 +334,12 @@ export default {
   components: { HfPopUp, Loading, StudioSideBar, HfButtons, ToolTip, HfFlashNotification },
   methods: {
     ...mapMutations('mainStore', ['updateAnApp']),
-    ...mapActions('mainStore', ['saveAnAppOnServer', 'updateAnAppOnServer']),
+    ...mapActions('mainStore', ['saveAnAppOnServer', 'updateAnAppOnServer', 'generateAPISecretKey']),
+    formattedAppName(appName){
+      console.log(appName)
+      if(appName == '' || appName == undefined) appName = 'No app name'
+      return this.truncate(appName,20)
+    },
     getProfileIcon(name) {
       return "https://avatars.dicebear.com/api/identicon/" + name + ".svg"
     },
@@ -283,18 +363,6 @@ export default {
             );
           });
       }
-    },
-    async switchOrg(orgDid) {
-      localStorage.setItem('selectedOrg', orgDid)
-      this.updateSideNavStatus(true)
-
-      this.selectAnOrg(orgDid)
-      this.$router.push({ name: 'playgroundCredential' })
-    
-      await this.fetchAllOrgDataOnOrgSelect();
-
-      this.$store.commit('playgroundStore/shiftContainer', false)
-
     },
     openSlider() {
       this.edit = false
@@ -352,8 +420,11 @@ export default {
           logoUrl: this.appModel.logoUrl
         })
         if(t){
-          Object.assign(this.appModel, { ...t })
-          this.edit = true;
+          this.apiKeySecret = t.apiKeySecret;
+          // Object.assign(this.appModel, { ...t })
+          // this.edit = true;
+          this.closeSlider();
+          this.$root.$emit('modal-show')
           this.notifySuccess(messages.APPLICATION.APP_CREATE_SUCCESS)
         } else {
           throw new Error('Something went wrong')
@@ -403,6 +474,31 @@ export default {
         this.isLoading = false;
       }
     },
+
+    async generateSecretKey(appId){
+      try{
+        console.log(appId)
+        this.isLoading = true;
+        const resp = await this.generateAPISecretKey({ appId });
+        if(resp){
+          this.apiKeySecret = resp.apiSecretKey;
+          this.$root.$emit('modal-show')
+          this.notifySuccess(messages.APPLICATION.APP_NEW_SECRET_KEY_SUCCESS)
+        } else {
+          throw new Error('Something went wrong')
+        }
+      }catch(e){
+        if(Array.isArray(e.message)){
+          e.message.forEach(m => {
+            this.notifyErr(m)      
+          })
+          return;
+        }
+        this.notifyErr(e.message)
+      } finally {
+        this.isLoading = false;
+      }
+    },
     clearAll() {
       this.appModel = {
         appId: "",
@@ -413,6 +509,7 @@ export default {
         whitelistedCors: [],
         logoUrl: "",
       }
+      this.apiKeySecret = ''
     },
   },
   mixins: [UtilsMixin]

@@ -11,7 +11,8 @@ const mainStore = {
     namespaced: true,
     mixin: [UtilsMixin],
     state: {
-        appList: []
+        appList: [],
+        totalAppCount: 0,
     },
     getters: {
         getAppByAppId: (state) => (appId) =>{
@@ -24,7 +25,8 @@ const mainStore = {
             state.appList = [];
         },
         insertAllApps(state, payload){
-            state.appList = payload;
+            state.appList = payload.data;
+            state.totalAppCount = payload.totalAppCount;
         },
         insertAnApp(state, payload) {
             if (!state.appList.find(x => x.appId === payload.appId)) {
@@ -107,7 +109,6 @@ const mainStore = {
             
         },
         fetchAppsListFromServer: ({commit }) => {
-            console.log('inside fetchAppsListFromServer .... ')
             // TODO: Get list of orgs 
             const url = `${apiServerBaseUrl}/app`;
             // TODO: // use proper authToken
@@ -122,7 +123,33 @@ const mainStore = {
             }).catch((e) => {
                 console.error(`Error while fetching apps ` + e.message);
             })
-        }
+        },
+        generateAPISecretKey: ({ commit }, payload) => {
+            return new Promise((resolve, reject) => {
+                const { appId } = payload;
+                if(!appId) {
+                    reject(new Error(`appId is not specified`))
+                }
+                const url = `${apiServerBaseUrl}/app/${appId}/secret/new`;
+                
+                // TODO: // use proper authToken
+                const headers = UtilsMixin.methods.getHeader(localStorage.getItem('authToken'));
+                fetch(url, {
+                    method: 'POST',
+                    headers,
+                })
+                .then(response => response.json())
+                .then(json => {
+                    
+                    if(json.error) {
+                        reject(json)
+                    }
+                    resolve(json)
+                }).catch((e) => {
+                    reject(new Error(`while generating new secret key app  ${e}`))
+                })
+            })
+        },
     }
 }
 

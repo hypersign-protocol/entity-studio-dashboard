@@ -1,13 +1,12 @@
 <template>
     <div class="notificaiton" @click="copyToClip(text, type)" :title='`Copy ${type}`'>
         <div class="text">
-            <span>{{ truncate(text, 50)}}  </span>
+            <span>{{ truncate(text, 90)}}  </span>
             <span><i class="far fa-copy copy"></i></span>
         </div>
         <small v-if="description != ''" class="description">{{  description }}</small>
     </div>
 </template>
-
 <style scoped>
 .notificaiton{
     margin-bottom: 10px;
