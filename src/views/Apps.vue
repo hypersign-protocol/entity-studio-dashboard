@@ -279,7 +279,7 @@
 }
 
 .eventCard {
-  border-left: 10px solid var(--ds-background-accent-red-subtler, rgba(241, 179, 25, 0.24));
+  border-left: 10px solid var(--ds-background-accent-red-subtler, #905ab029);
 }
 
 .eventCard:hover {

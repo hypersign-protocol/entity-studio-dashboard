@@ -1,14 +1,14 @@
 <template>
 <org-content/>
 </template>
-  <style scoped>
-  .container {
+<style scoped>
+.container {
     padding: 20px;
     text-align: left;
   }
   
   .eventCard {
-    border-left: 10px solid var(--ds-background-accent-red-subtler, rgba(241, 179, 25, 0.24));
+    border-left: 10px solid var(--ds-background-accent-red-subtler, #905ab029);
   }
   
   .eventCard:hover {
@@ -26,9 +26,9 @@
     padding: 1.25rem;
   
   }
-  </style>
+</style>
 
-  <script>
+<script>
 import HfPopUp from "../../components/element/hfPopup.vue";
 import StudioSideBar from "../../components/element/StudioSideBar.vue";
 import UtilsMixin from '../../mixins/utils';

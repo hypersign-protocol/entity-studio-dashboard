@@ -1,5 +1,4 @@
 <style scoped>
-
 h5 {
   width: 80%;
   text-align: center;
@@ -15,9 +14,9 @@ h5 span {
 }
 
 .button-theme {
- background-color: #f1b319;
-  border-collapse: #f1b319;
-  color: black;
+background-color: #905ab0;
+    border-collapse: #905ab0;
+  color: #fff;
   border: 0;
 }
 
@@ -82,7 +81,6 @@ h5 span {
   z-index: 2;
   grid-area: panel;
 }
-
 </style>
 
 <template>

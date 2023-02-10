@@ -215,7 +215,10 @@ cursor: pointer;
   box-shadow: 0 0 15px 0 rgba(34,41,47,.05);
 }
 .v-sidebar-menu.vsm_white-theme .vsm--mobile-bg{
-  background: #ffc107;
+  background: #905ab0;
+}
+.vsm--mobile-bg {
+  background: #905ab098 !important;
 }
 .v-sidebar-menu.vsm_white-theme {
   background-color: white !important;
@@ -226,6 +229,10 @@ cursor: pointer;
 }
 .v-sidebar-menu.vsm_white-theme .vsm--link{
   color: #000 !important;
+}
+.v-sidebar-menu.vsm_white-theme .vsm--link_level-1 .vsm--link:hover{
+  color: #000 !important;
+    background: #905ab0 !important;
 }
 .v-sidebar-menu.vsm_white-theme .vsm--link_level-1 .vsm--icon {
   background-color: transparent !important;
