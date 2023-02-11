@@ -1,6 +1,6 @@
 <template>
    <div class="home">
-     <h2>Welcome {{user.name}}, to the Entity Playground !</h2>
+     <h2>Welcome {{user.name}}, to Entity Playground !</h2>
      <Metrics/>
      <org-sidebar/>
    </div>

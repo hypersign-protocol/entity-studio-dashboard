@@ -44,7 +44,8 @@
           <textarea class="form-control" v-model="appModel.description" rows="3" placeholder="Enter meaningful description for your app, max 300 chars"></textarea>
         </div>
 
-        <div class="form-group">
+        
+        <!-- <div class="form-group">
           <tool-tip infoMessage="Logo URL, recomended size 160*160"></tool-tip>
           <label for="orgName"><strong>Logo URL:</strong></label>
           <div class="input-group mb-3">
@@ -53,7 +54,7 @@
             </div>
             <input type="text" class="form-control" v-model="appModel.logoUrl"  placeholder="https://path-to-my-logo.png" aria-label="Username" aria-describedby="basic-addon1"> 
           </div>
-        </div>
+        </div> -->
 
         <div class="form-group" v-if="edit === true">
           <tool-tip infoMessage="Your Encrypted Data Vault id"></tool-tip>
@@ -116,7 +117,7 @@
                 <span class="card-text">{{truncate(eachOrg.description || "No description for this app..", 41)}} </span>
               </div>
               <div class="col-md-4">
-                <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appId))" alt="logoImg" class="rounded-0" style="max-height: 60px;"></b-card-img>
+                <b-card-img :src="eachOrg.logoUrl || getProfileIcon(formattedAppName(eachOrg.appId))" alt="logoImg" class="rounded-0" style="max-height: 60px;min-height: 60px;"></b-card-img>
               </div>
             </div>
             <div class="row">
