@@ -55,8 +55,8 @@ export default {
 */
 .button-theme:hover{
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-  background:aliceblue !important;
-  border: 1px solid #905ab0 !important;
-  color: #905ab0 !important;
+  background:rgb(255, 255, 255) !important;
+  border: 1px solid #000000 !important;
+  color: #000000 !important;
 }
 </style>

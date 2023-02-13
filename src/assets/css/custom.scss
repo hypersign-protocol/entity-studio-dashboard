@@ -1,0 +1,41 @@
+// Define your variable overrides here
+$enable-shadows: true;
+$enable-gradients: false;
+$grid-breakpoints: (
+    xs: 0,
+    sm: 456px,
+    md: 789px,
+    lg: 999px,
+    xl: 1234px
+);
+$bv-enable-table-stacked: false;
+$body-bg: #202124;
+$body-color: #bdc1c6;
+$nav-bg: #140f1a;
+
+// Include Bootstrap and BootstrapVue SCSS files
+@import '~bootstrap/scss/bootstrap.scss';
+@import '~bootstrap-vue/src/index.scss';
+
+// General style overrides and custom classes
+body {
+    margin: 0;
+    background-color: $body-bg !important;
+    color: $body-color !important;
+}
+
+.my-widget {
+    color: var(--danger);
+}
+
+.navStyle {
+    background: $nav-bg;
+    margin-bottom: 1%;
+    padding: 5px !important;
+    padding-left: 1.5%;
+    text-align: left;
+    box-shadow:
+        rgba(0, 0, 0, 0.1) 0px 2px 2px 0px,
+        rgba(0, 0, 0, 0.02) 0px 3px 1px -2px,
+        rgba(0, 0, 0, 0.01) 0px 1px 5px 0px;
+}

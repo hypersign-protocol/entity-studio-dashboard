@@ -4,6 +4,7 @@ import router from './router'
 import { BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
 import Notifications from 'vue-notification'
 import config from './config'
+import './assets/css/custom.scss';
 import VueSidebarMenu from 'vue-sidebar-menu'
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import 'bootstrap/dist/css/bootstrap.css'

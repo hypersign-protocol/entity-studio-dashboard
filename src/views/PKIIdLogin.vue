@@ -34,7 +34,7 @@ h5 {
 }
 
 h5 span {
-  background: #fff;
+  /* background: #fff; */
   padding: 0 10px;
 }
 
@@ -96,7 +96,7 @@ h5 span {
 }
 
 .button-theme {
-background-color: #905ab0;
+background-image: linear-gradient(79deg, rgba(144, 90, 176, 1) 0%, rgba(86, 52, 105, 1) 98%);
   border-collapse: #905ab0;
   color: #fff;
   border: 0;
@@ -107,6 +107,8 @@ background-color: #905ab0;
   border-radius: 10px;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  color:#fff;
+  background-image: linear-gradient(94deg, rgba(76, 105, 100, 1) 0%, rgba(46, 102, 93, 1) 98%);
 }
 .align-center{
   margin-left: auto;

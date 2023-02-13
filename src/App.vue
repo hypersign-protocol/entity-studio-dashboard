@@ -35,7 +35,7 @@
   margin: 0;
   width: 100%;
   min-height: 100vh;
-  background: #F6F6F687;
+  /* background: #F6F6F687; */
 }
 .subtitle {
   padding-left: 10px;
@@ -62,7 +62,7 @@ cursor: pointer;
 </style>
 <template>
   <div id="app">
-   <b-navbar toggleable="lg" type="dark" variant="white" class="navStyle" v-if="showIcon" sticky>
+   <b-navbar toggleable="lg" type="dark" variant="none" class="navStyle" v-if="showIcon" sticky>
     <b-navbar-brand href="#" style="display:flex; width: 80%; margin-left: 0.2em;">
       <a href="#" @click.prevent="route('dashboard')">
         <img src="./assets/Entity_full.png" alt="" style="height:5vh; opacity: 80%;">
@@ -151,17 +151,7 @@ cursor: pointer;
 .navbar {
   padding: 0px !important;
 }
-.navStyle {
-  background: #FFFFFF;
-  margin-bottom: 1%;
-  padding: 5px !important;
-  padding-left: 1.5%;
-  text-align: left;
-  box-shadow:
-    rgba(0, 0, 0, 0.1) 0px 2px 2px 0px,
-    rgba(0, 0, 0, 0.02) 0px 3px 1px -2px,
-    rgba(0, 0, 0, 0.01) 0px 1px 5px 0px;
-}
+
 .orgNameCss {
   overflow-wrap: break-word;
   color: white;
