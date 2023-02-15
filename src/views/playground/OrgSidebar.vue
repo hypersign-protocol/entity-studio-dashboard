@@ -38,35 +38,45 @@
         </div>
      
         <div class="form-group">
-          <tool-tip infoMessage="Organistaion Controller"></tool-tip>
-          <label for="controller"><strong>Controllers<span style="color: red">*</span>:</strong></label>
-          <div class="selected-media-wrapper d-flex p-2 mb-4" style="overflow-y: auto"
-          v-if="orgStore.controller.length > 0">
-          <div v-for="ctl in orgStore.controller" v-bind:key="ctl">
-            <div :class="
-          flash == ctl
-            ? 'flash card rounded m-1 p-1 d-flex flex-row align-items-center'
-            : 'card rounded m-1 p-1 d-flex flex-row align-items-center pointer'"
-              @click="selectController(ctl)" style="min-width:90px;" :title="ctl">
-              {{ truncate(ctl,15)  }}
-              <span style="color: gray; padding-left: 5px">
-                <i style="" class="fas fa-minus-circle"></i>
-              </span>
+          
+          
+          <div>
+            <tool-tip infoMessage="Organistaion Controller"></tool-tip>
+            <label for="controller"><strong>Controllers<span style="color: red">*</span>:</strong></label>
+          </div>
+          
+          <div class="selected-media-wrapper d-flex p-2 mb-4" style="overflow-y: auto" v-if="orgStore.controller.length > 0">
+            <div v-for="ctl in orgStore.controller" v-bind:key="ctl">
+              <div :class="
+                flash == ctl
+                ? 'flash card rounded m-1 p-1 d-flex flex-row align-items-center'
+                : 'card rounded m-1 p-1 d-flex flex-row align-items-center pointer'"
+                style="min-width:90px; background-color: lightyellow; box-shadow: #80808042 1px 1px 1px 1px; color: grey" :title="ctl">
+                <div>
+                  {{ truncate(ctl,25)  }}
+                </div>
+                <div style="padding: 5px; color: lightcoral;cursor: pointer;" @click="deleteController(ctl)" title="Remove this controller">
+                  <i style="" class="fa fa-trash"></i>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-          <input type="text" class="form-control" id="controllers" v-model="controllerValue"
-            aria-describedby="controllerHelp" placeholder="Controller ids" v-if="isAdd">
+
+
+          
 
           <div v-if="isAdd">
-            <hf-buttons name="Add" @executeAction="addController()"> </hf-buttons>
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" id="controllers" v-model="controllerValue" aria-describedby="controllerHelp" placeholder="did:hid:...8HPRgfJAnph">
+              <div class="input-group-append">
+                <hf-buttons @executeAction="addController()" iconClass="fa fa-plus"></hf-buttons> 
+              </div>
+            </div>
           </div>
-          <div v-else>
-            <hf-buttons name="Delete" @executeAction="deleteController()"> </hf-buttons>
-
-            <hf-buttons name="Cancel" @executeAction="cancelController()"> </hf-buttons>
-
-          </div>
+          <!-- <div v-else>
+            <hf-buttons  @executeAction="deleteController()" iconClass="fa fa-trash" customClass="btn btn-danger"> </hf-buttons>
+            <hf-buttons name="Cancel" @executeAction="cancelController()" customClass="btn btn-link"> </hf-buttons>
+          </div> -->
 
 
 
@@ -244,8 +254,8 @@ export default {
       this.isAdd=false
       this.flash = id
     },
-    deleteController(){
-      this.orgStore.controller.splice(this.flash, 1)
+    deleteController(id){
+      this.orgStore.controller.splice(id, 1)
       this.flash = null
       this.isAdd=true
     }
@@ -256,9 +266,28 @@ export default {
     
     },
     addController() {
-      this.isAdd = true
-      this.orgStore.controller.push(this.controllerValue)
-      this.controllerValue = ""
+
+      try{
+        if(!this.controllerValue){
+          throw new Error("Please enter contoller id")
+        }
+
+        if(!this.controllerValue.startsWith("did:hid")){
+          throw new Error("DID method not supported")
+        }
+
+        if(this.orgStore.controller.indexOf(this.controllerValue) >= 0){
+          throw new Error("The controller has already been added")
+        }
+
+        this.isAdd = true
+        this.orgStore.controller.push(this.controllerValue)
+        
+      }catch(e){
+        this.notifyErr(e.message)
+      } finally {
+        this.controllerValue = ""
+      }
     },
     getProfileIcon(name) {
       return "https://avatars.dicebear.com/api/identicon/" + name + ".svg"
@@ -339,6 +368,7 @@ export default {
     editOrg(orgDid) {
       this.edit = true
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
+      this.controllerValue = "";
       Object.assign(this.orgStore, { ...this.findOrgByOrgID(orgDid) })
     },
     createAnOrg() {
@@ -424,6 +454,7 @@ export default {
       // Close the sideba
     },
     clearAll() {
+      this.controllerValue = ""
       this.orgStore = {
       flash: null,
       isAdd: true,
