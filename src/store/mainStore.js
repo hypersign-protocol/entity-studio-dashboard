@@ -13,6 +13,7 @@ const mainStore = {
     state: {
         appList: [],
         totalAppCount: 0,
+        showMainSideNavBar: true,
     },
     getters: {
         getAppByAppId: (state) => (appId) =>{
@@ -21,6 +22,9 @@ const mainStore = {
         },
     },
     mutations: {
+        setMainSideNavBar: (state, payload) =>{
+            state.showMainSideNavBar = payload ? payload : false;
+        },
         resetMainStore(state){
             state.appList = [];
         },

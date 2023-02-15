@@ -318,6 +318,9 @@ export default {
       return Math.ceil(parseInt(this.totalAppCount) / 10)
     }
   },
+  mounted(){
+    this.setMainSideNavBar(false);
+  },
   data() {
     return {
       edit: false,
@@ -344,7 +347,7 @@ export default {
   },
   components: { HfPopUp, Loading, StudioSideBar, HfButtons, ToolTip, HfFlashNotification },
   methods: {
-    ...mapMutations('mainStore', ['updateAnApp']),
+    ...mapMutations('mainStore', ['updateAnApp', 'setMainSideNavBar']),
     ...mapActions('mainStore', ['saveAnAppOnServer', 'updateAnAppOnServer', 'generateAPISecretKey']),
     formattedAppName(appName){
       if(appName == '' || appName == undefined) appName = 'No app name'
@@ -523,6 +526,9 @@ export default {
       }
       // this.apiKeySecret = ''
     },
+  },
+  beforeDestroy(){
+    this.setMainSideNavBar(true);
   },
   mixins: [UtilsMixin]
 }

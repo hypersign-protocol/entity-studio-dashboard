@@ -245,16 +245,19 @@ cursor: pointer;
 import UtilsMixin from './mixins/utils';
 import EventBus from './eventbus'
 import HfButtons from "./components/element/HfButtons.vue"
-import { mapActions, mapMutations, mapGetters } from 'vuex';
+import { mapActions, mapMutations, mapGetters, mapState } from 'vuex';
 export default {
   components: { HfButtons },
   computed: {
     ...mapGetters("playgroundStore", ["userDetails", "getSelectedOrg"]),
+    ...mapState({
+      showMainSideNavBar: state =>  state.mainStore.showMainSideNavBar
+    }),
     selectedOrg() {
       return this.getSelectedOrg;
     },
     showSideNavbar() {
-      return this.$store.state.playgroundStore.showSideNavbar
+      return this.$store.state.playgroundStore.showSideNavbar && this.showMainSideNavBar
     },
   },
   data() {
