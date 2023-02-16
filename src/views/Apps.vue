@@ -299,7 +299,7 @@
 import HfPopUp from "../components/element/hfPopup.vue";
 import StudioSideBar from "../components/element/StudioSideBar.vue";
 import UtilsMixin from '../mixins/utils';
-import { isEmpty, isValidURL } from '../mixins/fieldValidation'
+import { isEmpty } from '../mixins/fieldValidation'
 import 'vue-loading-overlay/dist/vue-loading.css';
 import Loading from "vue-loading-overlay";
 import HfButtons from '../components/element/HfButtons.vue'
