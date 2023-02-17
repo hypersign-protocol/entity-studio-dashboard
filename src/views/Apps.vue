@@ -385,7 +385,6 @@ export default {
       this.edit = true
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
       const appModel =  this.getAppByAppId(appId);
-      console.log(appModel)
       Object.assign(this.appModel, { ...appModel })
     },
     validateFields(){
@@ -453,7 +452,6 @@ export default {
     },
     async updateAnAppAPIServer() {
       try{
-        console.log('updateAnAppAPIServer')
         const errorMessages = this.validateFields(); 
         if(errorMessages && errorMessages.message.length > 0){
           throw errorMessages;
@@ -488,7 +486,6 @@ export default {
 
     async generateSecretKey(appId){
       try{
-        console.log(appId)
         this.isLoading = true;
         const resp = await this.generateAPISecretKey({ appId });
         if(resp){
