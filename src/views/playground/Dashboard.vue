@@ -1,6 +1,6 @@
 <template>
    <div class="home">
-     <h2>Welcome {{user.name}}, to Entity Playground !</h2>
+     <h2>Welcome {{user.name}}, to SSI Playground !</h2>
      <Metrics/>
      <org-sidebar/>
    </div>
@@ -29,6 +29,7 @@ export default {
     };
   },
   created() {
+   this.setSelectedDashboard(this.$config.DashboardTypes.SSIPlayground)
     const usrStr = localStorage.getItem('user')
     this.user = JSON.parse(usrStr);
     this.updateSideNavStatus(false)
@@ -37,6 +38,7 @@ export default {
     EventBus.$emit('closeSideNav')
   },
   methods: {
+    ...mapMutations('globalStore', ['setSelectedDashboard']),
     ...mapMutations('playgroundStore', ['updateSideNavStatus', 'selectAnOrg']),
     gotosubpage(id) {
       this.$router.push(`${id}`);

@@ -41,7 +41,7 @@
         <div class="form-group">
           <tool-tip infoMessage="Give a description for application, upto 100 chars"></tool-tip>
           <label for="orgName"><strong>Description:</strong></label>
-          <textarea class="form-control" v-model="appModel.description" rows="3" placeholder="Enter meaningful description for your app, max 300 chars"></textarea>
+          <textarea class="form-control" v-model="appModel.description" rows="3" placeholder="Enter meaningful description for your app, max 100 chars"></textarea>
         </div>
 
         
@@ -58,29 +58,25 @@
 
         <div class="form-group" v-if="edit === true">
           <tool-tip infoMessage="Your Encrypted Data Vault id"></tool-tip>
-          <label for="orgDid"><strong>Encrypted Data Vault<span style="color: red">*</span>: </strong></label>
+          <label for="orgDid"><strong>Encrypted Data Vault Id: </strong></label>
           <input type="text" class="form-control" id="orgDid" v-model="appModel.edvId" aria-describedby="orgNameHelp"
             disabled>
         </div>
 
         <div class="form-group" v-if="edit === true">
           <tool-tip infoMessage="Your wallet address"></tool-tip>
-          <label for="orgDid"><strong>Wallet Address<span style="color: red">*</span>: </strong></label>
+          <label for="orgDid"><strong>Wallet Address: </strong></label>
           <input type="text" class="form-control" id="orgDid" v-model="appModel.walletAddress" aria-describedby="orgNameHelp"
             disabled>
+          <small><a :href="`https://explorer.hypersign.id/hypersign-testnet/account/${appModel.walletAddress}`" target="_blank">Click here to see wallet balance</a></small>
         </div>
-
-        
 
         <div class="form-group">
           <tool-tip infoMessage="Listed origins allowed to make CORS requests. Enter comman seperated URLs to whitelist"></tool-tip>
           <label for="orgName"><strong>Allowed Origins (CORS):</strong></label>
           <textarea class="form-control" v-model="appModel.whitelistedCors" rows="3" placeholder="*, http://your-domain.com, http://test.com"></textarea>
         </div>
-
-        
-        
-
+              
         <!-- <div class="form-group" v-if="(edit === true) && appModel.apiKeySecret !=''">
           <tool-tip infoMessage="Your Application Secret. Make sure to copy it."></tool-tip>
           <label for="orgName"><strong>App Secret<span style="color: red">*</span>:</strong></label>
@@ -429,7 +425,7 @@ export default {
         this.isLoading = true;
         const t =await this.saveAnAppOnServer({
           appName: this.appModel.appName,
-          whitelistedCors: !Array.isArray(this.appModel.whitelistedCors) ? this.appModel.whitelistedCors.split(',').filter(x => x != " "): this.appModel.whitelistedCors,
+          whitelistedCors: !Array.isArray(this.appModel.whitelistedCors) ? this.appModel.whitelistedCors.split(',').filter(x => x != " ").map(x => x.trim()): this.appModel.whitelistedCors,
           description: this.appModel.description,
           logoUrl: this.appModel.logoUrl
         })
@@ -467,7 +463,7 @@ export default {
         const t = await this.updateAnAppOnServer({
           appId: this.appModel.appId,
           appName: this.appModel.appName,
-          whitelistedCors: !Array.isArray(this.appModel.whitelistedCors) ? this.appModel.whitelistedCors.split(',').filter(x => x != " "): this.appModel.whitelistedCors,
+          whitelistedCors: !Array.isArray(this.appModel.whitelistedCors) ? this.appModel.whitelistedCors.split(',').filter(x => x != " ").map(x => x.trim()): this.appModel.whitelistedCors,
           description: this.appModel.description,
           logoUrl: this.appModel.logoUrl
         })

@@ -2,7 +2,7 @@
    <div class="">
         <div class="row">
             <div class="col-md-12">
-            <h2 class="mb-6 text-2xl">Hi {{user.name}}, welcome to Entity Dashboard!</h2>
+            <h2 class="mb-6 text-2xl">Hi {{user.name}}, Welcome to Developer Dashboard!</h2>
             </div>
         </div>
      <div class="row">
@@ -51,6 +51,7 @@
 
 <script>
 import Apps from './Apps.vue';
+import {  mapMutations  } from 'vuex';
 
 export default {
   name: "dashboard",
@@ -66,9 +67,10 @@ export default {
   created() {
    const usrStr = localStorage.getItem('user')
    this.user = JSON.parse(usrStr);
-//    EventBus.$emit('closeSideNav')
+   this.setSelectedDashboard(this.$config.DashboardTypes.DeveloperDashboard)
   },
   methods: {
+    ...mapMutations('globalStore', ['setSelectedDashboard']),
    gotosubpage(name){
        this.$router.push({ name })
    },

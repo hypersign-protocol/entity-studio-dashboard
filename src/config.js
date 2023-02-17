@@ -55,4 +55,11 @@ config['appName']='Studio'
 config['hypersignSDK'] = hypersignSDK
 config['websocketUrl']=websocketUrl
 config['webWalletAddress']=webWalletAddress
+
+const DashboardTypes =  Object.freeze({
+    SSIPlayground: "SSIPlayground",
+    DeveloperDashboard: "DeveloperDashboard",
+})
+
+config['DashboardTypes'] = DashboardTypes
 export default config

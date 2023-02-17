@@ -71,10 +71,15 @@ cursor: pointer;
     <b-collapse id="nav-collapse" is-nav style="width: 30%;">
       <b-navbar-nav class="ml-auto">
 
-        <!-- <a class="mr-4" href="#" @click.prevent="route('playgroundDashboard')"
-          style="color:grey; margin-top:0.8em;" title="Playground">
-          <i class="fa fa-rocket" style="font-size:36px;"></i>
-        </a> -->
+        <a class="mr-4" href="#" @click.prevent="route('playgroundDashboard')"
+          style="color:grey; margin-top:0.8em;" title="SSI Playground" v-if="selectedDashboard === $config.DashboardTypes.DeveloperDashboard">
+          <i class="fa fa-gamepad" style="font-size:36px;"></i>
+        </a>
+
+        <a class="mr-4" href="#" @click.prevent="route('dashboard')"
+          style="color:grey; margin-top:0.8em;" title="Developer Dashboard"  v-if="selectedDashboard === $config.DashboardTypes.SSIPlayground">
+          <i class="fa fa-code" style="font-size:36px;"></i>
+        </a>
 
         <a class="mr-3" href="https://docs.hypersign.id/entity-studio/introduction" target="blank" 
           style="color:grey; margin-top:0.8em;" title="Documentation">
@@ -251,7 +256,8 @@ export default {
   computed: {
     ...mapGetters("playgroundStore", ["userDetails", "getSelectedOrg"]),
     ...mapState({
-      showMainSideNavBar: state =>  state.mainStore.showMainSideNavBar
+      showMainSideNavBar: state =>  state.mainStore.showMainSideNavBar,
+      selectedDashboard: state => state.globalStore.selectedDashboard,
     }),
     selectedOrg() {
       return this.getSelectedOrg;
@@ -259,6 +265,7 @@ export default {
     showSideNavbar() {
       return this.$store.state.playgroundStore.showSideNavbar && this.showMainSideNavBar
     },
+
   },
   data() {
     return {
