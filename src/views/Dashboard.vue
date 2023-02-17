@@ -1,92 +1,81 @@
-<style scoped>
-.addmargin {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.vue-logo-back {
-  background-color: black;
-}
-
-.logo {
-  width: 144px;
-}
-
-.fullbody {
-  width: 100%;
-}
-.floatLeft{
-  float: left;
-}
-
-.floatRight{
-  float: right;
-}
-
-.noBullet{
-  list-style-type:none;
-}
-
-.title {
-  color: grey;
-  font-size: 18px;
-}
-
-
-</style>
 <template>
-   <div class="home">
-     <h2>Welcome, {{user.name}} !</h2>
-     <Metrics/>
-     <org-sidebar/>
+   <div class="">
+        <div class="row">
+            <div class="col-md-12">
+            <h2 class="mb-6 text-2xl">Hi {{user.name}}, Welcome to Developer Dashboard!</h2>
+            </div>
+        </div>
+     <div class="row">
+       <div class="col-md-4">
+           <div class="card" >
+               <div class="card-body">
+                   <h2 class="card-title"><i class="fa fa-gamepad" style="font-size:36px;"></i></h2>
+                   <p class="card-text">
+                    Experience Self Sovereign Identity (SSI) concepts firsthand by using our Entity Studio playground.</p>
+                   <a href="#" @click.prevent="gotosubpage('playgroundDashboard')" class="btn btn-outline-primary rounded-pill">SSI Playground <i class="fa fa-arrow-right"></i></a>
+               </div>
+           </div>
+       </div>
+       <div class="col-md-4">
+           <div class="card" >
+               <div class="card-body">
+                   <h5 class="card-title"><i class="fa fa-graduation-cap" style="font-size:36px;"></i></h5>
+                   <p class="card-text">
+                    Dive into our API documentation to create innovative identity products on our infrastructure.
+                    </p>
+                   <a href="https://docs.hypersign.id/entity-studio/api-doc" target="_blank" class="btn btn-outline-primary rounded-pill">API Documentation <i class="fa fa-arrow-right"></i></a>
+               </div>
+           </div>
+       </div>
+
+       <div class="col-md-4">
+           <div class="card" >
+               <div class="card-body">
+                   <h5 class="card-title">
+                        <i class="fa fa-code" style="font-size:36px;"></i>                    
+                    </h5>
+                   <p class="card-text">Register your app on Entity Dashboard and get a head start with our SSI APIs</p>
+                   <a :href="`${$config.apiServer.host}/api`" target="_blank" class="btn btn-outline-primary rounded-pill">API Playground <i class="fa fa-arrow-right"></i></a>
+               </div>
+           </div>
+       </div>
+     </div>
+     <div class="row">
+        <div class="col-md-12">
+            <apps />
+        </div>
+     </div>
    </div>
 </template>
 
 
 <script>
-import Dashboard from '@/components/Dashboard.vue'
-import Metrics from '@/components/Metrics.vue'
-import OrgSidebar from './OrgSidebar.vue';
-import EventBus from '../eventbus'
+import Apps from './Apps.vue';
+import {  mapMutations  } from 'vuex';
+
 export default {
-  name: "PanelPage",
+  name: "dashboard",
   components: { 
-    Dashboard,
-    Metrics,
-    OrgSidebar,
+   Apps,
   },
   data() {
     return {
-      appList: [],
-      user: {},
-      appName: "",
-      authToken: localStorage.getItem('authToken')
+       user: {},
+       authToken: localStorage.getItem('authToken')
     };
   },
   created() {
-    const usrStr = localStorage.getItem('user')
-    this.user = JSON.parse(usrStr);
-    this.$store.commit('updateSideNavStatus',false)
-    this.$store.commit('selectAnOrg', '')
-    localStorage.removeItem('selectedOrg')
-    EventBus.$emit('closeSideNav')
+   const usrStr = localStorage.getItem('user')
+   this.user = JSON.parse(usrStr);
+   this.setSelectedDashboard(this.$config.DashboardTypes.DeveloperDashboard)
   },
   methods: {
-    gotosubpage: id => {
-      this.$router.push(`${id}`);
-    },
-    logout(){
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('user')
-      localStorage.removeItem("credentials")
-      localStorage.removeItem("userData")
-      
-      if(this.$route.params.nextUrl != null){
-                    this.$router.push(this.$route.params.nextUrl)
-                }else{
-        this.$router.push('/login')
-                }
-    },
+    ...mapMutations('globalStore', ['setSelectedDashboard']),
+   gotosubpage(name){
+       this.$router.push({ name })
+   },
+
+    
   },
 };
 </script>

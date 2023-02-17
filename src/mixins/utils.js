@@ -1,6 +1,19 @@
 export default {
     methods: {
-        copyToClip(textToCopy,contentType) {
+        getHeader(authToken = ''){
+            if(authToken != ''){
+                // TODO: Remove this userId later
+                return {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${authToken}`,
+                }    
+            } else {
+                return {
+                    "Content-Type": "application/json",
+                }
+            }
+        },
+        copyToClip(textToCopy,contentType, isapiKeySecret = false) {
             if (textToCopy) {
                 navigator.clipboard
                     .writeText(textToCopy)

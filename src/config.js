@@ -18,7 +18,7 @@ const config = {
     },
     nodeServer: {
         BASE_URL: process.env.VUE_APP_NODE_SERVER_BASE_URL,
-        BASE_URL_REST: process.env.VUE_APP_NODE_SERVER_BASE_URL_REST || 'https://jagrat.hypersign.id/rest/',
+        BASE_URL_REST: process.env.VUE_APP_NODE_SERVER_BASE_URL_REST || 'https://api.jagrat.hypersign.id/',
         SCHEMA_GET_REST:process.env.VUE_APP_SCHEMA_GET_EP_REST || 'hypersign-protocol/hidnode/ssi/schema/',
         NETWORK_STATUS_EP: EnvProvider.value('NODE_SERVER_NETWORK_STATUS_EP') || "net_info",
         SCHEMA_LIST_EP: EnvProvider.value('NODE_SERVER_SCHEMA_LIST_EP') || "api/schema/list",
@@ -33,8 +33,14 @@ const config = {
     app: {
         name: EnvProvider.value('TITLE') || "Hypersign Studio",
         decription: EnvProvider.value('DESC'),
-        version: EnvProvider.value('VERSION') || "v1.0.0"
+        version: EnvProvider.value('VERSION') || "v1.0.0",
+        buttonBgColor: process.env.VUE_APP_BTN_BACKGROUND || "#f1b319",
+        buttonTextColor: process.env.VUE_APP_BTN_TXT_COLOR || "black",
     },
+    apiServer: {
+        host: process.env.VUE_APP_STUDIO_API_SERVER_HOST || 'http://localhost:3001',
+        basePath: '/api/v1',
+    }
 
 }
 const websocketUrl= process.env.VUE_APP_STUDIO_SERVER_BASE_WS
@@ -49,4 +55,11 @@ config['appName']='Studio'
 config['hypersignSDK'] = hypersignSDK
 config['websocketUrl']=websocketUrl
 config['webWalletAddress']=webWalletAddress
+
+const DashboardTypes =  Object.freeze({
+    SSIPlayground: "SSIPlayground",
+    DeveloperDashboard: "DeveloperDashboard",
+})
+
+config['DashboardTypes'] = DashboardTypes
 export default config

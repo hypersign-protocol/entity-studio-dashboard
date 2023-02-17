@@ -1,0 +1,27 @@
+name: Studio Frontend Build Workflow
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout into repo
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Install packages
+        run: npm i
+
+      - name: Set the VUE_APP_TITLE in .env (Needed for build)
+        run: echo 'VUE_APP_TITLE=""' > .env
+
+      - name: Build
+        run: npm run build

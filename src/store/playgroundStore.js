@@ -1,10 +1,8 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
 import config from '../config'
 import UtilsMixin from '../mixins/utils.js'
-Vue.use(Vuex)
 
-export default new Vuex.Store({
+const playgroundStore = {
+    namespaced: true,
     mixin:[UtilsMixin],
     state: {
         containerShift:false,
@@ -80,6 +78,13 @@ export default new Vuex.Store({
             // filtering empty object
             schemaIdnames = schemaIdnames.filter(x => x)
             schemaIdnames.unshift({ value: null, text: "Please select a schema" })
+            return schemaIdnames;
+        },
+        listOfPresentationTemplateOptions(state) {
+            let schemaIdnames = state.templateList.map(x => {
+                return { value: x._id, text: `${x.name} (${x._id})`  }
+            })
+            schemaIdnames.unshift({ value: null, text: "Please select a Presentation Template" })
             return schemaIdnames;
         }
     },
@@ -211,6 +216,10 @@ export default new Vuex.Store({
         }
     },
     actions: {
+        insertAnOrg({commit}, payload){
+            commit('insertAnOrg', payload); 
+        },
+
         insertAschema({ commit }, payload) {
             const { schemaId } = payload;
             if (schemaId) {
@@ -242,14 +251,14 @@ export default new Vuex.Store({
             }
         },
 
-        fetchAllOrgDataOnOrgSelect() {
-            this.authToken = localStorage.getItem('authToken');
+        fetchAllOrgDataOnOrgSelect({ commit, getters, state,dispatch }) {
+            state.authToken = localStorage.getItem('authToken');
             // fetch all templete   
             {
-                let url = `${config.studioServer.BASE_URL}api/v1/presentation/template/org/${this.getters.getSelectedOrg._id}/`
+                let url = `${config.studioServer.BASE_URL}api/v1/presentation/template/org/${getters.getSelectedOrg._id}/`
                 const headers = {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${this.authToken}`
+                    "Authorization": `Bearer ${state.authToken}`
 
                 }
                 fetch(url, {
@@ -257,24 +266,24 @@ export default new Vuex.Store({
                 }).then(response => response.json()).then(json => {
                     
                     if (json.data.length!==0) {
-                        this.state.templateList=[]
+                        state.templateList=[]
                         json.data.forEach(template => {
-                            this.commit('insertApresentationTemplate', template)
+                            commit('insertApresentationTemplate', template)
                         })
                     }else{
-                        this.state.templateList=[]
+                        state.templateList=[]
                     }
                 })
             }
             // fetch all schemas
             {
-                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${this.getters.getSelectedOrg._id}/?page=1&limit=10`
+                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${getters.getSelectedOrg._id}/?page=1&limit=10`
 
                 const options = {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${this.authToken}`
+                        "Authorization": `Bearer ${state.authToken}`
                     }
                 }
 
@@ -284,15 +293,14 @@ export default new Vuex.Store({
                 }).then(response => response.json()).then(json => {       
 
                     if (json && json.data.schemaList.length!==0) {
-                        this.state.schemaList = []
+                        state.schemaList = []
                         json.data.schemaList.forEach(schema => {
-
-                            this.dispatch('insertAschema', schema)
+                            dispatch('insertAschema', schema)
                         })
                     } else {
                        
 
-                        this.state.schemaList = []
+                        state.schemaList = []
                     }
                 })
 
@@ -301,24 +309,24 @@ export default new Vuex.Store({
 
             //fetct all credentials
             {
-                const url = `${config.studioServer.BASE_URL}${config.studioServer.CRED_LIST_EP}/${this.getters.getSelectedOrg._id}`;
+                const url = `${config.studioServer.BASE_URL}${config.studioServer.CRED_LIST_EP}/${getters.getSelectedOrg._id}`;
                 const options = {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${this.authToken}`
+                        "Authorization": `Bearer ${state.authToken}`
                     }
                 }
                 fetch(url, {
                     headers: options.headers
                 }).then(response => response.json()).then(json => {
                     if (json && json.data.credList.length!==0) {
-                        this.state.vcList = []
+                        state.vcList = []
                         json.data.credList.forEach(credential => {
-                            this.dispatch('insertAcredential', credential)
+                            dispatch('insertAcredential', credential)
                         })
                     }else{
-                        this.state.vcList = []
+                        state.vcList = []
                     }
                     
                 })
@@ -375,4 +383,7 @@ export default new Vuex.Store({
 
 
     }
-})
+}
+
+export default playgroundStore;
+

@@ -55,9 +55,8 @@ export function isValidDid(str) {
     return false
   } else if(! (str.length==3 || str.length==4)) {
     return false
-  }else if (!((str[str.length - 1]).length === 45)) {
-    return false
-  } else {
+  }
+   else {
     return true
   }
 }

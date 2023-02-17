@@ -1,15 +1,20 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import PKIIdLogin from './views/PKIIdLogin.vue'
-import Register from './views/Register.vue'
-import config from './config'
-import Credential from './views/Credential.vue'
-import Presentation from './views/Presentation.vue'
-import Dashboard from './views/Dashboard.vue'
 import fetch from 'node-fetch'
-import Schema from './views/Schema.vue'
-import Org from './views/Org.vue'
-import store from './store/store'
+import config from './config'
+import store from './store'
+
+import PKIIdLogin from './views/PKIIdLogin.vue'
+
+import MainDashboard from './views/Dashboard.vue'
+
+import Credential from './views/playground/Credential.vue'
+import Presentation from './views/playground/Presentation.vue'
+import Dashboard from './views/playground/Dashboard.vue'
+import Schema from './views/playground/Schema.vue'
+import Org from './views/playground/Org.vue'
+import VerifyPresentation from './views/playground/VerifyPresentation.vue'
+
 Vue.use(Router)
 
 const router =  new Router({
@@ -21,12 +26,17 @@ const router =  new Router({
       requiresAuth:true,
     },
     {
+      path: '/studio',
+      redirect: '/studio/dashboard',
+      requiresAuth:true
+    },
+    {
       path: '/login',
       redirect: '/studio/login'
     },
     {
-      path: '/studio',
-      redirect: '/studio/dashboard',
+      path: '/studio/playground',
+      redirect: '/studio/playground/dashboard',
       requiresAuth:true
     },
     {
@@ -35,8 +45,8 @@ const router =  new Router({
       component: PKIIdLogin
     },
     {
-      path: '/studio/dashboard',
-      name: 'dashboard',
+      path: '/studio/playground/dashboard',
+      name: 'playgroundDashboard',
       component: Dashboard,
       meta: {
         requiresAuth: true,
@@ -44,29 +54,16 @@ const router =  new Router({
       } 
     },
     {
-      path: '/studio/org',
-      name: 'Org',
+      path: '/studio/playground/org',
+      name: 'playgroundOrg',
       component: Org,
       meta: {
         requiresAuth: true
       } 
     },
     {
-      path: '/studio/register',
-      name: 'register',
-      component: Register
-    },
-    // {
-    //   path: '/studio/profile',
-    //   name: 'profile',
-    //   component: Profile,
-    //   meta: {
-    //     requiresAuth: true
-    //   } 
-    // },
-    {
-      path: '/studio/schema',
-      name: 'schema',
+      path: '/studio/playground/schema',
+      name: 'playgroundSchema',
       component: Schema,
       beforeEnter:guardRouteIfOrgNotSelected,
       meta: {
@@ -74,17 +71,9 @@ const router =  new Router({
         title: `${config.app.name} - Schema`
            }
     },
-    // {
-    //   path: '/studio/apps/:appId',
-    //   name: 'appdetails',
-    //   component: AppDetails,
-    //   meta: {
-    //     requiresAuth: true
-    //   } 
-    // },
     {
-      path: '/studio/credential',
-      name: 'credential',
+      path: '/studio/playground/credential',
+      name: 'playgroundCredential',
       component: Credential,
       beforeEnter:guardRouteIfOrgNotSelected,
       meta: {
@@ -93,8 +82,8 @@ const router =  new Router({
       } 
     },
     {
-      path: '/studio/presentation',
-      name: 'presentation',
+      path: '/studio/playground/presentation',
+      name: 'playgroundPresentation',
       component: Presentation,
       beforeEnter:guardRouteIfOrgNotSelected,
       meta: {
@@ -102,24 +91,35 @@ const router =  new Router({
          title: `${config.app.name} - Presentation`
       } 
     },
-      {
-        path: "/404",
-        name: "PageNotFound",
+    {
+      path: '/studio/playground/presentation/verify',
+      name: 'playgroundVerifyPresentation',
+      component: VerifyPresentation,
+      beforeEnter:guardRouteIfOrgNotSelected,
+      meta: {
+        requiresAuth: true,
+         title: `${config.app.name} - VerifyPresentation`
+      } 
+    },
+    {
+      path: '/studio/dashboard',
+      name: 'dashboard',
+      component: MainDashboard,
+      meta: {
+        requiresAuth: true,
+           title: `${config.app.name} - Dashboard`
+      } 
+    },
+    {
+      path: "/404",
+      name: "PageNotFound",
 
-        component: () =>
-          import ('./views/404.vue'),
-        meta: {
-          title: `${config.app.name} - 404`
-        }
-      },
-    // {
-    //   path: '/studio/apps/:appId/issue',
-    //   name: 'issueCredential',
-    //   component: IssueCredential,
-    //   meta: {
-    //     requiresAuth: true
-    //   } 
-    // }
+      component: () =>
+        import ('./views/404.vue'),
+      meta: {
+        title: `${config.app.name} - 404`
+      }
+    },
   ]
 })
 function guardRouteIfOrgNotSelected(to, from, next)
@@ -163,7 +163,7 @@ router.beforeEach((to, from, next) => {
           })  
         }else{
           localStorage.setItem("user", JSON.stringify(json.message));
-          store.commit('addUserDetailsToProfile',json.message)
+          store.commit('playgroundStore/addUserDetailsToProfile',json.message)
           next()
         }
       })

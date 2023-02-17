@@ -30,6 +30,19 @@
   cursor: pointer;
 }
 </style>
+
+<style scoped>
+.multiselect__tags {
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+  background: #fff;
+  font-weight: 400;
+}
+
+.multiselect__tag {
+  background:var(--button-bg-color)
+}
+</style>
 <template>
   <div :class="isContainerShift ?'homeShift':'home'">
     <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>
@@ -86,12 +99,28 @@
                     <div class="form-group">
                       <tool-tip infoMessage="Select Schema to create template"></tool-tip>
                       <label for="forselectschema"><strong>Select Schema<span style="color: red">*</span>:</strong></label>                      
-                      <hf-select-drop-down
+                      <!-- <hf-select-drop-down
                       :options="selectOptions"
                        @selected="e =>{OnSchemaSelectDropDownChange(e)}"
-                      ></hf-select-drop-down>
+                      ></hf-select-drop-down> -->
+
+
+                      <multiselect
+                        v-model="selectedSchemIdsInMultiSelect"
+                        placeholder="Search or select schema (s)"
+                        label="text"
+                        track-by="value"
+                        :options="selectOptions"
+                        :multiple="true"
+                        :taggable="false"
+                        :close-on-select="false"
+                        :clear-on-select="false"
+                        @input="onInputTag"
+                      >
+                      </multiselect>
+
                       <div v-if="selectOptions.length === 1">
-                      <span class="goschema" @click="goToSchema()">Create Schema</span>                      
+                      <span class="goschema" @click="gotosubpage('playgroundSchema')">Create Schema</span>                      
                       </div>
                     </div>              
                     <div class="form-group">
@@ -143,15 +172,15 @@
               <th>Template Id </th>        
               <th>Name</th>
               <!-- <th>Issuer DID</th> -->
-              <th>Schema Id</th>
-              <th>Reason</th>
-              <th>Call Back URI</th>
+              <th>Schema Id (s)</th>
+              <!-- <th>Reason</th> -->
+              <th>CallBack Url</th>
               <th></th>
             </tr>
           </thead>
 
           <tbody>
-            <tr v-for="row in templateList" :key="row">
+            <tr v-for="row in templateList" :key="row._id">
               <td class="align-middle">
                 <div class="align-middle" style="display:flex;">
                 <span class="mr-1">{{row._id}}</span>
@@ -165,15 +194,27 @@
               <td class="align-middle">{{row.name}}</td>
               <!-- <td>{{row.issuerDid.toString()}}</td> -->
               <td class="align-middle">
-                 <a :href="`${$config.explorer.BASE_URL}schemas/${row.schemaId}`" target="_blank">{{ shorten(row.schemaId)}}
-                </a>
-                <i class="far fa-copy"
-                style="cursor:pointer;"
-                title="Click to copy Schema Id"
-                @click="copyToClip(row.schemaId,'Schema Id')"
-                ></i>
+                <span v-for="eachschema in row.schemaId" v-if="Array.isArray(row.schemaId)">
+                  <a :href="`${$config.explorer.BASE_URL}schemas/${eachschema}`" target="_blank">{{ shorten(eachschema)}}
+                  </a>
+                  <i class="far fa-copy"
+                  style="cursor:pointer;"
+                  title="Click to copy Schema Id"
+                  @click="copyToClip(eachschema,'Schema Id')"
+                  ></i> <br>
+                </span>
+                <span v-else>
+                  <a :href="`${$config.explorer.BASE_URL}schemas/${row.schemaId}`" target="_blank">{{ shorten(row.schemaId)}}
+                  </a>
+                  <i class="far fa-copy"
+                  style="cursor:pointer;"
+                  title="Click to copy Schema Id"
+                  @click="copyToClip(row.schemaId,'Schema Id')"
+                  ></i>
+                </span>
+                  
               </td>
-              <td class="align-middle">{{row.reason}}</td>
+              <!-- <td class="align-middle">{{row.reason}}</td> -->
               <td class="align-middle" :title="row.callbackUrl">{{truncate(row.callbackUrl,40)}}</td>
               <td class="align-middle">
               <div style="display:flex">
@@ -224,41 +265,46 @@
 </template>
 
 <script>
-import HfPopUp from "../components/element/hfPopup.vue"
+import HfPopUp from "../../components/element/hfPopup.vue"
 import fetch from "node-fetch";
-import UtilsMixin from '../mixins/utils';
-import StudioSideBar from "../components/element/StudioSideBar.vue";
-import HfButtons from "../components/element/HfButtons.vue"
-import conf from '../config';
+import UtilsMixin from '../../mixins/utils';
+import StudioSideBar from "../../components/element/StudioSideBar.vue";
+import HfButtons from "../../components/element/HfButtons.vue"
+import conf from '../../config';
 const { hypersignSDK } = conf;
 import QrcodeVue from "qrcode.vue";
 // import Info from '@/components/Info.vue'
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
-import HfSelectDropDown from "../components/element/HfSelectDropDown.vue"
-import EventBus from "../eventbus"
-import ToolTip from "../components/element/ToolTip.vue"
-import message from '../mixins/messages'
-import { isEmpty, isValidURL, isValidDid } from '../mixins/fieldValidation'
+import HfSelectDropDown from "../../components/element/HfSelectDropDown.vue"
+import EventBus from "../../eventbus"
+import ToolTip from "../../components/element/ToolTip.vue"
+import message from '../../mixins/messages'
+import { isEmpty, isValidURL, isValidDid } from '../../mixins/fieldValidation'
+import { mapGetters, mapState  } from "vuex";
 export default {
   name: "Presentation",
   components: { QrcodeVue , StudioSideBar, HfButtons, Loading, HfSelectDropDown, ToolTip, HfPopUp},
   computed:{
-    templateList(){
-      return this.$store.state.templateList;
-    },
+    ...mapGetters('playgroundStore', ['listOfAllSchemaOptions', 'getSelectedOrg']),
+    ...mapState({
+      templateList: state => state.playgroundStore.templateList,
+      containerShift: state => state.playgroundStore.containerShift,
+      selectedOrgDid: state => state.playgroundStore.selectedOrgDid
+    }),
     selectedOrg(){
-      return this.$store.getters.getSelectedOrg;
+      return this.getSelectedOrg;
     },
     selectOptions(){
-      return this.$store.getters.listOfAllSchemaOptions;
+      return this.listOfAllSchemaOptions;
     },
     isContainerShift() {
-      return this.$store.state.containerShift
+      return this.containerShift
     }
   },
   data() {
     return {
+      selectedSchemIdsInMultiSelect: [],
       isEdit:false,
       deleteId:'',
       maxChar:105,
@@ -323,7 +369,7 @@ export default {
   created() {
     const usrStr = localStorage.getItem("user");
     this.user = JSON.parse(usrStr);
-    this.$store.commit('updateSideNavStatus',true)
+    this.$store.commit('playgroundStore/updateSideNavStatus',true)
     // this.fetchTemplates()
   },
   beforeRouteEnter(to, from, next) {
@@ -332,6 +378,15 @@ export default {
     });
   },
   methods: {
+    onInputTag(){
+      console.log('onInputTag ()  got called')
+      if(this.selectedSchemIdsInMultiSelect.length > 0){
+        console.log('Inside if mapping');  
+        this.presentationTemplate.schemaId = this.selectedSchemIdsInMultiSelect.map(x => x.value)
+      } else {
+        this.presentationTemplate.schemaId = []; 
+      }
+    },  
     charCount(){
       if(this.presentationTemplate.reason.length > this.maxChar) {
         this.remainingCharText = "Exceeded"+" "+this.maxChar+" "+"characters limit"
@@ -341,12 +396,29 @@ export default {
         }
     },
     editTemp(temp) {
+      this.selectedSchemIdsInMultiSelect = []
       this.isEdit = true
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
       this.id = temp._id
       this.presentationTemplate.name = temp.name
       this.presentationTemplate.issuerDid = temp.issuerDid[0]
-      EventBus.$emit("setOption",temp.schemaId)
+      
+      if(Array.isArray(temp.schemaId)){
+        this.presentationTemplate.schemaId = temp.schemaId
+        this.selectOptions.forEach(eachOpt => {
+          if(temp.schemaId.find(x => x == eachOpt.value)){
+            this.selectedSchemIdsInMultiSelect.push(eachOpt)
+          }
+        });
+        
+        
+      } else {
+        this.presentationTemplate.schemaId = [temp.schemaId]
+        
+        const t = this.selectOptions.find(x => x.value === temp.schemaId)
+        this.selectedSchemIdsInMultiSelect.push(t)
+      }
+      
       this.presentationTemplate.reason = temp.reason
       this.charCount()
       this.presentationTemplate.callbackUrl = temp.callbackUrl
@@ -378,10 +450,10 @@ export default {
                 console.log(json.data._id)
                 if(json.data._id){
                   const id = json.data._id
-                  this.$store.commit('deleteTemplate',id)
+                  this.$store.commit('playgroundStore/deleteTemplate',id)
                   this.notifySuccess(`Template with ${id} id deleted successfully`)
                   this.$root.$emit('modal-close')
-                  this.$store.commit('DecreaseOrgTemplateCount','templatesCount')
+                  this.$store.commit('playgroundStore/DecreaseOrgTemplateCount','templatesCount')
                 }          
           } else {
             this.notifyErr('Please enter correct template id')
@@ -394,17 +466,6 @@ export default {
       }
 
     },
-    goToSchema() {
-      this.$router.push('schema')
-    },
-    OnSchemaSelectDropDownChange(event) {
-      if (event) {     
-        this.selected = event
-        this.presentationTemplate.schemaId=this.selected
-      } else {
-        this.schemaId = '';
-      }
-    },
     clearAll() {
       EventBus.$emit("resetOption",this.selected)
       this.presentationTemplate.issuerDid = ''
@@ -416,10 +477,11 @@ export default {
       this.isEdit = false
       this.maxChar=105,
       this.remainingCharText='Remaining 105 characters'
+      this.selectedSchemIdsInMultiSelect = []
     },
     openSlider() {
       this.clearAll()
-      this.presentationTemplate.issuerDid=this.$store.getters.getSelectedOrg.orgDid
+      this.presentationTemplate.issuerDid= this.getSelectedOrg.orgDid
       // this.presentationTemplate.issuerDid = JSON.parse(localStorage.getItem("user")).id
       this.presentationTemplate.domain = this.selectedOrg.domain;
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
@@ -453,8 +515,8 @@ export default {
         })
         .catch((e) => this.notifyErr(`Error: ${e.message}`));
     },
-    gotosubpage: (id) => {
-      this.$router.push(`${id}`);
+    gotosubpage (name){
+      this.$router.push({ name });
     },
     addBlankAttrBox() {
       if (this.attributeName != " ") {
@@ -507,7 +569,7 @@ export default {
           return this.notifyErr(message.PRESENTATION.ISSUER_DID_EMPTY)
         } else if(!isValidDid(this.presentationTemplate.issuerDid)){
           return this.notifyErr(message.CREDENTIAL.INVALID_DID)
-        } else if (isEmpty(this.presentationTemplate.schemaId)) {
+        } else if (this.presentationTemplate.schemaId.length <= 0) {
           return this.notifyErr(message.CREDENTIAL.SELECT_SCHEMA)
         } else if (isEmpty(this.presentationTemplate.reason)) {
           return this.notifyErr(message.PRESENTATION.REASON)
@@ -533,7 +595,7 @@ export default {
           reason: this.presentationTemplate.reason,
           // required: this.presentationTemplate.required,
           callbackUrl: this.presentationTemplate.callbackUrl,
-          orgDid:this.$store.state.selectedOrgDid
+          orgDid:this.selectedOrgDid
         }
         if(this.isEdit === true) {
           body = {
@@ -545,7 +607,7 @@ export default {
           reason: this.presentationTemplate.reason,
           // required: this.presentationTemplate.required,
           callbackUrl: this.presentationTemplate.callbackUrl,
-          orgDid:this.$store.state.selectedOrgDid
+          orgDid:this.selectedOrgDid
         }
         method = "PUT"
         }
@@ -556,12 +618,12 @@ export default {
           headers: headers,
         }).then((res) => res.json()).then(json => {
           if(this.isEdit === true) {
-            this.$store.commit('updateTemplate',json.data)
+            this.$store.commit('playgroundStore/updateTemplate',json.data)
             this.notifySuccess('Template Successfully updated')
           } else{
-            this.$store.commit('insertApresentationTemplate', json.data.presentationTemplateObj)
+            this.$store.commit('playgroundStore/insertApresentationTemplate', json.data.presentationTemplateObj)
             this.notifySuccess('Template Successfully created')
-            this.$store.commit('increaseOrgDataCount','templatesCount')
+            this.$store.commit('playgroundStore/increaseOrgDataCount','templatesCount')
           }
           // this.openSlider();
           this.clearAll()
