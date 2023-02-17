@@ -1,4 +1,4 @@
-name: Studio Frontend Build Worflow
+name: Studio Frontend Build Workflow
 
 on:
   pull_request:
