@@ -37,6 +37,10 @@ const config = {
         buttonBgColor: process.env.VUE_APP_BTN_BACKGROUND || "#f1b319",
         buttonTextColor: process.env.VUE_APP_BTN_TXT_COLOR || "black",
     },
+    apiServer: {
+        host: process.env.VUE_APP_STUDIO_API_SERVER_HOST || 'http://localhost:3001',
+        basePath: '/api/v1',
+    }
 
 }
 const websocketUrl= process.env.VUE_APP_STUDIO_SERVER_BASE_WS
@@ -51,4 +55,11 @@ config['appName']='Studio'
 config['hypersignSDK'] = hypersignSDK
 config['websocketUrl']=websocketUrl
 config['webWalletAddress']=webWalletAddress
+
+const DashboardTypes =  Object.freeze({
+    SSIPlayground: "SSIPlayground",
+    DeveloperDashboard: "DeveloperDashboard",
+})
+
+config['DashboardTypes'] = DashboardTypes
 export default config

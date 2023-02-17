@@ -5,6 +5,17 @@ const ORGANIZATION = {
     INVALID_DOMAIN_NAME: "Enter valid Domain name"
 }
 
+const APPLICATION = {
+    INVALID_APP_NAME: "Please enter a valid application name",
+    APP_CREATE_SUCCESS: "App created successfully",    
+    APP_UPDATE_SUCCESS: "App updated successfully",
+    APP_NEW_SECRET_KEY_SUCCESS: "API secret key is generated successfully",
+    CHAR_EXCEED_APP_NAME: "App name cannot be greater than 50 characters",
+    CHAR_LESS_APP_NAME: "App name cannot be less than 5 characters",
+    CHAR_EXCEED_APP_DES: "Description cannot be greater than 100 characters",
+    CHAR_LESS_APP_DES: "Description can not be less than 20 characters",
+}
+
 const SCHEMA = {
     DUPLICATE_ATTRIBUTE: "Duplicate attribute name not allowed",
     PROTECTED_TERM: "is protected term you can't use it",
@@ -39,5 +50,6 @@ module.exports = {
     ORGANIZATION,
     SCHEMA,
     CREDENTIAL,
-    PRESENTATION
+    PRESENTATION,
+    APPLICATION
 }

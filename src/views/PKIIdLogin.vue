@@ -96,9 +96,9 @@ h5 span {
 }
 
 .button-theme {
- background-color: #f1b319;
-  border-collapse: #f1b319;
-  color: black;
+background-color: #905ab0;
+  border-collapse: #905ab0;
+  color: #fff;
   border: 0;
 }
 
@@ -294,7 +294,7 @@ export default {
         text: msg,
       });
     },
-    gotosubpage: (id) => {
+    gotosubpage(id){
       this.$router.push(`${id}`);
     },
     ///////////////////////////////////////////////////////////////////// Commenting below code since no use//////////////////////////////

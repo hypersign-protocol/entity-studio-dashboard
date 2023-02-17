@@ -322,33 +322,36 @@ h5 span {
 <script>
 import fetch from "node-fetch";
 // import Info from '@/components/Info.vue'
-import UtilsMixin from '../mixins/utils';
-import HfPopUp from "../components/element/hfPopup.vue";
+import UtilsMixin from '../../mixins/utils';
+import HfPopUp from "../../components/element/hfPopup.vue";
 import Loading from "vue-loading-overlay";
-import StudioSideBar from "../components/element/StudioSideBar.vue";
-import HfButtons from "../components/element/HfButtons.vue"
-import HfSelectDropDown from "../components/element/HfSelectDropDown.vue"
-import EventBus from "../eventbus"
-import ToolTip from "../components/element/ToolTip.vue"
-import { isEmpty, isValidDid, isValidURL, isFloat } from '../mixins/fieldValidation'
-import message from '../mixins/messages'
+import StudioSideBar from "../../components/element/StudioSideBar.vue";
+import HfButtons from "../../components/element/HfButtons.vue"
+import HfSelectDropDown from "../../components/element/HfSelectDropDown.vue"
+import EventBus from "../../eventbus"
+import ToolTip from "../../components/element/ToolTip.vue"
+import { isEmpty, isValidDid, isValidURL, isFloat } from '../../mixins/fieldValidation'
+import message from '../../mixins/messages'
 import Datepicker from 'vuejs-datetimepicker'
 import VueQr from "vue-qr"
+import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
 export default {
   name: "Credential",
   components: { HfPopUp, Loading, StudioSideBar, HfButtons, HfSelectDropDown, ToolTip, Datepicker, VueQr },
   computed: {
-    vcList(){
-      return this.$store.getters.vcList;
-    },
+    ...mapGetters('playgroundStore', ['vcList', 'listOfAllSchemaOptions', 'getSelectedOrg', 'findSchemaBySchemaID']),
+    ...mapState({
+      containerShift: state => state.playgroundStore.containerShift,
+      selectedOrgDid: state => state.playgroundStore.selectedOrgDid
+    }),
     selectOptions(){
-      return this.$store.getters.listOfAllSchemaOptions;
+      return this.listOfAllSchemaOptions;
     },
     selectedOrg(){
-      return this.$store.getters.getSelectedOrg;
+      return this.getSelectedOrg;
     },
     isContainerShift() {
-      return this.$store.state.containerShift
+      return this.containerShift
     }
   },
   data() {
@@ -414,7 +417,7 @@ export default {
   created() {
     const usrStr = localStorage.getItem("user");
     this.user = JSON.parse(usrStr);
-    this.$store.commit('updateSideNavStatus',true)
+    this.updateSideNavStatus(true)
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -422,6 +425,8 @@ export default {
     });
   },
   methods: {
+    ...mapActions('playgroundStore', ['insertAcredential']),
+    ...mapMutations('playgroundStore', ['increaseOrgDataCount', 'updateSideNavStatus']),
     noEdit(row){
       if(row.credStatus.claim.currentStatus === 'Revoked' || row.credStatus.claim.currentStatus === 'Expired'){
         return false
@@ -556,23 +561,23 @@ export default {
       return chars[0]
     },
     goToSchema() {
-      this.$router.push('schema')
+      this.$router.push({name : 'playgroundSchema'})
     },
     openSlider() {
       this.isEdit = false
       
       this.clearAll();
-      this.issuerDid=this.$store.getters.getSelectedOrg.orgDid      
+      this.issuerDid=this.orgDid      
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
     },
-    ssePopulateCredStatus(id,store){
+    ssePopulateCredStatus(id, store){
       const sse = new EventSource(`${this.$config.studioServer.CRED_SSE}${id}`);
       sse.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.status === "Registered" || data.status === "Failed" || data.status === "Live" || data.status === "Suspended" || data.status === "Revoked") {
           
           sse.close();
-          store.dispatch("insertAcredential", data)
+          store.dispatch("playgroundStore/insertAcredential", data)
         }
         // store.commit("updateCredStatus", data);
       };
@@ -631,7 +636,7 @@ export default {
       this.selected = event;
       if (event) {
         this.issueCredAttributes = [];        
-        const selectedSchema = this.$store.getters.findSchemaBySchemaID(event);
+        const selectedSchema = this.findSchemaBySchemaID(event);
         const schemaMap =  selectedSchema.schemaDetails.schema.properties;
         const requiredFields = selectedSchema.schemaDetails.schema.required  
         for (const e of Object.entries(schemaMap)) {
@@ -812,7 +817,7 @@ export default {
         this.isLoading = true
         const fields = attributeMap
         const schemaId = this.selected
-        const issuerDid = this.$store.getters.getSelectedOrg.orgDid   
+        const issuerDid = this.getSelectedOrg.orgDid   
         const subjectDid = this.holderDid
         const expirationDate = this.expiryDateTime
         const url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.CRED_ISSUE_EP}`;
@@ -826,7 +831,7 @@ export default {
           issuerDid,
           subjectDid,
           expirationDate,
-          orgDid:this.$store.state.selectedOrgDid
+          orgDid: this.selectedOrgDid
         };
         this.QrData.data = creadData
         fetch(url, {
@@ -838,12 +843,12 @@ export default {
             const { QR_DATA, creadRecord } = json.data
             if (json.message === 'success') {
               this.notifySuccess("Credential creation initiated. Please approve the trancation from your wallet")
-              this.$store.dispatch("insertAcredential", creadRecord)
+              this.insertAcredential(creadRecord)
               const URL = `${this.$config.webWalletAddress}/deeplink?url=${JSON.stringify(QR_DATA)}`
               this.openWallet(URL)
               this.ssePopulateCredStatus(creadRecord._id, this.$store)
               this.openSlider();
-              this.$store.commit('increaseOrgDataCount','credentialsCount')
+              this.increaseOrgDataCount('credentialsCount')
            } else {
              console.log(json)
              throw new Error(`${json.message}`)

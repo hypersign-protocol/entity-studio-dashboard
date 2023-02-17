@@ -10,9 +10,9 @@
 }
 
 .button-theme{
-    background-color: #f1b319;
-    border-collapse:  #f1b319;
-    color: black;
+    background-color: #905ab0;
+    border-collapse: #905ab0;
+    color: #fff;
     border: 0;
 }
 
@@ -33,10 +33,15 @@
     font-size: 1.1em;
     border-radius: 0px 0px 0px 5px;
     color: #212529;
-    background: rgba(241, 179, 25, 0.24);
+    background:#905ab029;
     border:0;
 }
-
+.form-control:focus {
+    border-color:rgba(46, 102, 93, 1) !important;
+}
+.custom-select:focus {
+    border-color: rgba(46, 102, 93, 1) !important;
+}
 .home{
     margin-left: auto;
     margin-right: auto;
@@ -60,4 +65,20 @@ a {
 a:hover {
     color: #212529 ;
     text-decoration: underline ;
+}
+.bg-gradient-primary {
+    /* background-image: linear-gradient(310deg, #5e72e4, #825ee4); */
+}
+:root {
+    --primary: #905ab0 !important;
+    --button-bg-color: #905ab0 !important;
+}
+.btn-outline-primary {
+    color: rgba(76, 105, 100, 1);
+    border-color: rgba(76, 105, 100, 1);
+}
+.btn-outline-primary:hover {
+    color: #fff;
+    background-color: rgba(76, 105, 100, 1);
+    border-color: rgba(76, 105, 100, 1);
 }

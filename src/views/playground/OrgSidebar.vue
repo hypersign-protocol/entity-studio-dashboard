@@ -38,53 +38,49 @@
         </div>
      
         <div class="form-group">
-          <tool-tip infoMessage="Organistaion Controller"></tool-tip>
-          <label for="controller"><strong>Controllers<span style="color: red">*</span>:</strong></label>
-          <div class="selected-media-wrapper d-flex p-2 mb-4" style="overflow-y: auto"
-          v-if="orgStore.controller.length > 0">
-          <div v-for="ctl in orgStore.controller" v-bind:key="ctl">
-            <div :class="
-          flash == ctl
-            ? 'flash card rounded m-1 p-1 d-flex flex-row align-items-center'
-            : 'card rounded m-1 p-1 d-flex flex-row align-items-center pointer'"
-              @click="selectController(ctl)" style="min-width:90px;" :title="ctl">
-              {{ truncate(ctl,15)  }}
-              <span style="color: gray; padding-left: 5px">
-                <i style="" class="fas fa-minus-circle"></i>
-              </span>
+          
+          
+          <div>
+            <tool-tip infoMessage="Organistaion Controller"></tool-tip>
+            <label for="controller"><strong>Controllers<span style="color: red">*</span>:</strong></label>
+          </div>
+          
+          <div class="selected-media-wrapper d-flex p-2 mb-4" style="overflow-y: auto" v-if="orgStore.controller.length > 0">
+            <div v-for="ctl in orgStore.controller" v-bind:key="ctl">
+              <div :class="
+                flash == ctl
+                ? 'flash card rounded m-1 p-1 d-flex flex-row align-items-center'
+                : 'card rounded m-1 p-1 d-flex flex-row align-items-center pointer'"
+                style="min-width:90px; background-color: lightyellow; box-shadow: #80808042 1px 1px 1px 1px; color: grey" :title="ctl">
+                <div>
+                  {{ truncate(ctl,25)  }}
+                </div>
+                <div style="padding: 5px; color: lightcoral;cursor: pointer;" @click="deleteController(ctl)" title="Remove this controller">
+                  <i style="" class="fa fa-trash"></i>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-          <input type="text" class="form-control" id="controllers" v-model="controllerValue"
-            aria-describedby="controllerHelp" placeholder="Controller ids" v-if="isAdd">
+
+
+          
 
           <div v-if="isAdd">
-            <hf-buttons name="Add" @executeAction="addController()"> </hf-buttons>
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" id="controllers" v-model="controllerValue" aria-describedby="controllerHelp" placeholder="did:hid:...8HPRgfJAnph">
+              <div class="input-group-append">
+                <hf-buttons @executeAction="addController()" iconClass="fa fa-plus"></hf-buttons> 
+              </div>
+            </div>
           </div>
-          <div v-else>
-            <hf-buttons name="Delete" @executeAction="deleteController()"> </hf-buttons>
-
-            <hf-buttons name="Cancel" @executeAction="cancelController()"> </hf-buttons>
-
-          </div>
+          <!-- <div v-else>
+            <hf-buttons  @executeAction="deleteController()" iconClass="fa fa-trash" customClass="btn btn-danger"> </hf-buttons>
+            <hf-buttons name="Cancel" @executeAction="cancelController()" customClass="btn btn-link"> </hf-buttons>
+          </div> -->
 
 
 
         </div>
-        <!-- <div class="form-group">
-          <label for="logo"><strong>Logo URL:</strong></label>
-          <input type="text" class="form-control" id="logo" v-model="orgStore.logo" aria-describedby="logoHelp"
-            placeholder="Enter logo URL">
-        </div> -->
-        <!-- <div class="form-group">
-          <label for="region"><strong>Region:</strong></label>
-          <input type="text" class="form-control" id="region" v-model="orgStore.region" aria-describedby="regionHelp"
-            placeholder="Select your region">
-        </div> -->
-        <!-- <div class="form-group">
-                      <label for="region"><strong>Network:</strong></label>
-                      <input type="text" class="form-control" id="region" v-model="orgStore.network" aria-describedby="regionHelp" placeholder="Select your region">
-                  </div> -->
         <hr />
         <div class="form-group" v-if="edit">
           <hf-buttons name="Update" class="btn btn-primary" @executeAction="createAnOrg()"></hf-buttons>
@@ -177,7 +173,7 @@
 }
 
 .eventCard {
-  border-left: 10px solid var(--ds-background-accent-red-subtler, rgba(241, 179, 25, 0.24));
+  border-left: 10px solid var(--ds-background-accent-red-subtler, #905ab029);
 }
 
 .eventCard:hover {
@@ -204,22 +200,24 @@
 </style>
 
 <script>
-import HfPopUp from "../components/element/hfPopup.vue";
-import StudioSideBar from "../components/element/StudioSideBar.vue";
-import UtilsMixin from '../mixins/utils';
-import { isEmpty, isValidURL } from '../mixins/fieldValidation'
+import HfPopUp from "../../components/element/hfPopup.vue";
+import StudioSideBar from "../../components/element/StudioSideBar.vue";
+import UtilsMixin from '../../mixins/utils';
+import { isEmpty, isValidURL } from '../../mixins/fieldValidation'
 import 'vue-loading-overlay/dist/vue-loading.css';
 import validator from 'validator';
 import Loading from "vue-loading-overlay";
-import HfButtons from '../components/element/HfButtons.vue'
-import ToolTip from '../components/element/ToolTip.vue'
-import messages from '../mixins/messages'
+import HfButtons from '../../components/element/HfButtons.vue'
+import ToolTip from '../../components/element/ToolTip.vue'
+import messages from '../../mixins/messages';
+import  { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 export default {
   computed: {
-    orgList() {
-      return this.$store.state.orgList;
-    },
-
+    ...mapState({
+      userProfile: state => state.playgroundStore.userProfile,
+      orgList: state => state.playgroundStore.orgList,
+    }),
+    ...mapGetters("playgroundStore", ["findOrgByOrgID"])
   },
   data() {
     return {
@@ -242,21 +240,22 @@ export default {
       isLoading: true,
       isProcessFinished: true,
       images: {
-        greentick: require("../assets/green-tick.png"),
-        redcross: require("../assets/red-cross.png"),
-        loader: require("../assets/small-loader.gif"),
+        greentick: require("../../assets/green-tick.png"),
+        redcross: require("../../assets/red-cross.png"),
+        loader: require("../../assets/small-loader.gif"),
       }
     }
   },
   components: { HfPopUp, Loading, StudioSideBar, HfButtons, ToolTip },
   methods: {
-
+    ...mapActions('playgroundStore', ['fetchAllOrgDataOnOrgSelect']),
+    ...mapMutations('playgroundStore', ['updateSideNavStatus', 'selectAnOrg']),
     selectController(id) {
       this.isAdd=false
       this.flash = id
     },
-    deleteController(){
-      this.orgStore.controller.splice(this.flash, 1)
+    deleteController(id){
+      this.orgStore.controller.splice(id, 1)
       this.flash = null
       this.isAdd=true
     }
@@ -267,9 +266,28 @@ export default {
     
     },
     addController() {
-      this.isAdd = true
-      this.orgStore.controller.push(this.controllerValue)
-      this.controllerValue = ""
+
+      try{
+        if(!this.controllerValue){
+          throw new Error("Please enter contoller id")
+        }
+
+        if(!this.controllerValue.startsWith("did:hid")){
+          throw new Error("DID method not supported")
+        }
+
+        if(this.orgStore.controller.indexOf(this.controllerValue) >= 0){
+          throw new Error("The controller has already been added")
+        }
+
+        this.isAdd = true
+        this.orgStore.controller.push(this.controllerValue)
+        
+      }catch(e){
+        this.notifyErr(e.message)
+      } finally {
+        this.controllerValue = ""
+      }
     },
     getProfileIcon(name) {
       return "https://avatars.dicebear.com/api/identicon/" + name + ".svg"
@@ -329,25 +347,29 @@ export default {
           });
       }
     },
-    switchOrg(orgDid) {
+    async switchOrg(orgDid) {
       localStorage.setItem('selectedOrg', orgDid)
-      this.$store.commit('updateSideNavStatus', true)
-      this.$store.commit('selectAnOrg', orgDid)
-      this.$router.push('/studio/credential')
-      this.$store.dispatch('fetchAllOrgDataOnOrgSelect')
-      this.$store.commit('shiftContainer', false)
+      this.updateSideNavStatus(true)
+
+      this.selectAnOrg(orgDid)
+      this.$router.push({ name: 'playgroundCredential' })
+    
+      await this.fetchAllOrgDataOnOrgSelect();
+
+      this.$store.commit('playgroundStore/shiftContainer', false)
 
     },
     openSlider() {
       this.edit = false
       this.clearAll();
-      this.orgStore.controller = [this.$store.state.userProfile.details.did]
+      this.orgStore.controller = [this.userProfile.details.did]
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
     },
     editOrg(orgDid) {
       this.edit = true
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
-      Object.assign(this.orgStore, { ...this.$store.getters.findOrgByOrgID(orgDid) })
+      this.controllerValue = "";
+      Object.assign(this.orgStore, { ...this.findOrgByOrgID(orgDid) })
     },
     createAnOrg() {
       if (isEmpty(this.orgStore.name)) {
@@ -400,8 +422,8 @@ export default {
           this.openWallet(URL)
           if (j.error === false) {
             if (!this.edit) {
-              this.$store.commit('insertAnOrg', j.data.org);
-              this.$store.commit('selectAnOrg', j.data.org._id)
+              this.$store.commit('playgroundStore/insertAnOrg', j.data.org);
+              this.$store.commit('playgroundStore/selectAnOrg', j.data.org._id)
               this.isProcessFinished = true;
               this.openSlider();
 
@@ -410,7 +432,7 @@ export default {
             }
 
             if (this.edit === true) {
-              this.$store.commit('updateAnOrg', j.data.org)
+              this.$store.commit('playgroundStore/updateAnOrg', j.data.org)
               this.notifySuccess("Org Edited successfull");
               this.$root.$emit("bv::toggle::collapse", "sidebar-right");
             }
@@ -432,6 +454,7 @@ export default {
       // Close the sideba
     },
     clearAll() {
+      this.controllerValue = ""
       this.orgStore = {
       flash: null,
       isAdd: true,
