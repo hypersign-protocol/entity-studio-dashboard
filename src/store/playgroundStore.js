@@ -9,8 +9,7 @@ const playgroundStore = {
         schemaList: [],
         vcList: [],
         templateList: [],
-        orgList: [
-        ],
+        orgList: [],
         selectedOrgDid: "",
         showSideNavbar:false,
         userProfile:{
@@ -152,19 +151,12 @@ const playgroundStore = {
                 state.schemaList.push(payload);
             } else {
                 console.log('already exists scheme id =' + payload._id);
-                this.commit('updateAschema', payload);
-              //  state.updateAschema(state, payload) 
-
-                
             }
         },
         insertAnOrg(state, payload) {
             if (!state.orgList.find(x => x._id === payload._id)) {
                 state.orgList.push(payload);
-            } else {
-                console.log('already exists scheme id =' + payload._id);
-                this.commit('updateAnOrg', payload);
-            }
+            } 
         },
         updateAschema(state, payload) {
             let index = state.schemaList.findIndex(x => x._id === payload._id);
@@ -197,22 +189,19 @@ const playgroundStore = {
         insertAcredential(state, payload) {
             if (!state.vcList.find(x => x._id === payload._id)) {
                 state.vcList.push(payload);
-            } else {
-                console.log('already exists, updating.. credential id =' + payload._id);
-                this.commit('updateAcredential', payload);
             }
         },
         updateAcredential(state, payload) {
             let index = state.vcList.findIndex(x => x._id === payload._id);
-            Object.assign(state.vcList[index], {...payload});
+            if(index >= 0){
+                Object.assign(state.vcList[index], {...payload});
+            } else {
+                state.vcList.push(payload);
+            }
         },
         updateSidebarStatus(state,payload) {
             state.showSideNavbar = payload
         },
-
-        //     fetchAllOrgDataOnOrgSelect(state, payload) {
-        //         console.log(state , payload);
-        // }
         deleteTemplate(state,payload) {
             let index = state.templateList.findIndex(x => x._id === payload)
             if(index > -1) {
@@ -242,13 +231,13 @@ const playgroundStore = {
                 commit('insertAschema', payload);
             }
         },
-        insertAcredential({ commit }, payload) {
-            console.log('Inside  playgroundStore/insertAcredential action ')
+        
+        upsertAcredentialAction({ commit }, payload) {
             const { vc_id } = payload;
             if (vc_id) {
                 fetch(vc_id + ':').then(response => response.json()).then(json => {
                     Object.assign(payload, { ...json });
-                    commit('insertAcredential', payload);
+                    commit('updateAcredential', payload);
                 }).catch(e => console.log(e))
             } else {
                 commit('insertAcredential', payload);
@@ -274,33 +263,11 @@ const playgroundStore = {
             })
         },
 
-        fetchAllOrgDataOnOrgSelect({ commit, getters, state, dispatch }) {
+        fetchSchemasForOrg({commit, getters, state, dispatch}){
             state.authToken = localStorage.getItem('authToken');
-            // fetch all templete   
+             // fetch all schemas
             {
-                let url = `${config.studioServer.BASE_URL}api/v1/presentation/template/org/${getters.getSelectedOrg._id}/`
-                const headers = {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${state.authToken}`
-
-                }
-                fetch(url, {
-                    headers
-                }).then(response => response.json()).then(json => {
-                    
-                    if (json.data.length!==0) {
-                        state.templateList=[]
-                        json.data.forEach(template => {
-                            commit('insertApresentationTemplate', template)
-                        })
-                    }else{
-                        state.templateList=[]
-                    }
-                })
-            }
-            // fetch all schemas
-            {
-                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${getters.getSelectedOrg._id}/?page=1&limit=10`
+                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${state.selectedOrgDid}/?page=1&limit=10`
 
                 const options = {
                     method: "GET",
@@ -324,10 +291,13 @@ const playgroundStore = {
 
 
             }
+        },
 
+        fetchCredentialsForOrg({commit, getters, state, dispatch}){
+            state.authToken = localStorage.getItem('authToken');
             //fetct all credentials
             {
-                const url = `${config.studioServer.BASE_URL}${config.studioServer.CRED_LIST_EP}/${getters.getSelectedOrg._id}`;
+                const url = `${config.studioServer.BASE_URL}${config.studioServer.CRED_LIST_EP}/${state.selectedOrgDid}`;
                 const options = {
                     method: "GET",
                     headers: {
@@ -341,7 +311,7 @@ const playgroundStore = {
                     if (json && json.data.credList.length!==0) {
                         state.vcList = []
                         json.data.credList.forEach(credential => {
-                            dispatch('insertAcredential', credential)
+                            dispatch('upsertAcredentialAction', credential)
                         })
                     }else{
                         state.vcList = []
@@ -351,55 +321,39 @@ const playgroundStore = {
 
 
             }
+        },
 
+        fetchTemplatesForOrg({commit, getters, state, dispatch}){
+            state.authToken = localStorage.getItem('authToken');
+            // fetch all templete   
+            {
+                let url = `${config.studioServer.BASE_URL}api/v1/presentation/template/org/${state.selectedOrgDid}/`
+                const headers = {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${state.authToken}`
 
+                }
+                fetch(url, {
+                    headers
+                }).then(response => response.json()).then(json => {
+                    
+                    if (json.data.length!==0) {
+                        state.templateList=[]
+                        json.data.forEach(template => {
+                            commit('insertApresentationTemplate', template)
+                        })
+                    }else{
+                        state.templateList=[]
+                    }
+                })
+            }
+        },
 
-
-            //   async getList(type) {
-            //     let url = "";
-            //     let options = {}
-            //     if (type === "SCHEMA") {
-            //       url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${this.selectedOrg._id}/?page=${this.schema_page}&limit=10`
-
-            //       options = {
-            //         method: "GET",
-            //         headers: {
-            //           "Content-Type": "application/json",
-            //           "Authorization": `Bearer ${this.authToken}`
-            //         }
-            //       }
-            //     } else {
-            //       url = `${config.studioServer.BASE_URL}${config.studioServer.CRED_LIST_EP}/${this.selectedOrg._id}`;
-            //       options = {
-            //         method: "GET",
-            //         headers: {
-            //           "Content-Type": "application/json",
-            //           "Authorization": `Bearer ${this.authToken}`
-            //         }
-            //       }
-            //     }
-
-            //     const resp = await fetch(url, options);
-            //     const j = await resp.json();
-            //     if (j && j.status == 500) {
-            //       return this.notifyErr(`Error:  ${j.error}`);
-            //     }
-            //     if (type === "SCHEMA") {
-            //       console.log(j);
-            //       const schemaList = j.schemaList
-            //       schemaList.forEach(schema => {
-            //         this.$store.dispatch('insertAschema', schema)
-            //       })
-            //     } else {
-            //       j.credList.forEach(credential => {
-            //         this.$store.dispatch('insertAcredential', credential)
-            //       })
-            //     }
-            //   },
-
+        fetchAllOrgDataOnOrgSelect({ dispatch }) {        
+            dispatch('fetchSchemasForOrg')
+            dispatch('fetchCredentialsForOrg')
+            dispatch('fetchTemplatesForOrg')
         }
-
-
     }
 }
 

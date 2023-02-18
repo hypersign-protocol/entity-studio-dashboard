@@ -429,6 +429,7 @@ export default {
     const usrStr = localStorage.getItem("user");
     this.user = JSON.parse(usrStr);
     this.updateSideNavStatus(true)
+    this.fetchSchemasForOrg();
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -436,7 +437,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions('playgroundStore', ['upsertAschemaAction']),
+    ...mapActions('playgroundStore', ['upsertAschemaAction', 'fetchSchemasForOrg']),
     ...mapMutations('playgroundStore',['updateSideNavStatus', 'increaseOrgDataCount']),
     handleClick(id) {
       this.flash = id

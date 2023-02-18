@@ -418,6 +418,7 @@ export default {
     const usrStr = localStorage.getItem("user");
     this.user = JSON.parse(usrStr);
     this.updateSideNavStatus(true)
+    this.fetchCredentialsForOrg()
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -425,7 +426,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions('playgroundStore', ['insertAcredential']),
+    ...mapActions('playgroundStore', ['insertAcredential', 'upsertAcredentialAction', 'fetchCredentialsForOrg']),
     ...mapMutations('playgroundStore', ['increaseOrgDataCount', 'updateSideNavStatus']),
     noEdit(row){
       if(row.credStatus.claim.currentStatus === 'Revoked' || row.credStatus.claim.currentStatus === 'Expired'){
@@ -485,14 +486,6 @@ export default {
       this.statusReason = ''
     },
   async updateCredStatus() {
-    //   const QR_DATA = {
-    //   QRType:"ISSUE_CREDENTIAL",
-		// 	data:{
-    //   status: this.selected,
-    //   vcId: this.vcId,
-    //   credentialStatusUrl:`https://api.jagrat.hypersign.id/hypersign-protocol/hidnode/ssi/credential/${this.vcId}`,
-		// 		}
-    // }
     try {
       this.isLoading = true
       //check for status check
@@ -522,9 +515,9 @@ export default {
           "Authorization": `Bearer ${this.authToken}`
         };
         fetch(url,{
-        method: "PUT",
-        headers,
-        body: JSON.stringify({QR_DATA: creadData})        
+          method: "PUT",
+          headers,
+          body: JSON.stringify({QR_DATA: creadData})        
         }).then((res) => res.json())
         .then(json =>{
           const { QR_DATA } = json.data
@@ -533,8 +526,8 @@ export default {
             this.notifySuccess('cred status updated successfully')
             const URL = `${this.$config.webWalletAddress}/deeplink?url=${JSON.stringify(QR_DATA)}`      
             this.openWallet(URL)
-             this.ssePopulateCredStatus(id, this.$store)
-              this.openSlider();
+            this.ssePopulateCredStatus(id, this.$store)
+            this.openSlider();
           }
         })
     } catch (e) {
@@ -553,8 +546,8 @@ export default {
       }
     },
     CapitaliseString(string) {
-    const spaced = string.replace(/([a-z])([A-Z])/g, '$1 $2');
-    return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+      const spaced = string.replace(/([a-z])([A-Z])/g, '$1 $2');
+      return spaced.charAt(0).toUpperCase() + spaced.slice(1);
     },
     removeUrl(url) {
       const chars = url.split('credential/');
@@ -572,15 +565,13 @@ export default {
     },
     ssePopulateCredStatus(id, store){
       const sse = new EventSource(`${this.$config.studioServer.CRED_SSE}${id}`);
+      const that = this;
       sse.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.status === "Registered" || data.status === "Failed" || data.status === "Live" || data.status === "Suspended" || data.status === "Revoked") {
           sse.close();
-          console.log('Before calling playgroundStore/insertAcredential data.status = ' +  data.status)
-          store.dispatch("playgroundStore/insertAcredential", data)
-          console.log('Afteer calling playgroundStore/insertAcredential data.status = ' +  data.status)
+          that.upsertAcredentialAction(data)
         }
-        // store.commit("updateCredStatus", data);
       };
 
       sse.onopen = function (e) {
@@ -844,7 +835,7 @@ export default {
             const { QR_DATA, creadRecord } = json.data
             if (json.message === 'success') {
               this.notifySuccess("Credential creation initiated. Please approve the trancation from your wallet")
-              this.insertAcredential(creadRecord)
+              this.upsertAcredentialAction(creadRecord)
               const URL = `${this.$config.webWalletAddress}/deeplink?url=${JSON.stringify(QR_DATA)}`
               this.openWallet(URL)
               this.ssePopulateCredStatus(creadRecord._id, this.$store)
