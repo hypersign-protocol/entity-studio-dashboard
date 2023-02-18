@@ -303,8 +303,8 @@ export default {
   methods: {
     ...mapActions("mainStore", ["fetchAppsListFromServer"]),
     ...mapMutations("mainStore", ["resetMainStore"]),
-    ...mapActions("playgroundStore", ["insertAnOrg", 'insertAschema', "insertAcredential"]),
-    ...mapMutations("playgroundStore", ["insertApresentationTemplate",  'selectAnOrg', 'shiftContainer', 'resetStore']),
+    ...mapActions("playgroundStore", ['insertAschema', "insertAcredential", "fetchAllOrgsAction"]),
+    ...mapMutations("playgroundStore", ["insertAnOrg", "insertApresentationTemplate",  'selectAnOrg', 'shiftContainer', 'resetStore']),
     route(name){
       this.$router.push({ name })
     },
@@ -387,32 +387,7 @@ export default {
     },
 
     fetchAllOrgs() {
-      // TODO: Get list of orgs 
-      const url = `${this.$config.studioServer.BASE_URL}api/v1/org`
-      const headers = {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${this.authToken}`
-
-      }
-      fetch(url, {
-        headers
-      }).then(response => response.json()).then(json => {
-        const data = json.data.org
-        // TODO: iterate through them
-        if (data) {
-          data.forEach(org => {
-            // Store them in the store.
-            // this.$store.commit('playgroundStore/insertAnOrg', org)
-            this.insertAnOrg(org);
-          })
-        }
-        if (data && data.length > 0) {
-          // this.$store.commit('selectAnOrg', data[0]._id)    //no need to do this
-          // this.$store.dispatch('fetchAllOrgDataOnOrgSelect', data[0]._id)
-        }
-
-
-      })
+      this.fetchAllOrgsAction();
     },
 
     fetchTemplates(selectedOrgDid) {

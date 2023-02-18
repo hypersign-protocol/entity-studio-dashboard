@@ -173,7 +173,11 @@ const playgroundStore = {
         },
         updateAnOrg(state, payload) {
             const orgToUpdateIndex = state.orgList.findIndex(x => x._id === payload._id);
-            Object.assign(state.orgList[orgToUpdateIndex], {...payload});
+            if(orgToUpdateIndex >= 0){
+                Object.assign(state.orgList[orgToUpdateIndex], {...payload});
+            } else {
+                console.error('No org found to update at index = ' + orgToUpdateIndex)
+            }
         },
         insertApresentationTemplate(state, payload) {
             if (!state.templateList.find(x => x._id === payload._id)) {
@@ -252,7 +256,26 @@ const playgroundStore = {
             }
         },
 
-        fetchAllOrgDataOnOrgSelect({ commit, getters, state,dispatch }) {
+        fetchAllOrgsAction({commit}){
+            const authToken =  localStorage.getItem('authToken');
+            const url = `${config.studioServer.BASE_URL}api/v1/org`
+            const headers = {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${authToken}`
+            }
+            fetch(url, {
+                headers
+            }).then(response => response.json()).then(json => {
+                const data = json.data.org
+                if (data) {
+                    data.forEach(org => {
+                        commit('insertAnOrg', org);
+                    })
+                }
+            })
+        },
+
+        fetchAllOrgDataOnOrgSelect({ commit, getters, state, dispatch }) {
             state.authToken = localStorage.getItem('authToken');
             // fetch all templete   
             {

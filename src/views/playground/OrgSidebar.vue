@@ -249,7 +249,7 @@ export default {
   components: { HfPopUp, Loading, StudioSideBar, HfButtons, ToolTip },
   methods: {
     ...mapActions('playgroundStore', ['fetchAllOrgDataOnOrgSelect']),
-    ...mapMutations('playgroundStore', ['updateSideNavStatus', 'selectAnOrg']),
+    ...mapMutations('playgroundStore', ['shiftContainer', 'updateSideNavStatus', 'increaseOrgCount', 'selectAnOrg', 'insertAnOrg','updateAnOrg']),
     selectController(id) {
       this.isAdd=false
       this.flash = id
@@ -297,12 +297,10 @@ export default {
       sse.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.status === "Registered" || data.status === "Failed") {
-
           sse.close();
-          store.commit("insertAnOrg", data)
-          store.commit('increaseOrgCount')
+          this.updateAnOrg(data)
+          this.increaseOrgCount();
         }
-        // store.commit("updateCredStatus", data);
       };
 
       sse.onopen = function (e) {
@@ -356,8 +354,7 @@ export default {
     
       await this.fetchAllOrgDataOnOrgSelect();
 
-      this.$store.commit('playgroundStore/shiftContainer', false)
-
+      this.shiftContainer(false)
     },
     openSlider() {
       this.edit = false
@@ -422,8 +419,8 @@ export default {
           this.openWallet(URL)
           if (j.error === false) {
             if (!this.edit) {
-              this.$store.commit('playgroundStore/insertAnOrg', j.data.org);
-              this.$store.commit('playgroundStore/selectAnOrg', j.data.org._id)
+              this.insertAnOrg(j.data.org)
+              this.selectAnOrg(j.data.org._id)
               this.isProcessFinished = true;
               this.openSlider();
 
@@ -432,7 +429,7 @@ export default {
             }
 
             if (this.edit === true) {
-              this.$store.commit('playgroundStore/updateAnOrg', j.data.org)
+              this.updateAnOrg(j.data.org)
               this.notifySuccess("Org Edited successfull");
               this.$root.$emit("bv::toggle::collapse", "sidebar-right");
             }
@@ -445,13 +442,6 @@ export default {
         }).finally(() => {
           this.isLoading = false;
         })
-
-      // TODO: Implement API to create an organization
-
-      // TODO: Make a POST request to ORG API
-      // Once the ORG is created just store the org in store
-      //this.$store.commit('insertAnOrg', payload);
-      // Close the sideba
     },
     clearAll() {
       this.controllerValue = ""
