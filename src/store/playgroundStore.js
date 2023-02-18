@@ -191,7 +191,7 @@ const playgroundStore = {
             if (!state.vcList.find(x => x._id === payload._id)) {
                 state.vcList.push(payload);
             } else {
-                console.log('already exists credential id =' + payload._id);
+                console.log('already exists, updating.. credential id =' + payload._id);
                 this.commit('updateAcredential', payload);
             }
         },
@@ -240,6 +240,7 @@ const playgroundStore = {
             }
         },
         insertAcredential({ commit }, payload) {
+            console.log('Inside  playgroundStore/insertAcredential action ')
             const { vc_id } = payload;
             if (vc_id) {
                 fetch(vc_id + ':').then(response => response.json()).then(json => {

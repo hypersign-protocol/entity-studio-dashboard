@@ -575,9 +575,10 @@ export default {
       sse.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.status === "Registered" || data.status === "Failed" || data.status === "Live" || data.status === "Suspended" || data.status === "Revoked") {
-          
           sse.close();
+          console.log('Before calling playgroundStore/insertAcredential data.status = ' +  data.status)
           store.dispatch("playgroundStore/insertAcredential", data)
+          console.log('Afteer calling playgroundStore/insertAcredential data.status = ' +  data.status)
         }
         // store.commit("updateCredStatus", data);
       };
