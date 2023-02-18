@@ -168,15 +168,18 @@ const playgroundStore = {
         },
         updateAschema(state, payload) {
             let index = state.schemaList.findIndex(x => x._id === payload._id);
-           Object.assign(state.schemaList[index], {...payload});
-           // state.schemaList[index] = payload;
+            if(index >= 0){
+                Object.assign(state.schemaList[index], {...payload});
+            } else {
+                state.schemaList.push(payload);
+            }
         },
         updateAnOrg(state, payload) {
             const orgToUpdateIndex = state.orgList.findIndex(x => x._id === payload._id);
             if(orgToUpdateIndex >= 0){
                 Object.assign(state.orgList[orgToUpdateIndex], {...payload});
             } else {
-                console.error('No org found to update at index = ' + orgToUpdateIndex)
+                state.orgList.push(payload);
             }
         },
         insertApresentationTemplate(state, payload) {
@@ -220,11 +223,7 @@ const playgroundStore = {
         }
     },
     actions: {
-        insertAnOrg({commit}, payload){
-            commit('insertAnOrg', payload); 
-        },
-
-        insertAschema({ commit }, payload) {
+        upsertAschemaAction({ commit }, payload) {
             const { schemaId } = payload;
             if (schemaId) {
                                
@@ -237,7 +236,7 @@ const playgroundStore = {
                         shcemaDetial.schema.properties = props;
                     }
                     payload['schemaDetails'] = shcemaDetial;
-                    commit('insertAschema', payload);
+                    commit('updateAschema', payload);
                 }).catch(e => console.log(e))
             } else {
                 commit('insertAschema', payload);
@@ -310,20 +309,15 @@ const playgroundStore = {
                         "Authorization": `Bearer ${state.authToken}`
                     }
                 }
-
-
                 fetch(url, {
                     headers: options.headers
                 }).then(response => response.json()).then(json => {       
-
                     if (json && json.data.schemaList.length!==0) {
                         state.schemaList = []
                         json.data.schemaList.forEach(schema => {
-                            dispatch('insertAschema', schema)
+                            dispatch('upsertAschemaAction', schema)
                         })
                     } else {
-                       
-
                         state.schemaList = []
                     }
                 })
