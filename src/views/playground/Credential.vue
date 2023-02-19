@@ -278,7 +278,23 @@ h5 span {
               <td>{{ row.credStatus ? new Date(row.credStatus.issuanceDate).toLocaleString('en-us', { timeZone: 'UTC' }): "-"}}</td>
               <td>{{ row.credStatus ? new Date(row.credStatus.expirationDate).toLocaleString('en-us', { timeZone: 'UTC' }) : "-"}}</td>
               <!-- <td>{{ row.credStatus ?  row.credStatus.credentialHash : "-"}}</td>  -->
-              <td> {{ row.credStatus ? row.credStatus.claim.currentStatus : row.status}}</td>
+              <!-- <td> {{ row.credStatus ? row.credStatus.claim.currentStatus : row.status}}</td> -->
+
+              <td>
+                <span v-if="row.credStatus.claim.currentStatus=='Live'">
+                  <b-badge pill variant="success" class="mr-2">{{ row.credStatus.claim.currentStatus }}</b-badge>
+                </span>
+                <span v-if="row.credStatus.claim.currentStatus=='Expired'">
+                  <b-badge pill variant="secondary" class="mr-2">{{ row.credStatus.claim.currentStatus }}</b-badge>
+                </span>
+                <span v-if="row.credStatus.claim.currentStatus=='Suspended'">
+                  <b-badge pill variant="warning" class="mr-2">{{ row.credStatus.claim.currentStatus }}</b-badge>
+                </span>
+                <span v-if="row.credStatus.claim.currentStatus=='Revoked'">
+                  <b-badge pill variant="danger" class="mr-2">{{ row.credStatus.claim.currentStatus }}</b-badge>
+                </span>
+              </td>
+
               <td>{{ row.credStatus ? row.credStatus.claim.statusReason  : "-"}}</td>
               <td v-if="row.credStatus">
               <div style="display:flex;">
