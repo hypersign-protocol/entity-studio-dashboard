@@ -120,28 +120,6 @@ background-color: #905ab0;
                      
         </div>
 
-        <!-- <div class="col-md-4" v-if="presentantionTemplateId != '' && showQR">
-            <div class="leafygreen-ui-196mwvg">
-                <div class="leafygreen-ui-mlc9qv">
-                    <pre class="css-1sdjnkx e5i1odf0 leafygreen-ui-vbfbru" tabindex="-1">
-                        <code class="lg-highlight-hljs-light none leafygreen-ui-y7nvfm">
-                            {{ getCodeSnippet }}
-                        </code>
-                    </pre>
-                    <div class="leafygreen-ui-16sacod" data-testid="leafygreen-code-panel">
-                        <i class="far fa-copy"
-                            style="cursor:pointer;"
-                            title="Click to copy the code snippet"
-                            @click="copyToClip(getCodeSnippet,'code snippet')"
-                        ></i>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align: center;">
-                <label style="font-size:small; color:grey;">Read our <a href="https://docs.hypersign.id" target="_blank">documentation </a> for integration</label>
-            </div>
-        </div> -->
-
         <div class="col-md-4" v-if="presentantionTemplateId != '' && showQR">
             <div class="justify-content-center" style="text-align: center;">
                 This QR code will expire in <span class="badge badge-danger">{{ this.countDown }}</span> seconds
@@ -238,21 +216,6 @@ export default {
         selectOptions(){
             return this.listOfPresentationTemplateOptions;
         },
-        getCodeSnippet(){
-        return `
-                <div>
-                    <div id='studio-btn'><\/div>
-                    <canvas id='studio-qr'><\/canvas>
-                    <script
-                        type="text/javascript"
-                        src="https://cdn.jsdelivr.net/gh/hypersign-protocol/studio/js-sdk/build/index.js"
-                        data-button-text="Present Presentation"
-                        data-button-css-class="btn btn-primary"
-                        data-presentation-template-id="${this.presentantionTemplateId}"
-                    ><\/script>
-                <\/div>
-                `;  
-        }
     },
   
     created() {
@@ -448,7 +411,7 @@ export default {
                 newScript.setAttribute('data-button-text', 'Present Credential')
                 newScript.setAttribute('data-button-css-class', 'btn button-theme')
                 newScript.setAttribute('data-hs-wallet-base-url', this.$config.webWalletAddress)
-                newScript.setAttribute('data-presentation-request-endpoint', 'https://stage.hypermine.in/studioserver/api/v1/presentation/request/')
+                newScript.setAttribute('data-presentation-request-endpoint', `${this.$config.studioServer.BASE_URL}api/v1/presentation/request/`)
                 newScript.setAttribute('data-presentation-template-id', this.presentantionTemplateId)
                 divScripts.innerHTML = ""
                 divScripts.appendChild(newScript)

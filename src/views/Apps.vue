@@ -5,7 +5,7 @@
       <h3 v-if="appList.length > 0" class="mt-4" style="text-align: left;">
         <i class="fa fa-rocket mr-2" aria-hidden="true"></i>Your Applications
       </h3>
-      <h4 v-else class="mt-4" style="text-align: left;">Create your first organization!</h4>
+      <h4 v-else class="mt-4" style="text-align: left;">Create your first application!</h4>
 
       <hf-buttons name="+ Create" style="text-align: right;" class="ml-auto mt-4" @executeAction="openSlider()">
       </hf-buttons>
@@ -181,7 +181,7 @@
       
     </div>
 
-    <div style="padding: 5px;">
+    <div style="padding: 5px;" v-if="appList.length > 0">
       <nav aria-label="Page navigation example" style="margin: 0 auto; width: 50px; ">
         <ul class="pagination">
           <li class="page-item">

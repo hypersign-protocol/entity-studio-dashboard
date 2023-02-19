@@ -9,8 +9,7 @@ const playgroundStore = {
         schemaList: [],
         vcList: [],
         templateList: [],
-        orgList: [
-        ],
+        orgList: [],
         selectedOrgDid: "",
         showSideNavbar:false,
         userProfile:{
@@ -152,28 +151,28 @@ const playgroundStore = {
                 state.schemaList.push(payload);
             } else {
                 console.log('already exists scheme id =' + payload._id);
-                this.commit('updateAschema', payload);
-              //  state.updateAschema(state, payload) 
-
-                
             }
         },
         insertAnOrg(state, payload) {
             if (!state.orgList.find(x => x._id === payload._id)) {
                 state.orgList.push(payload);
-            } else {
-                console.log('already exists scheme id =' + payload._id);
-                this.commit('updateAnOrg', payload);
-            }
+            } 
         },
         updateAschema(state, payload) {
             let index = state.schemaList.findIndex(x => x._id === payload._id);
-           Object.assign(state.schemaList[index], {...payload});
-           // state.schemaList[index] = payload;
+            if(index >= 0){
+                Object.assign(state.schemaList[index], {...payload});
+            } else {
+                state.schemaList.push(payload);
+            }
         },
         updateAnOrg(state, payload) {
             const orgToUpdateIndex = state.orgList.findIndex(x => x._id === payload._id);
-            Object.assign(state.orgList[orgToUpdateIndex], {...payload});
+            if(orgToUpdateIndex >= 0){
+                Object.assign(state.orgList[orgToUpdateIndex], {...payload});
+            } else {
+                state.orgList.push(payload);
+            }
         },
         insertApresentationTemplate(state, payload) {
             if (!state.templateList.find(x => x._id === payload._id)) {
@@ -190,22 +189,19 @@ const playgroundStore = {
         insertAcredential(state, payload) {
             if (!state.vcList.find(x => x._id === payload._id)) {
                 state.vcList.push(payload);
-            } else {
-                console.log('already exists credential id =' + payload._id);
-                this.commit('updateAcredential', payload);
             }
         },
         updateAcredential(state, payload) {
             let index = state.vcList.findIndex(x => x._id === payload._id);
-            Object.assign(state.vcList[index], {...payload});
+            if(index >= 0){
+                Object.assign(state.vcList[index], {...payload});
+            } else {
+                state.vcList.push(payload);
+            }
         },
         updateSidebarStatus(state,payload) {
             state.showSideNavbar = payload
         },
-
-        //     fetchAllOrgDataOnOrgSelect(state, payload) {
-        //         console.log(state , payload);
-        // }
         deleteTemplate(state,payload) {
             let index = state.templateList.findIndex(x => x._id === payload)
             if(index > -1) {
@@ -216,11 +212,7 @@ const playgroundStore = {
         }
     },
     actions: {
-        insertAnOrg({commit}, payload){
-            commit('insertAnOrg', payload); 
-        },
-
-        insertAschema({ commit }, payload) {
+        upsertAschemaAction({ commit }, payload) {
             const { schemaId } = payload;
             if (schemaId) {
                                
@@ -233,29 +225,109 @@ const playgroundStore = {
                         shcemaDetial.schema.properties = props;
                     }
                     payload['schemaDetails'] = shcemaDetial;
-                    commit('insertAschema', payload);
+                    commit('updateAschema', payload);
                 }).catch(e => console.log(e))
             } else {
                 commit('insertAschema', payload);
             }
         },
-        insertAcredential({ commit }, payload) {
+        
+        upsertAcredentialAction({ commit }, payload) {
             const { vc_id } = payload;
             if (vc_id) {
                 fetch(vc_id + ':').then(response => response.json()).then(json => {
                     Object.assign(payload, { ...json });
-                    commit('insertAcredential', payload);
+                    commit('updateAcredential', payload);
                 }).catch(e => console.log(e))
             } else {
                 commit('insertAcredential', payload);
             }
         },
 
-        fetchAllOrgDataOnOrgSelect({ commit, getters, state,dispatch }) {
+        fetchAllOrgsAction({commit}){
+            const authToken =  localStorage.getItem('authToken');
+            const url = `${config.studioServer.BASE_URL}api/v1/org`
+            const headers = {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${authToken}`
+            }
+            fetch(url, {
+                headers
+            }).then(response => response.json()).then(json => {
+                const data = json.data.org
+                if (data) {
+                    data.forEach(org => {
+                        commit('insertAnOrg', org);
+                    })
+                }
+            })
+        },
+
+        fetchSchemasForOrg({commit, getters, state, dispatch}){
+            state.authToken = localStorage.getItem('authToken');
+             // fetch all schemas
+            {
+                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${state.selectedOrgDid}/?page=1&limit=10`
+
+                const options = {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${state.authToken}`
+                    }
+                }
+                fetch(url, {
+                    headers: options.headers
+                }).then(response => response.json()).then(json => {       
+                    if (json && json.data.schemaList.length!==0) {
+                        state.schemaList = []
+                        json.data.schemaList.forEach(schema => {
+                            dispatch('upsertAschemaAction', schema)
+                        })
+                    } else {
+                        state.schemaList = []
+                    }
+                })
+
+
+            }
+        },
+
+        fetchCredentialsForOrg({commit, getters, state, dispatch}){
+            state.authToken = localStorage.getItem('authToken');
+            //fetct all credentials
+            {
+                const url = `${config.studioServer.BASE_URL}${config.studioServer.CRED_LIST_EP}/${state.selectedOrgDid}`;
+                const options = {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${state.authToken}`
+                    }
+                }
+                fetch(url, {
+                    headers: options.headers
+                }).then(response => response.json()).then(json => {
+                    if (json && json.data.credList.length!==0) {
+                        state.vcList = []
+                        json.data.credList.forEach(credential => {
+                            dispatch('upsertAcredentialAction', credential)
+                        })
+                    }else{
+                        state.vcList = []
+                    }
+                    
+                })
+
+
+            }
+        },
+
+        fetchTemplatesForOrg({commit, getters, state, dispatch}){
             state.authToken = localStorage.getItem('authToken');
             // fetch all templete   
             {
-                let url = `${config.studioServer.BASE_URL}api/v1/presentation/template/org/${getters.getSelectedOrg._id}/`
+                let url = `${config.studioServer.BASE_URL}api/v1/presentation/template/org/${state.selectedOrgDid}/`
                 const headers = {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${state.authToken}`
@@ -275,113 +347,13 @@ const playgroundStore = {
                     }
                 })
             }
-            // fetch all schemas
-            {
-                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${getters.getSelectedOrg._id}/?page=1&limit=10`
+        },
 
-                const options = {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${state.authToken}`
-                    }
-                }
-
-
-                fetch(url, {
-                    headers: options.headers
-                }).then(response => response.json()).then(json => {       
-
-                    if (json && json.data.schemaList.length!==0) {
-                        state.schemaList = []
-                        json.data.schemaList.forEach(schema => {
-                            dispatch('insertAschema', schema)
-                        })
-                    } else {
-                       
-
-                        state.schemaList = []
-                    }
-                })
-
-
-            }
-
-            //fetct all credentials
-            {
-                const url = `${config.studioServer.BASE_URL}${config.studioServer.CRED_LIST_EP}/${getters.getSelectedOrg._id}`;
-                const options = {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${state.authToken}`
-                    }
-                }
-                fetch(url, {
-                    headers: options.headers
-                }).then(response => response.json()).then(json => {
-                    if (json && json.data.credList.length!==0) {
-                        state.vcList = []
-                        json.data.credList.forEach(credential => {
-                            dispatch('insertAcredential', credential)
-                        })
-                    }else{
-                        state.vcList = []
-                    }
-                    
-                })
-
-
-            }
-
-
-
-
-            //   async getList(type) {
-            //     let url = "";
-            //     let options = {}
-            //     if (type === "SCHEMA") {
-            //       url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${this.selectedOrg._id}/?page=${this.schema_page}&limit=10`
-
-            //       options = {
-            //         method: "GET",
-            //         headers: {
-            //           "Content-Type": "application/json",
-            //           "Authorization": `Bearer ${this.authToken}`
-            //         }
-            //       }
-            //     } else {
-            //       url = `${config.studioServer.BASE_URL}${config.studioServer.CRED_LIST_EP}/${this.selectedOrg._id}`;
-            //       options = {
-            //         method: "GET",
-            //         headers: {
-            //           "Content-Type": "application/json",
-            //           "Authorization": `Bearer ${this.authToken}`
-            //         }
-            //       }
-            //     }
-
-            //     const resp = await fetch(url, options);
-            //     const j = await resp.json();
-            //     if (j && j.status == 500) {
-            //       return this.notifyErr(`Error:  ${j.error}`);
-            //     }
-            //     if (type === "SCHEMA") {
-            //       console.log(j);
-            //       const schemaList = j.schemaList
-            //       schemaList.forEach(schema => {
-            //         this.$store.dispatch('insertAschema', schema)
-            //       })
-            //     } else {
-            //       j.credList.forEach(credential => {
-            //         this.$store.dispatch('insertAcredential', credential)
-            //       })
-            //     }
-            //   },
-
+        fetchAllOrgDataOnOrgSelect({ dispatch }) {        
+            dispatch('fetchSchemasForOrg')
+            dispatch('fetchCredentialsForOrg')
+            dispatch('fetchTemplatesForOrg')
         }
-
-
     }
 }
 

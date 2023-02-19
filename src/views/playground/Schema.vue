@@ -358,7 +358,7 @@ import EventBus from "../../eventbus"
 import ToolTip from "../../components/element/ToolTip.vue"
 import { isValidURL, isEmpty, ifSpaceExists, isValidSchemaAttrName } from '../../mixins/fieldValidation'
 import message from '../../mixins/messages'
-import { mapGetters, mapState } from "vuex";
+import { mapGetters, mapState, mapActions, mapMutations } from "vuex";
 export default {
   name: "Schema",
   components: { QrcodeVue, Loading, StudioSideBar, HfButtons, HfSelectDropDown, ToolTip },
@@ -428,7 +428,8 @@ export default {
   created() {
     const usrStr = localStorage.getItem("user");
     this.user = JSON.parse(usrStr);
-    this.$store.commit('playgroundStore/updateSideNavStatus',true)
+    this.updateSideNavStatus(true)
+    this.fetchSchemasForOrg();
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -436,6 +437,8 @@ export default {
     });
   },
   methods: {
+    ...mapActions('playgroundStore', ['upsertAschemaAction', 'fetchSchemasForOrg']),
+    ...mapMutations('playgroundStore',['updateSideNavStatus', 'increaseOrgDataCount']),
     handleClick(id) {
       this.flash = id
       const found = this.attributes.find((x)=>x.id === id)
@@ -450,22 +453,21 @@ export default {
     updateSchemaAttribute() {
       let isValid = this.handleValidation()
       if(isValid) {
-      let obj = {
-        name: this.selected.attributeName,
-        type: this.selected.attributeTypes,
-        // format: this.selected.attributeFormat,
-        isRequired: this.selected.attributeRequired,
-        id: this.selectedId
+        let obj = {
+          name: this.selected.attributeName,
+          type: this.selected.attributeTypes,
+          // format: this.selected.attributeFormat,
+          isRequired: this.selected.attributeRequired,
+          id: this.selectedId
+        }
+        const indexToUpdate = this.attributes.findIndex((x)=>x.id === this.selectedId)
+        if(indexToUpdate > -1){
+          this.attributes[indexToUpdate] = obj
+          EventBus.$emit("resetOption",this.selected.attributeTypes);
+          this.clearSelected()
+          this.isAdd = true
+        }
       }
-      const indexToUpdate = this.attributes.findIndex((x)=>x.id === this.selectedId)
-      if(indexToUpdate > -1){
-      this.attributes[indexToUpdate] = obj
-      EventBus.$emit("resetOption",this.selected.attributeTypes);
-      this.clearSelected()
-      this.isAdd = true
-      }
-      }
-      
     },
     deleteAttribute() {
       let id = this.selectedId
@@ -563,12 +565,12 @@ export default {
     ssePopulateSchema(id, store) {
       const sse = new EventSource(`${this.$config.studioServer.SCHEMA_SSE}${id}`);
     
-      
+      const that =  this
       sse.onmessage = function (e) {
         const data = JSON.parse(e.data)
         if (data.status === "Registered" || data.status === "Failed") {
           sse.close();
-          store.dispatch("insertAschema", data)
+          that.upsertAschemaAction(data);
         }
       }
       sse.onopen = function (e) {
@@ -627,13 +629,13 @@ export default {
             if (j.message === 'success') {
               this.notifySuccess("Schema creation initiated. Please approve the transaction from your wallet");
               // Store the information in store.
-              this.$store.dispatch('playgroundStore/insertAschema', j.data.schema);
+              this.upsertAschemaAction(j.data.schema)
               // Open the wallet for trasanctional approval.
               const URL = `${this.$config.webWalletAddress}/deeplink?url=${JSON.stringify(QR_DATA)}`
               this.openWallet(URL)
               this.ssePopulateSchema(j.data.schema._id, this.$store)
               this.openSlider();
-              this.$store.commit('playgroundStore/increaseOrgDataCount','schemasCount')
+              this.increaseOrgDataCount('schemasCount')
             } else {
               throw new Error(`${j.error}`);
             }

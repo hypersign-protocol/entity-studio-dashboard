@@ -2,7 +2,7 @@
    <div class="">
         <div class="row">
             <div class="col-md-12">
-            <h2 class="mb-6 text-2xl">Hi {{user.name}}, Welcome to Developer Dashboard!</h2>
+            <h2 class="mb-6 text-2xl">Hi {{ user.name ? user.name.split(' ')[0]: ""}}, Welcome to Developer Dashboard!</h2>
             </div>
         </div>
      <div class="row">

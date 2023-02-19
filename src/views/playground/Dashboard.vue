@@ -1,6 +1,6 @@
 <template>
    <div class="home">
-     <h2>Welcome {{user.name}}, to SSI Playground !</h2>
+     <h2>Hi {{ user.name ? user.name.split(' ')[0]: ""}}, Welcome to SSI Playground !</h2>
      <Metrics/>
      <org-sidebar/>
    </div>
