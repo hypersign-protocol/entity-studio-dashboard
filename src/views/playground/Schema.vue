@@ -375,7 +375,7 @@ export default {
   },
   data() {
     return {
-      reservedKeys:['id'],
+      reservedKeys:['id', 'type'],
       counter:0,
       flash:null,
       isAdd:true,
