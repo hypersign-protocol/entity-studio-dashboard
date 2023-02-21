@@ -227,7 +227,7 @@
                         <label for="required" class="col-form-label">Required: </label>                        
                         </div>
                         <div class="col-lg-9 col-md-9 px-0">
-                             <input type="checkbox" v-model="selected.attributeRequired" id="required" >
+                             <input type="checkbox" v-model="selected.attributeRequired" id="required" class="form-control" >
                         </div>
                     </div>
 
@@ -309,14 +309,12 @@
               <td>{{ row.schemaDetails ? row.schemaDetails.modelVersion : "-" }}</td>
               <td class="word-wrap">{{ row.schemaDetails ? row.schemaDetails.schema.description : "-" }}</td>
               <td>
-              <div v-if="row.schemaDetails">
-              <div v-for="prop in Object.keys(row.schemaDetails.schema.properties)" style="display:inline-block;">
-              <span class="schemaProp card rounded m-1 p-1 d">
-                {{prop}}
-                </span>
-              </div>
-              </div>
-              <span v-else>-</span>
+                <div v-if="row.schemaDetails">
+                  <div v-for="prop in Object.keys(row.schemaDetails.schema.properties)" style="display:inline-block;">
+                    <b-badge pill variant="info" class="mr-2">{{prop}}</b-badge>
+                  </div>
+                </div>
+                <span v-else>-</span>
               </td>
 
               <td>{{ row.createdAt ? new Date(row.createdAt).toLocaleString('en-us', { timeZone: 'UTC' }) : "-" }}</td>
