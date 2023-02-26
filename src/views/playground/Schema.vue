@@ -227,7 +227,7 @@
                         <label for="required" class="col-form-label">Required: </label>                        
                         </div>
                         <div class="col-lg-9 col-md-9 px-0">
-                             <input type="checkbox" v-model="selected.attributeRequired" id="required" class="form-control" >
+                             <input type="checkbox" v-model="selected.attributeRequired" id="required">
                         </div>
                     </div>
 
