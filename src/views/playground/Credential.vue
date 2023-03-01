@@ -280,7 +280,7 @@ h5 span {
               <!-- <td>{{ row.credStatus ?  row.credStatus.credentialHash : "-"}}</td>  -->
               <!-- <td> {{ row.credStatus ? row.credStatus.claim.currentStatus : row.status}}</td> -->
 
-              <td>
+              <td v-if="row.credStatus && row.credStatus.claim">
                 <span v-if="row.credStatus.claim.currentStatus=='Live'">
                   <b-badge pill variant="success" class="mr-2">{{ row.credStatus.claim.currentStatus }}</b-badge>
                 </span>
@@ -293,6 +293,9 @@ h5 span {
                 <span v-if="row.credStatus.claim.currentStatus=='Revoked'">
                   <b-badge pill variant="danger" class="mr-2">{{ row.credStatus.claim.currentStatus }}</b-badge>
                 </span>
+              </td>
+              <td v-else>
+                -
               </td>
 
               <td>{{ row.credStatus ? row.credStatus.claim.statusReason  : "-"}}</td>
