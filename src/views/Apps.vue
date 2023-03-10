@@ -15,11 +15,11 @@
     id="entity-secret-confirmation-popup"
     Header="API Secret Key Confirmation"> 
         <div>          
-          <p>You are regenerating API Secret Key. Old Secret key wont be valid anymore. 
+          <p style="color:#ff5400de">Warning: You are regenerating a new API Secret Key. The old key will no longer be valid. 
           </p>
           <input type="text" class="form-control" id="appId" v-model="appIdToGenerateSecret" aria-describedby="selected App Id" placeholder="Enter Application Id">
           <div class="text-center mt-3">
-          <hf-buttons name="Generate Key" class="btn btn-primary text-center" @executeAction="reGenerateSecretKey"></hf-buttons>
+          <hf-buttons name="Continue" class="btn btn-primary text-center" @executeAction="reGenerateSecretKey"></hf-buttons>
           </div>          
         </div>
     </hf-pop-up>
