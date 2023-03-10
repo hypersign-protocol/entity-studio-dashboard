@@ -11,16 +11,29 @@
       </hf-buttons>
     </div>
 
-    <hf-pop-up Header="API Secret Key"> 
-        <div v-if="apiKeySecret !=''">
+    <hf-pop-up
+    id="entity-secret-confirmation-popup"
+    Header="API Secret Key Confirmation"> 
+        <div>          
+          <p>You are regenerating API Secret Key. Old Secret key wont be valid anymore. 
+          </p>
+          <input type="text" class="form-control" id="appId" v-model="appIdToGenerateSecret" aria-describedby="selected App Id" placeholder="Enter Application Id">
+          <div class="text-center mt-3">
+          <hf-buttons name="Generate Key" class="btn btn-primary text-center" @executeAction="reGenerateSecretKey"></hf-buttons>
+          </div>          
+        </div>
+    </hf-pop-up>
+    <hf-pop-up 
+    id="entity-secretKey-popup"
+    Header="API Secret Key">
+      <div class="mt-2" v-if="apiKeySecret !=''">
           <p>Make sure to copy and save it securely. If lost, this key can not be recovered. However, you can regenerate a new one. 
           </p>
           <p>Use this key to authenticate your server. See '<a href="https://docs.hypersign.id/entity-studio/api-doc/authentication" target="_blank">API reference</a>' documentation for more.</p>
-          <HfFlashNotification :text='`${apiKeySecret}`' type='API Secret Key' 
+          <HfFlashNotification class="mt-2" v-if="apiKeySecret !=''" :text='`${apiKeySecret}`' type='API Secret Key' 
           description="Your API Secret Key" @click="onHfFlashClick()"></HfFlashNotification>
-        </div>
+          </div>
     </hf-pop-up>
-    
     <StudioSideBar :title="edit ? 'Edit Application' : 'Add Application'">
       <div class="container"> 
         <div class="form-group" v-if="edit === true">
@@ -130,7 +143,7 @@
             <div class="row mt-2">
               <div class="col">
                 <span class=" " style="float:right">
-                  <b-badge pill variant="danger" @click="generateSecretKey(eachOrg.appId)"
+                  <b-badge pill variant="danger" @click="openSecretkeyPopUp(eachOrg.appId)"
                     title="Click to generate a new API Secret Key" class="mr-2" style="cursor: pointer;">
                     <i class="fa fa-key"></i>
                     Api</b-badge>
@@ -323,12 +336,13 @@ export default {
       flash: null,
       isAdd: true,
       controllerValue: "",
-      
+      appIdToGenerateSecret:"",
       authToken: localStorage.getItem("authToken"),
       fullPage: true,
       isLoading: false,
       isProcessFinished: true,
       apiKeySecret: "",
+      selectedAppId:"",
       appModel: {
         appId: "",
         apiKeySecret: "",
@@ -433,7 +447,7 @@ export default {
           // Object.assign(this.appModel, { ...t })
           // this.edit = true;
           this.closeSlider();
-          this.$root.$emit('modal-show')
+          this.$root.$emit('bv::show::modal','entity-secretKey-popup');
           this.notifySuccess(messages.APPLICATION.APP_CREATE_SUCCESS)
         } else {
           throw new Error('Something went wrong')
@@ -482,15 +496,29 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },    
+    openSecretkeyPopUp(appId){
+      this.appIdToGenerateSecret=""
+      this.selectedAppId = ""
+      this.apiKeySecret = "" 
+      this.selectedAppId = appId;                             
+      this.$root.$emit('bv::show::modal','entity-secret-confirmation-popup');
     },
-
-    async generateSecretKey(appId){
-      try{
+    async reGenerateSecretKey(){         
+      if(this.appIdToGenerateSecret===""){
+        return this.notifyErr(messages.APPLICATION.ENTER_APP_ID)
+      }
+      if(this.appIdToGenerateSecret!==this.selectedAppId){
+        return this.notifyErr(messages.APPLICATION.VALID_ID)
+      }
+        this.$root.$emit('bv::hide::modal','entity-secret-confirmation-popup');        
+        try{          
+        const appId = this.selectedAppId
         this.isLoading = true;
         const resp = await this.generateAPISecretKey({ appId });
         if(resp){
           this.apiKeySecret = resp.apiSecretKey;
-          this.$root.$emit('modal-show')
+          this.$root.$emit('bv::show::modal','entity-secretKey-popup');
           this.notifySuccess(messages.APPLICATION.APP_NEW_SECRET_KEY_SUCCESS)
         } else {
           throw new Error('Something went wrong')

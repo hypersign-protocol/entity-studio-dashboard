@@ -242,6 +242,7 @@
       <!-- </div> -->
     </div>
     <hf-pop-up
+    id="entity-delete-presentation-popup"
     Header="Delete Presentation Template"
     >
     <div class="row g-3 align-items-center  mt-4">
@@ -427,7 +428,7 @@ export default {
     clickRowToDelete(temp) {
      this.deleteId = ''
       this.tempToDelete = temp._id;
-      this.$root.$emit('modal-show');
+      this.$root.$emit('bv::show::modal','entity-delete-presentation-popup');      
     },
    async deleteTemp() {
       try {
@@ -451,8 +452,8 @@ export default {
                 if(json.data._id){
                   const id = json.data._id
                   this.$store.commit('playgroundStore/deleteTemplate',id)
-                  this.notifySuccess(`Template with ${id} id deleted successfully`)
-                  this.$root.$emit('modal-close')
+                  this.notifySuccess(`Template with ${id} id deleted successfully`)                  
+                  this.$root.$emit('bv::hide::modal','entity-delete-presentation-popup');
                   this.$store.commit('playgroundStore/DecreaseOrgTemplateCount','templatesCount')
                 }          
           } else {
