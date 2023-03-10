@@ -31,6 +31,8 @@
   background-clip: content-box;
   background-color: rgba(173,232,255,.5607843137254902);
   border-radius: 0.25rem;
+  height: 50px;
+  text-align: left;
 }
 h5 {
   width: 100%;
@@ -323,14 +325,15 @@ h5 span {
               logoBackgroundColor="white" logoCornerRadius="2"></vue-qr>
             </div>        
             <h5 class="pt-2"><span>OR</span></h5>
-            <i
-            style="float:right"
-            class="far fa-copy pr-2"
-            title="copy url"
-            @click="copyToClip(credUrl,'URL')"
-            ></i>
             <div class="linkdiv">
-            <p style="max-width: 500px; word-wrap: break-word; padding:10px;">{{ truncate(credUrl,70)}}</p>
+              <span style="max-width: 500px;overflow-wrap: break-word;padding-left: 10px;margin-top: 10px;position: absolute;">{{ truncate(credUrl,70) }}</span>
+              <span style="padding: 6px;float: right;margin-top: 5px;">
+                <i
+                  class="far fa-copy pr-2"
+                  title="copy url"
+                  @click="copyToClip(credUrl,'URL')"
+                ></i>
+              </span>
             </div>
         </hf-pop-up>
       </div>
