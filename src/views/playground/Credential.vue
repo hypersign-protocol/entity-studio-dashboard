@@ -441,6 +441,7 @@ export default {
     this.user = JSON.parse(usrStr);
     this.updateSideNavStatus(true)
     this.fetchCredentialsForOrg()
+    this.fetchSchemasForOrg()    
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -448,7 +449,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions('playgroundStore', ['insertAcredential', 'upsertAcredentialAction', 'fetchCredentialsForOrg']),
+    ...mapActions('playgroundStore', ['insertAcredential', 'upsertAcredentialAction', 'fetchCredentialsForOrg','fetchSchemasForOrg']),
     ...mapMutations('playgroundStore', ['increaseOrgDataCount', 'updateSideNavStatus']),
     noEdit(row){
       if(row.credStatus.claim.currentStatus === 'Revoked' || row.credStatus.claim.currentStatus === 'Expired'){
