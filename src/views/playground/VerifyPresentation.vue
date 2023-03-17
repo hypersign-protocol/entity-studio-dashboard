@@ -258,7 +258,6 @@ export default {
                 
         },
         addEventListener(){
-            console.log('Adding all event listeneres... binding this')
             document.addEventListener('studio-init', this.studioInitListenerCB.bind(this));
             document.addEventListener('studio-success', this.studioSuccessListenerCB.bind(this));
             document.addEventListener('studio-wait', this.studioWaitListenerCB);
@@ -270,9 +269,7 @@ export default {
             document.removeEventListener('studio-wait', this.studioWaitListenerCB);
             document.removeEventListener('studio-error', this.studioErrorListenerCB);
         },
-        studioInitListenerCB: function (e){
-            //console.log('New QR initiated ...' + e.detail.id)
-            
+        studioInitListenerCB: function (e){            
             if(!this.challenge){
                 this.challenge = e.detail.id;
                 this.countDownTimer()

@@ -17,7 +17,6 @@ const mainStore = {
     },
     getters: {
         getAppByAppId: (state) => (appId) =>{
-            console.log(appId);
             return state.appList.find(x => x.appId === appId);
         },
     },
@@ -61,9 +60,10 @@ const mainStore = {
                     if(json.error) {
                         reject(json)
                     }
-
+                    else{
                     commit('insertAnApp', json);
-                    resolve(json)
+                    resolve(json)                    
+                    }                    
                 }).catch((e) => {
                     reject(new Error(`while updating an app  ${e}`))
                 })
@@ -91,9 +91,10 @@ const mainStore = {
                     if(json.error) {
                         reject(json)
                     }
-
+                    else{
                     commit('updateAnApp', json);
                     resolve(json)
+                    }                    
                 }).catch(e => {
                     reject(new Error(`while updating an app   ${e}`))
                 })
