@@ -387,7 +387,7 @@ export default {
           { text: "integer", value: "integer" },
           { text: "number", value: "number" },
           { text: "boolean", value: "boolean" },
-          { text: "date", value: "date" },
+          { text: "date-time", value: "date" },
         ],
       page: 1,
       visible:false,

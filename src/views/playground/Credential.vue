@@ -119,7 +119,7 @@ h5 span {
                       <Datepicker v-if="attr.type === 'date'"
                           class="datepicker"
                           name="toDate"
-                          format="YYYY-MM-DD" 
+                          format="YYYY-MM-DD h:i:s" 
                           v-model="attr.value"
                           />
                           <!-- <input class="ml-2" v-if="attr.type === 'boolean'" type="radio" v-model="attr.value" id="required" >                      -->
