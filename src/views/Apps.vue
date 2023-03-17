@@ -308,7 +308,7 @@
 import HfPopUp from "../components/element/hfPopup.vue";
 import StudioSideBar from "../components/element/StudioSideBar.vue";
 import UtilsMixin from '../mixins/utils';
-import { isEmpty } from '../mixins/fieldValidation'
+import { isEmpty,isValidOrigin } from '../mixins/fieldValidation'
 import 'vue-loading-overlay/dist/vue-loading.css';
 import Loading from "vue-loading-overlay";
 import HfButtons from '../components/element/HfButtons.vue'
@@ -350,7 +350,7 @@ export default {
         walletAddress: "",
         edvId: "",
         description: "",
-        whitelistedCors: [],
+        whitelistedCors: "",
         logoUrl: "",
       }
     }
@@ -399,6 +399,7 @@ export default {
       this.edit = true
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
       const appModel =  this.getAppByAppId(appId);
+      appModel.whitelistedCors = appModel.whitelistedCors.toString()      
       Object.assign(this.appModel, { ...appModel })
     },
     validateFields(){
@@ -424,6 +425,16 @@ export default {
       if(!isAppDescriptionEmpty && (this.appModel.description.length > 100)){
         m.push(messages.APPLICATION.CHAR_EXCEED_APP_DES)
       }
+      if(!isEmpty(this.appModel.whitelistedCors)){
+        const newArray = this.appModel.whitelistedCors.split(',').filter(x => x != " ").map(x => x.trim())
+      for(let i = 0;i<newArray.length;i++)
+      {
+        if(!isValidOrigin(newArray[i])){
+          m.push(messages.APPLICATION.INVALID_CORS)
+          break;          
+        }
+      }
+      }      
       return {
         message: m
       };
@@ -436,9 +447,20 @@ export default {
         }
 
         this.isLoading = true;
+        let whitelistCors = []
+        if(!isEmpty(this.appModel.whitelistedCors)){
+         whitelistCors = this.appModel.whitelistedCors
+            .split(",")
+            .filter((x) => x != " ")
+            .map((x) => x.trim());
+          const s = new Set(whitelistCors);
+          if (whitelistCors.length !== s.size) {
+            throw new Error(messages.APPLICATION.DUPLICATE_ORIGIN_VALUES);
+          }        
+        }
         const t =await this.saveAnAppOnServer({
           appName: this.appModel.appName,
-          whitelistedCors: !Array.isArray(this.appModel.whitelistedCors) ? this.appModel.whitelistedCors.split(',').filter(x => x != " ").map(x => x.trim()): this.appModel.whitelistedCors,
+          whitelistedCors: whitelistCors,
           description: this.appModel.description,
           logoUrl: this.appModel.logoUrl
         })
@@ -472,10 +494,21 @@ export default {
         }
 
         this.isLoading = true;
+        let whitelistCors = []
+        if(!isEmpty(this.appModel.whitelistedCors)){
+         whitelistCors = this.appModel.whitelistedCors
+            .split(",")
+            .filter((x) => x != " ")
+            .map((x) => x.trim());
+          const s = new Set(whitelistCors);
+          if (whitelistCors.length !== s.size) {
+            throw new Error(messages.APPLICATION.DUPLICATE_ORIGIN_VALUES);
+          }
+        }
         const t = await this.updateAnAppOnServer({
           appId: this.appModel.appId,
           appName: this.appModel.appName,
-          whitelistedCors: !Array.isArray(this.appModel.whitelistedCors) ? this.appModel.whitelistedCors.split(',').filter(x => x != " ").map(x => x.trim()): this.appModel.whitelistedCors,
+          whitelistedCors: whitelistCors,
           description: this.appModel.description,
           logoUrl: this.appModel.logoUrl
         })
@@ -542,7 +575,7 @@ export default {
         apiKeySecret: "",
         walletAddress: "",
         edvId: "",
-        whitelistedCors: [],
+        whitelistedCors: "",
         logoUrl: "",
       }
       // this.apiKeySecret = ''

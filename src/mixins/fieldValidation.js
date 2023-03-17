@@ -24,6 +24,14 @@ export function isValidSchemaAttrName(str) {
     return false
   }
 }
+export function isValidOrigin(str) {
+  const regex = /^(https?:\/\/[^ ]+|\*)$/
+  if(regex.test(str)){
+    return true
+  } else {
+    return false
+  }
+}
 export function isEmpty(str) {
     if (str == " ") {
         return true;
