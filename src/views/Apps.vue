@@ -449,7 +449,14 @@ export default {
         this.isLoading = true;
         let whitelistCors = []
         if(!isEmpty(this.appModel.whitelistedCors)){
-         whitelistCors = this.appModel.whitelistedCors.split(',').filter(x => x != " ").map(x => x.trim())         
+         whitelistCors = this.appModel.whitelistedCors
+            .split(",")
+            .filter((x) => x != " ")
+            .map((x) => x.trim());
+          const s = new Set(whitelistCors);
+          if (whitelistCors.length !== s.size) {
+            throw new Error(messages.APPLICATION.DUPLICATE_ORIGIN_VALUES);
+          }        
         }
         const t =await this.saveAnAppOnServer({
           appName: this.appModel.appName,
@@ -489,7 +496,14 @@ export default {
         this.isLoading = true;
         let whitelistCors = []
         if(!isEmpty(this.appModel.whitelistedCors)){
-         whitelistCors = this.appModel.whitelistedCors.split(',').filter(x => x != " ").map(x => x.trim())         
+         whitelistCors = this.appModel.whitelistedCors
+            .split(",")
+            .filter((x) => x != " ")
+            .map((x) => x.trim());
+          const s = new Set(whitelistCors);
+          if (whitelistCors.length !== s.size) {
+            throw new Error(messages.APPLICATION.DUPLICATE_ORIGIN_VALUES);
+          }
         }
         const t = await this.updateAnAppOnServer({
           appId: this.appModel.appId,

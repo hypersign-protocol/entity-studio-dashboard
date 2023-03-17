@@ -16,7 +16,8 @@ const APPLICATION = {
     CHAR_LESS_APP_DES: "Description can not be less than 20 characters",
     VALID_ID: "Enter Valid Application Id",
     ENTER_APP_ID: "Enter Application Id",
-    INVALID_CORS: "Invalid origins values, use valid url or *"
+    INVALID_CORS: "Invalid origins values, use valid url or *",
+    DUPLICATE_ORIGIN_VALUES: "Duplicate origin values are not allowed"
 }
 
 const SCHEMA = {

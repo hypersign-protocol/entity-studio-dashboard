@@ -17,7 +17,6 @@ const mainStore = {
     },
     getters: {
         getAppByAppId: (state) => (appId) =>{
-            console.log(appId);
             return state.appList.find(x => x.appId === appId);
         },
     },
