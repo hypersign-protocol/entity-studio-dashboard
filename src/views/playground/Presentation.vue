@@ -281,7 +281,7 @@ import EventBus from "../../eventbus"
 import ToolTip from "../../components/element/ToolTip.vue"
 import message from '../../mixins/messages'
 import { isEmpty, isValidURL, isValidDid } from '../../mixins/fieldValidation'
-import { mapGetters, mapState  } from "vuex";
+import { mapGetters, mapState, mapActions  } from "vuex";
 export default {
   name: "Presentation",
   components: { QrcodeVue , StudioSideBar, HfButtons, Loading, HfSelectDropDown, ToolTip, HfPopUp},
@@ -371,6 +371,7 @@ export default {
     this.user = JSON.parse(usrStr);
     this.$store.commit('playgroundStore/updateSideNavStatus',true)
     // this.fetchTemplates()
+    this.fetchSchemasForOrg()
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -378,6 +379,7 @@ export default {
     });
   },
   methods: {
+    ...mapActions('playgroundStore', ['fetchSchemasForOrg']),
     onInputTag(){
       console.log('onInputTag ()  got called')
       if(this.selectedSchemIdsInMultiSelect.length > 0){
