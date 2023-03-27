@@ -55,16 +55,16 @@
                 <div>
                   {{ truncate(ctl,25)  }}
                 </div>
-                <div style="padding: 5px; color: lightcoral;cursor: pointer;" @click="deleteController(ctl)" title="Remove this controller">
+                <!-- <div style="padding: 5px; color: lightcoral;cursor: pointer;" @click="deleteController(ctl)" title="Remove this controller">
                   <i style="" class="fa fa-trash"></i>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
 
 
           
-
+<!-- 
           <div v-if="isAdd">
             <div class="input-group mb-3">
               <input type="text" class="form-control" id="controllers" v-model="controllerValue" aria-describedby="controllerHelp" placeholder="did:hid:...8HPRgfJAnph">
@@ -72,7 +72,7 @@
                 <hf-buttons @executeAction="addController()" iconClass="fa fa-plus"></hf-buttons> 
               </div>
             </div>
-          </div>
+          </div> -->
           <!-- <div v-else>
             <hf-buttons  @executeAction="deleteController()" iconClass="fa fa-trash" customClass="btn btn-danger"> </hf-buttons>
             <hf-buttons name="Cancel" @executeAction="cancelController()" customClass="btn btn-link"> </hf-buttons>
@@ -81,7 +81,7 @@
 
 
         </div>
-        <hr />
+        <!-- <hr /> -->
         <div class="form-group" v-if="edit">
           <hf-buttons name="Update" class="btn btn-primary" @executeAction="createAnOrg()"></hf-buttons>
         </div>
@@ -137,9 +137,9 @@
             </ul>
             </div>
                 <div class="pl-2" v-if="eachOrg.status === 'Registered'">            
-                <i class="fas fa-pencil-alt"
+                <!-- <i class="fas fa-pencil-alt"
                 @click="editOrg(eachOrg._id)" title="Click to edit this event" style="cursor: pointer"
-                ></i>
+                ></i> -->
                 <span class="ml-3"></span>
                 <i class="fas fa-sync" aria-hidden="true" @click="switchOrg(eachOrg._id)" title="Click to switch to org"
                   style="cursor: pointer"></i>
