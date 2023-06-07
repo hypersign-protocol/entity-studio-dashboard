@@ -137,9 +137,9 @@
             </ul>
             </div>
                 <div class="pl-2" v-if="eachOrg.status === 'Registered'">            
-                <!-- <i class="fas fa-pencil-alt"
+                <i class="fas fa-pencil-alt"
                 @click="editOrg(eachOrg._id)" title="Click to edit this event" style="cursor: pointer"
-                ></i> -->
+                ></i>
                 <span class="ml-3"></span>
                 <i class="fas fa-sync" aria-hidden="true" @click="switchOrg(eachOrg._id)" title="Click to switch to org"
                   style="cursor: pointer"></i>
@@ -416,6 +416,11 @@ export default {
           let QR_DATA = j.data.QrData
           let URL = `${this.$config.webWalletAddress}/deeplink?url=${JSON.stringify(QR_DATA)}`
 
+          if(this.edit===true){
+            this.notifySuccess("Org Edited successfull");
+            return this.$root.$emit("bv::toggle::collapse", "sidebar-right");
+            
+          }
           this.openWallet(URL)
           if (j.error === false) {
             if (!this.edit) {
@@ -433,6 +438,8 @@ export default {
               this.notifySuccess("Org Edited successfull");
               this.$root.$emit("bv::toggle::collapse", "sidebar-right");
             }
+
+            
           }
 
 
