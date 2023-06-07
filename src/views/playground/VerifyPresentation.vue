@@ -220,7 +220,8 @@ export default {
   
     created() {
         this.$store.commit('playgroundStore/updateSideNavStatus',true)
-        this.addEventListener()
+        this.removeEventListener()
+        
     },  
     data() {
         return {  
@@ -258,14 +259,15 @@ export default {
                 
         },
         addEventListener(){
-            document.addEventListener('studio-init', this.studioInitListenerCB.bind(this));
-            document.addEventListener('studio-success', this.studioSuccessListenerCB.bind(this));
+            document.addEventListener('studio-init', this.studioInitListenerCB);
+            document.addEventListener('studio-success', this.studioSuccessListenerCB);
             document.addEventListener('studio-wait', this.studioWaitListenerCB);
             document.addEventListener('studio-error', this.studioErrorListenerCB);
         },
         removeEventListener(){
             console.log('Removing all event listeneres...')
-            document.removeEventListener('studio-success', this.studioSuccessListenerCB.bind(this));
+            document.removeEventListener('studio-init', this.studioInitListenerCB);
+            document.removeEventListener('studio-success', this.studioSuccessListenerCB);
             document.removeEventListener('studio-wait', this.studioWaitListenerCB);
             document.removeEventListener('studio-error', this.studioErrorListenerCB);
         },
@@ -327,8 +329,7 @@ export default {
                                     headers: { accessToken },
                                     method: 'GET'
                                 });
-                            
-                if(resp.status === 200){
+                    if(resp.status === 200){
                     const json =  await resp.json();
                     const { message } = json;
                     if(message == 'success'){
@@ -372,7 +373,7 @@ export default {
             this.qrData = ""
             const loadScript = document.getElementById('load-script')
             if(loadScript) loadScript.innerHTML = ""
-            // this.removeEventListener()
+            this.removeEventListener()
             this.isLoading = false
             this.challenge = ""
             this.countDown = 60
@@ -387,6 +388,7 @@ export default {
             }
         },
         requestPresentation(){
+
             
             if(this.showQR){
                 return 
@@ -416,7 +418,7 @@ export default {
             } else {
                 console.log('divScripts = ' + divScripts)
             }
-
+            this.addEventListener()
         }
 
     },
