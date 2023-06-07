@@ -14,6 +14,9 @@
     "deploy": "gh-pages -d dist",
     "jvjr-build": "jvjr --build"
   },
+  "engines": {
+    "node": "14.21.3"
+  },
   "dependencies": {
     "@mdi/font": "^7.0.96",
     "@mdi/light-font": "^0.2.63",
