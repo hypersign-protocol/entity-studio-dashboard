@@ -449,7 +449,7 @@ export default {
       this.isAdd = false
     },
     updateSchemaAttribute() {
-      let isValid = this.handleValidation()
+      let isValid = this.handleValidation(true)
       if(isValid) {
         let obj = {
           name: this.selected.attributeName,
@@ -505,7 +505,7 @@ export default {
       // this.additionalProperties = false
       this.attributes = []      
     },
-    handleValidation() {
+    handleValidation(update=false) {
       let isValid = true
       if (isEmpty(this.selected.attributeName)) {
         isValid = false
@@ -522,8 +522,11 @@ export default {
       } else if(!isValidSchemaAttrName(this.selected.attributeName)){
         isValid = false
         return this.notifyErr(message.SCHEMA.NAME_CAMELCASE)
-      } else if(this.isPresent(this.selected.attributeName)){
+      } else if(this.isPresent(this.selected,update)){
         isValid = false
+        if(update){
+          return this.notifyErr(message.SCHEMA.DUPLICATE_ATTRIBUTE_UPDATE)
+        }
         return this.notifyErr(message.SCHEMA.DUPLICATE_ATTRIBUTE)
       } else if (this.selected.attributeTypes === ' ' || this.selected.attributeTypes === null) {
         isValid = false
@@ -535,9 +538,14 @@ export default {
       // }
     return isValid
     },
-    isPresent(attr) {
+    isPresent(attr, update=false) {
     const element = this.attributes.find((x) => {
-            return x.name === attr;
+           if(update){
+            return x.name === attr.attributeName  && x.type === attr.attributeTypes;
+
+           } 
+           return x.name === attr.attributeName
+
         });
         return typeof element === "undefined" ? false : true;
     
