@@ -21,6 +21,7 @@ const APPLICATION = {
 }
 
 const SCHEMA = {
+    DUPLICATE_ATTRIBUTE_UPDATE: "Duplicate attribute, change name or type while updating",
     DUPLICATE_ATTRIBUTE: "Duplicate attribute name not allowed",
     PROTECTED_TERM: "is protected field",
     NO_SPACE: "There should not be space in attribute name",

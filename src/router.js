@@ -169,6 +169,7 @@ router.beforeEach((to, from, next) => {
       })
       .catch((e)=> {
         console.log(e);
+        store.commit('mainStore/setMainSideNavBar',false)
         next({
           path: '/studio/login',
           params: { nextUrl:  to.fullPath}
