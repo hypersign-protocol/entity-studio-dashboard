@@ -522,7 +522,7 @@ export default {
       } else if(!isValidSchemaAttrName(this.selected.attributeName)){
         isValid = false
         return this.notifyErr(message.SCHEMA.NAME_CAMELCASE)
-      } else if(this.isPresent(this.selected.attributeName)){
+      } else if(this.isPresent(this.selected)){
         isValid = false
         return this.notifyErr(message.SCHEMA.DUPLICATE_ATTRIBUTE)
       } else if (this.selected.attributeTypes === ' ' || this.selected.attributeTypes === null) {
@@ -536,8 +536,10 @@ export default {
     return isValid
     },
     isPresent(attr) {
+      console.log(attr.attributeTypes);
     const element = this.attributes.find((x) => {
-            return x.name === attr;
+      console.log(x);
+            return x.name === attr.attributeName  && x.type === attr.attributeTypes;
         });
         return typeof element === "undefined" ? false : true;
     
