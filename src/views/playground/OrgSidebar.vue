@@ -226,8 +226,8 @@ export default {
       isAdd: true,
       controllerValue: "",
       orgStore: {
-        name: "Hypermine Pvt Ltd",
-        domain: "hypermine.in",
+        name: "",
+        domain: "https://entity.hypersign.id",
         // logo: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.5EZ51foyo3QBV2FHnKq1cwHaEc%26pid%3DApi&f=1",
         // region: "US EAST",
         network: "Jagrat",
@@ -457,7 +457,7 @@ export default {
       isAdd: true,
 
         name: "",
-        domain: "",
+        domain: "https://entity.hypersign.id",
         // logo: "",
         // region: "",
         network: "",

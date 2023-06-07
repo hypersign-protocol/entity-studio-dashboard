@@ -329,7 +329,7 @@ export default {
         schemaId: '',
         reason: '',
         required: true,
-        callbackUrl: '',
+        callbackUrl: 'https://entity.hypersign.id',
       },
       id:'',
       selected:null,
@@ -474,7 +474,7 @@ export default {
       this.presentationTemplate.domain = ''
       this.presentationTemplate.name = ''
       // this.presentationTemplate.required = true
-      this.presentationTemplate.callbackUrl = ''
+      this.presentationTemplate.callbackUrl = 'https://entity.hypersign.id'
       this.presentationTemplate.reason = ''
       this.isEdit = false
       this.maxChar=105,
