@@ -326,7 +326,7 @@ h5 span {
             </div>        
             <h5 class="pt-2"><span>OR</span></h5>
             <div class="linkdiv">
-              <span style="max-width: 500px;overflow-wrap: break-word;padding-left: 10px;margin-top: 10px;position: absolute;">{{ truncate(credUrl,70) }}</span>
+              <span style="max-width: 500px;overflow-wrap: break-word;padding-left: 10px;margin-top: 10px;position: absolute;">{{ truncate(credUrl,65) }}</span>
               <span style="padding: 6px;float: right;margin-top: 5px;">
                 <i
                   class="far fa-copy pr-2"
