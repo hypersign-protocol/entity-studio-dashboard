@@ -161,14 +161,14 @@ h5 span {
                       <tool-tip infoMessage="Issuance Date of the issued credential"></tool-tip>
                       <label for="fordid"><strong>Issuance Date:</strong></label>                      
                       <input type="text" class="form-control"                      
-                      v-model="new Date(issuanceDate).toLocaleString('en-us', { timeZone: 'UTC' })" disabled
+                      :v-model="new Date(issuanceDate).toLocaleString('en-us', { timeZone: 'UTC' })" disabled
                          />
                     </div>
                      <div class="form-group pt-2" v-if="isEdit === true">
                       <tool-tip infoMessage="Expiry Date for the issued credential"></tool-tip>
                       <label for="fordid"><strong>Expiry Date:</strong></label>                      
                       <input type="text" class="form-control"
-                      v-model="new Date(expiryDateTime).toLocaleString('en-us', { timeZone: 'UTC' })" disabled
+                      :v-model="new Date(expiryDateTime).toLocaleString('en-us', { timeZone: 'UTC' })" disabled 
                          />
                     </div>
                     <!-- <div class="form-group" v-if="isEdit===true">
@@ -228,11 +228,11 @@ h5 span {
         <table class="table table-bordered event-card" style="background:#FFFF">
           <thead class="thead-light">
             <tr>
-              <th>VC Id</th>
-              <th>Schema Id</th>
+              <th>Credential Id</th>
+              <th>Type</th>
               <th>Subject DID</th>
-              <th>Issuance Date (UTC)</th>
-              <th>Expiration Date (UTC)</th>
+              <th>Issuance Date </th>
+              <th>Expiration Date </th>
               <!-- <th>Credential Hash</th> -->
               <th>Status</th>
               <th>Status Reason</th>
@@ -257,13 +257,13 @@ h5 span {
               </td>
               <td>
                 <div style="display:flex;">
-                <a :href="`${$config.explorer.BASE_URL}schemas/${row.schemaId}`" target="_blank">{{ shorten(row.schemaId) }}
+                <a :href="`${$config.explorer.BASE_URL}schemas/${row.schemaId}`" target="_blank">{{ row.vc.type[row.vc.type.length-1] }}
                 </a>
-                <i class="far fa-copy ml-1"
+                <!-- <i class="far fa-copy ml-1"
                 style="cursor:pointer;"
                 title="Click to copy Schema Id"
-                @click="copyToClip(row.schemaId,'Schema Id')"
-                ></i>
+                @click="copyToClip(row.vc.type[row.vc.type.length-1],'Schema Id')"
+                ></i> -->
                 </div>
               </td>
               <td>
@@ -277,8 +277,8 @@ h5 span {
                 ></i>
                 </div>
               </td>
-              <td>{{ row.credStatus ? new Date(row.credStatus.issuanceDate).toLocaleString('en-us', { timeZone: 'UTC' }): "-"}}</td>
-              <td>{{ row.credStatus ? new Date(row.credStatus.expirationDate).toLocaleString('en-us', { timeZone: 'UTC' }) : "-"}}</td>
+              <td>{{ row.credStatus ? new Date(row.credStatus.issuanceDate).toLocaleString('en-us'): "-"}}</td>
+              <td>{{ row.credStatus ? new Date(row.credStatus.expirationDate).toLocaleString('en-us') : "-"}}</td>
               <!-- <td>{{ row.credStatus ?  row.credStatus.credentialHash : "-"}}</td>  -->
               <!-- <td> {{ row.credStatus ? row.credStatus.claim.currentStatus : row.status}}</td> -->
 
