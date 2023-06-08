@@ -179,7 +179,7 @@
                           >
                           {{ truncate(attr.name,15) }}
                            <span style="color: gray; padding-left: 5px">
-                            <i v-if="flash==attr.id" title="click to delete" class="fas fa-minus-circle" @click="deleteAttribute"></i>
+                            <i v-if="flash==attr.id" title="click to delete" class="fas fa-minus-circle" @click="deleteAttribute" style="color:#d9534f	"></i>
                           </span>
                         </div>
                       </div>
