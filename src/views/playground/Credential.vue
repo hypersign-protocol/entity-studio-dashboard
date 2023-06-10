@@ -243,7 +243,6 @@ h5 span {
           </thead>
           <tbody>
             <tr v-for="row in vcList" :key="row._id">
-            
               <td>
                 <div v-if="row.vc">
                 <a :href="`${$config.explorer.BASE_URL}revocationRegistry/${removeUrl(row.vc.id)}`" target="_blank>">{{ row.vc.id ? shorten((row.vc.id)) : '-' }}</a>
@@ -256,14 +255,14 @@ h5 span {
                 <span v-else>-</span>
               </td>
               <td>
-                <div style="display:flex;">
-                <a :href="`${$config.explorer.BASE_URL}schemas/${row.schemaId}`" target="_blank">{{ row.vc.type[row.vc.type.length-1] }}
+                <div style="display:flex;" >
+                <a :href="`${$config.explorer.BASE_URL}schemas/${row.schemaId}`" target="_blank">{{   row.vc?  row.vc.type[row.vc.type.length-1] : '-' }}
                 </a>
-                <!-- <i class="far fa-copy ml-1"
+                <i class="far fa-copy ml-1" v-if="row.vc"
                 style="cursor:pointer;"
                 title="Click to copy Schema Id"
-                @click="copyToClip(row.vc.type[row.vc.type.length-1],'Schema Id')"
-                ></i> -->
+                @click="copyToClip(row.schemaId,'Schema Id')"
+                ></i>
                 </div>
               </td>
               <td>
@@ -363,6 +362,7 @@ export default {
   computed: {
     ...mapGetters('playgroundStore', ['vcList', 'listOfAllSchemaOptions', 'getSelectedOrg', 'findSchemaBySchemaID']),
     ...mapState({
+      vcList: state => state.playgroundStore.vcList,
       containerShift: state => state.playgroundStore.containerShift,
       selectedOrgDid: state => state.playgroundStore.selectedOrgDid
     }),
@@ -449,7 +449,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions('playgroundStore', ['insertAcredential', 'upsertAcredentialAction', 'fetchCredentialsForOrg','fetchSchemasForOrg']),
+    ...mapActions('playgroundStore', [ 'upsertAcredentialAction', 'fetchCredentialsForOrg','fetchSchemasForOrg']),
     ...mapMutations('playgroundStore', ['increaseOrgDataCount', 'updateSideNavStatus']),
     noEdit(row){
       if(row.credStatus.claim.currentStatus === 'Revoked' || row.credStatus.claim.currentStatus === 'Expired'){
@@ -593,7 +593,7 @@ export default {
         const data = JSON.parse(event.data);
         if (data.status === "Registered" || data.status === "Failed" || data.status === "Live" || data.status === "Suspended" || data.status === "Revoked") {
           sse.close();
-          that.upsertAcredentialAction(data)
+          that.upsertAcredentialAction(data)  
         }
       };
 
