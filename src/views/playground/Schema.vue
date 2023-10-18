@@ -174,13 +174,12 @@
                             flash == attr.id
                             ? 'flash card rounded m-1 p-1 d-flex flex-row align-items-center'
                             : 'card rounded m-1 p-1 d-flex flex-row align-items-center pointer'"
-                            @click="handleClick(attr.id)"
-                            style="min-width:90px;"
+                            @click="handleClick(attr.id)"                            
                             :title="attr.name"
                           >
-                          {{ truncate(attr.name,7) }}
+                          {{ truncate(attr.name,15) }}
                            <span style="color: gray; padding-left: 5px">
-                            <i style="" class="fas fa-minus-circle"></i>
+                            <i v-if="flash==attr.id" title="click to delete" class="fas fa-minus-circle" @click="deleteAttribute" style="color:#d9534f	"></i>
                           </span>
                         </div>
                       </div>
@@ -247,9 +246,9 @@
                           @executeAction="updateSchemaAttribute()"
                         ></hf-buttons>
                         <hf-buttons 
-                          name="Delete"        
+                          name="Cancel"        
                           class="btn btn-danger ml-2"
-                          @executeAction="deleteAttribute()"
+                          @executeAction="cancelUpdate()"
                         ></hf-buttons>
                       </div>
                     </div>
@@ -448,6 +447,13 @@ export default {
       EventBus.$emit("setOption",updateData.type);
       this.isAdd = false
     },
+    cancelUpdate(){
+      this.flash = null;
+      this.selected.attributeName = ""
+      EventBus.$emit("resetOption",this.selected.attributeTypes);
+      this.selected.attributeRequired = false
+      this.isAdd = true
+    },
     updateSchemaAttribute() {
       let isValid = this.handleValidation(true)
       if(isValid) {
@@ -541,7 +547,7 @@ export default {
     isPresent(attr, update=false) {
     const element = this.attributes.find((x) => {
            if(update){
-            return x.name === attr.attributeName  && x.type === attr.attributeTypes;
+            return x.name === attr.attributeName  && x.type === attr.attributeTypes && x.isRequired === attr.attributeRequired
 
            } 
            return x.name === attr.attributeName

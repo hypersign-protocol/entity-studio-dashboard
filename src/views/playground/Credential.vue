@@ -161,14 +161,14 @@ h5 span {
                       <tool-tip infoMessage="Issuance Date of the issued credential"></tool-tip>
                       <label for="fordid"><strong>Issuance Date:</strong></label>                      
                       <input type="text" class="form-control"                      
-                      v-model="new Date(issuanceDate).toLocaleString('en-us', { timeZone: 'UTC' })" disabled
+                      :v-model="new Date(issuanceDate).toLocaleString('en-us', { timeZone: 'UTC' })" disabled
                          />
                     </div>
                      <div class="form-group pt-2" v-if="isEdit === true">
                       <tool-tip infoMessage="Expiry Date for the issued credential"></tool-tip>
                       <label for="fordid"><strong>Expiry Date:</strong></label>                      
                       <input type="text" class="form-control"
-                      v-model="new Date(expiryDateTime).toLocaleString('en-us', { timeZone: 'UTC' })" disabled
+                      :v-model="new Date(expiryDateTime).toLocaleString('en-us', { timeZone: 'UTC' })" disabled 
                          />
                     </div>
                     <!-- <div class="form-group" v-if="isEdit===true">
@@ -228,11 +228,11 @@ h5 span {
         <table class="table table-bordered event-card" style="background:#FFFF">
           <thead class="thead-light">
             <tr>
-              <th>VC Id</th>
-              <th>Schema Id</th>
+              <th>Credential Id</th>
+              <th>Type</th>
               <th>Subject DID</th>
-              <th>Issuance Date (UTC)</th>
-              <th>Expiration Date (UTC)</th>
+              <th>Issuance Date </th>
+              <th>Expiration Date </th>
               <!-- <th>Credential Hash</th> -->
               <th>Status</th>
               <th>Status Reason</th>
@@ -243,7 +243,6 @@ h5 span {
           </thead>
           <tbody>
             <tr v-for="row in vcList" :key="row._id">
-            
               <td>
                 <div v-if="row.vc">
                 <a :href="`${$config.explorer.BASE_URL}revocationRegistry/${removeUrl(row.vc.id)}`" target="_blank>">{{ row.vc.id ? shorten((row.vc.id)) : '-' }}</a>
@@ -256,10 +255,10 @@ h5 span {
                 <span v-else>-</span>
               </td>
               <td>
-                <div style="display:flex;">
-                <a :href="`${$config.explorer.BASE_URL}schemas/${row.schemaId}`" target="_blank">{{ shorten(row.schemaId) }}
+                <div style="display:flex;" >
+                <a :href="`${$config.explorer.BASE_URL}schemas/${row.schemaId}`" target="_blank">{{   row.vc?  row.vc.type[row.vc.type.length-1] : '-' }}
                 </a>
-                <i class="far fa-copy ml-1"
+                <i class="far fa-copy ml-1" v-if="row.vc"
                 style="cursor:pointer;"
                 title="Click to copy Schema Id"
                 @click="copyToClip(row.schemaId,'Schema Id')"
@@ -277,8 +276,8 @@ h5 span {
                 ></i>
                 </div>
               </td>
-              <td>{{ row.credStatus ? new Date(row.credStatus.issuanceDate).toLocaleString('en-us', { timeZone: 'UTC' }): "-"}}</td>
-              <td>{{ row.credStatus ? new Date(row.credStatus.expirationDate).toLocaleString('en-us', { timeZone: 'UTC' }) : "-"}}</td>
+              <td>{{ row.credStatus ? new Date(row.credStatus.issuanceDate).toLocaleString('en-us'): "-"}}</td>
+              <td>{{ row.credStatus ? new Date(row.credStatus.expirationDate).toLocaleString('en-us') : "-"}}</td>
               <!-- <td>{{ row.credStatus ?  row.credStatus.credentialHash : "-"}}</td>  -->
               <!-- <td> {{ row.credStatus ? row.credStatus.claim.currentStatus : row.status}}</td> -->
 
@@ -326,7 +325,7 @@ h5 span {
             </div>        
             <h5 class="pt-2"><span>OR</span></h5>
             <div class="linkdiv">
-              <span style="max-width: 500px;overflow-wrap: break-word;padding-left: 10px;margin-top: 10px;position: absolute;">{{ truncate(credUrl,70) }}</span>
+              <span style="max-width: 500px;overflow-wrap: break-word;padding-left: 10px;margin-top: 10px;position: absolute;">{{ truncate(credUrl,65) }}</span>
               <span style="padding: 6px;float: right;margin-top: 5px;">
                 <i
                   class="far fa-copy pr-2"
@@ -363,6 +362,7 @@ export default {
   computed: {
     ...mapGetters('playgroundStore', ['vcList', 'listOfAllSchemaOptions', 'getSelectedOrg', 'findSchemaBySchemaID']),
     ...mapState({
+      vcList: state => state.playgroundStore.vcList,
       containerShift: state => state.playgroundStore.containerShift,
       selectedOrgDid: state => state.playgroundStore.selectedOrgDid
     }),
@@ -449,7 +449,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions('playgroundStore', ['insertAcredential', 'upsertAcredentialAction', 'fetchCredentialsForOrg','fetchSchemasForOrg']),
+    ...mapActions('playgroundStore', [ 'upsertAcredentialAction', 'fetchCredentialsForOrg','fetchSchemasForOrg']),
     ...mapMutations('playgroundStore', ['increaseOrgDataCount', 'updateSideNavStatus']),
     noEdit(row){
       if(row.credStatus.claim.currentStatus === 'Revoked' || row.credStatus.claim.currentStatus === 'Expired'){
@@ -593,7 +593,7 @@ export default {
         const data = JSON.parse(event.data);
         if (data.status === "Registered" || data.status === "Failed" || data.status === "Live" || data.status === "Suspended" || data.status === "Revoked") {
           sse.close();
-          that.upsertAcredentialAction(data)
+          that.upsertAcredentialAction(data)  
         }
       };
 
