@@ -62,7 +62,7 @@ ENV VUE_APP_SSE=${VUE_APP_SSE}
 RUN npm run build
 
 
-FROM nginx:1.13.8 as production-stage
+FROM nginx:latest as production-stage
 COPY nginx.conf /etc/nginx/nginx.conf
 
 COPY --from=build-stage /app/dist /usr/share/nginx/html
