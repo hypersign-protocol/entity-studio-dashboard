@@ -1,11 +1,14 @@
 <template>
-   <div class="">
-        <div class="row">
-            <div class="col-md-12">
-            <h2 class="mb-6 text-2xl">Hi {{ user.name ? user.name.split(' ')[0]: ""}}, Welcome to Developer Dashboard!</h2>
-            </div>
-        </div>
-     <div class="row">
+  <div class="">
+    <div class="row">
+      <div class="col-md-12">
+        <h2 class="mb-6 text-2xl">
+          Hi {{ user.name ? user.name.split(" ")[0] : "" }}, Welcome to
+          Developer Dashboard!
+        </h2>
+      </div>
+    </div>
+    <!-- <div class="row">
        <div class="col-md-4">
            <div class="card" >
                <div class="card-body">
@@ -40,42 +43,40 @@
            </div>
        </div>
      </div>
-     <div class="row">
-        <div class="col-md-12">
-            <apps />
-        </div>
-     </div>
-   </div>
+      -->
+    <div class="row">
+      <div class="col-md-12">
+        <apps />
+      </div>
+    </div>
+  </div>
 </template>
 
-
 <script>
-import Apps from './Apps.vue';
-import {  mapMutations  } from 'vuex';
+import Apps from "./Apps.vue";
+import { mapMutations } from "vuex";
 
 export default {
   name: "dashboard",
-  components: { 
-   Apps,
+  components: {
+    Apps,
   },
   data() {
     return {
-       user: {},
-       authToken: localStorage.getItem('authToken')
+      user: {},
+      authToken: localStorage.getItem("authToken"),
     };
   },
   created() {
-   const usrStr = localStorage.getItem('user')
-   this.user = JSON.parse(usrStr);
-   this.setSelectedDashboard(this.$config.DashboardTypes.DeveloperDashboard)
+    const usrStr = localStorage.getItem("user");
+    this.user = JSON.parse(usrStr);
+    this.setSelectedDashboard(this.$config.DashboardTypes.DeveloperDashboard);
   },
   methods: {
-    ...mapMutations('globalStore', ['setSelectedDashboard']),
-   gotosubpage(name){
-       this.$router.push({ name })
-   },
-
-    
+    ...mapMutations("globalStore", ["setSelectedDashboard"]),
+    gotosubpage(name) {
+      this.$router.push({ name });
+    },
   },
 };
 </script>

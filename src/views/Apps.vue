@@ -255,89 +255,90 @@
       </div>
     </StudioSideBar>
 
-    <div class="scroll row" v-if="appList.length > 0">
-      <div
-        class="col-md-4 mb-4"
-        v-for="eachOrg in appList"
-        :key="eachOrg.appId"
-      >
-        <div class="card bg-gradient-primary">
-          <div class="card-body">
-            <div class="row">
-              <div class="col">
-                <h5 class="card-title text-uppercase text-muted mb-0">
-                  {{ formattedAppName(eachOrg.appName) }}
-                </h5>
+    <div v-if="appList.length > 0">
+      <div class="scroll row">
+        <div
+          class="col-md-4 mb-4"
+          v-for="eachOrg in appList"
+          :key="eachOrg.appId"
+        >
+          <div class="card bg-gradient-primary">
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">
+                    {{ formattedAppName(eachOrg.appName) }}
+                  </h5>
+                </div>
               </div>
-            </div>
-            <div class="row mt-2">
-              <div class="col-md-8">
-                <span class="card-text"
-                  >{{
-                    truncate(
-                      eachOrg.description || "No description for this app..",
-                      41
-                    )
-                  }}
-                </span>
+              <div class="row mt-2">
+                <div class="col-md-8">
+                  <span class="card-text"
+                    >{{
+                      truncate(
+                        eachOrg.description || "No description for this app..",
+                        41
+                      )
+                    }}
+                  </span>
+                </div>
+                <div class="col-md-4">
+                  <b-card-img
+                    :src="
+                      eachOrg.logoUrl ||
+                      getProfileIcon(formattedAppName(eachOrg.appId))
+                    "
+                    alt="logoImg"
+                    class="rounded-0"
+                    style="max-height: 60px; min-height: 60px"
+                  ></b-card-img>
+                </div>
               </div>
-              <div class="col-md-4">
-                <b-card-img
-                  :src="
-                    eachOrg.logoUrl ||
-                    getProfileIcon(formattedAppName(eachOrg.appId))
-                  "
-                  alt="logoImg"
-                  class="rounded-0"
-                  style="max-height: 60px; min-height: 60px"
-                ></b-card-img>
+              <div class="row">
+                <div class="col">
+                  <b-card-text>
+                    <small class="card-field-label">Application Id:</small>
+                    <div
+                      class="apiKeySecret"
+                      @click="copyToClip(eachOrg.appId, 'Application Id')"
+                      title="Copy Application Id"
+                    >
+                      {{ truncate(eachOrg.appId, 35) }}
+                      <i class="far fa-copy" style="float: right"></i>
+                    </div>
+                  </b-card-text>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <b-card-text>
-                  <small class="card-field-label">Application Id:</small>
-                  <div
-                    class="apiKeySecret"
-                    @click="copyToClip(eachOrg.appId, 'Application Id')"
-                    title="Copy Application Id"
-                  >
-                    {{ truncate(eachOrg.appId, 35) }}
-                    <i class="far fa-copy" style="float: right"></i>
-                  </div>
-                </b-card-text>
-              </div>
-            </div>
-            <div class="row mt-2">
-              <div class="col">
-                <span class=" " style="float: right">
-                  <b-badge
-                    pill
-                    variant="danger"
-                    @click="openSecretkeyPopUp(eachOrg.appId)"
-                    title="Click to generate a new API Secret Key"
-                    class="mr-2"
-                    style="cursor: pointer"
-                  >
-                    <i class="fa fa-key"></i>
-                    Api</b-badge
-                  >
-                  <b-badge
-                    pill
-                    variant="info"
-                    @click="editOrg(eachOrg.appId)"
-                    title="Click to edit the app"
-                    style="cursor: pointer"
-                  >
-                    <i class="fas fa-pencil-alt"></i>
-                    Edit</b-badge
-                  >
-                </span>
+              <div class="row mt-2">
+                <div class="col">
+                  <span class=" " style="float: right">
+                    <b-badge
+                      pill
+                      variant="danger"
+                      @click="openSecretkeyPopUp(eachOrg.appId)"
+                      title="Click to generate a new API Secret Key"
+                      class="mr-2"
+                      style="cursor: pointer"
+                    >
+                      <i class="fa fa-key"></i>
+                      Api</b-badge
+                    >
+                    <b-badge
+                      pill
+                      variant="info"
+                      @click="editOrg(eachOrg.appId)"
+                      title="Click to edit the app"
+                      style="cursor: pointer"
+                    >
+                      <i class="fas fa-pencil-alt"></i>
+                      Edit</b-badge
+                    >
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <!-- <b-card no-body class="overflow-hidden " border-variant="warning" >
+          <!-- <b-card no-body class="overflow-hidden " border-variant="warning" >
           <b-row no-gutters>
             <b-col md="8">
               <b-card-body :title="formattedAppName(eachOrg.appName)">
@@ -372,37 +373,38 @@
             </b-col>
           </b-row>
         </b-card> -->
+        </div>
       </div>
-    </div>
 
-    <div style="padding: 5px" v-if="appList.length > 0">
-      <nav
-        aria-label="Page navigation example"
-        style="margin: 0 auto; width: 50px"
-      >
-        <ul class="pagination">
-          <li class="page-item">
-            <a class="page-link" href="#" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-              <span class="sr-only">Previous</span>
-            </a>
-          </li>
+      <div style="padding: 5px">
+        <nav
+          aria-label="Page navigation example"
+          style="margin: 0 auto; width: 50px"
+        >
+          <ul class="pagination">
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+              </a>
+            </li>
 
-          <li class="page-item" v-if="pages > 1">
-            <a class="page-link" href="#">1</a>
-          </li>
-          <li class="page-item" v-if="pages > 2">
-            <a class="page-link" href="#">2</a>
-          </li>
+            <li class="page-item" v-if="pages > 1">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item" v-if="pages > 2">
+              <a class="page-link" href="#">2</a>
+            </li>
 
-          <li class="page-item">
-            <a class="page-link" href="#" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-              <span class="sr-only">Next</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   </div>
 </template>

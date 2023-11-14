@@ -10,7 +10,7 @@
   font-weight: bold;
 }
 .row .nav-style {
-  position:absolute;
+  position: absolute;
   z-index: 0;
 }
 
@@ -21,7 +21,6 @@
 .card-radius {
   border-radius: 10px;
 }
-
 
 .logo-style {
   width: 144px;
@@ -35,7 +34,7 @@
   margin: 0;
   width: 100%;
   min-height: 100vh;
-  background: #F6F6F687;
+  background: #f6f6f687;
 }
 .subtitle {
   padding-left: 10px;
@@ -46,101 +45,156 @@
 .container-collapsed {
   margin-left: 15em;
 }
-.far{
-cursor: pointer;
-color: grey;
-display: inline;
-padding-left: 5px;
+.far {
+  cursor: pointer;
+  color: grey;
+  display: inline;
+  padding-left: 5px;
 }
-.hov{
-padding: 0 1.5em 0 1.5em;
+.hov {
+  padding: 0 1.5em 0 1.5em;
 }
-.hov:hover{
-background-color: #dee2e6;
-cursor: pointer;
+.hov:hover {
+  background-color: #dee2e6;
+  cursor: pointer;
 }
 </style>
 <template>
   <div id="app">
-   <b-navbar toggleable="lg" type="dark" variant="white" class="navStyle" v-if="showIcon" sticky>
-    <b-navbar-brand href="#" style="display:flex; width: 80%; margin-left: 0.2em;">
-      <a href="#" @click.prevent="route('dashboard')">
-        <img src="./assets/Entity_full.png" alt="" style="height:5vh; opacity: 80%;">
-      </a>
-    </b-navbar-brand>
-    <b-collapse id="nav-collapse" is-nav style="width: 30%;">
-      <b-navbar-nav class="ml-auto">
-
-        <a class="mr-4" href="#" @click.prevent="route('playgroundDashboard')"
+    <b-navbar
+      toggleable="lg"
+      type="dark"
+      variant="white"
+      class="navStyle"
+      v-if="showIcon"
+      sticky
+    >
+      <b-navbar-brand
+        href="#"
+        style="display: flex; width: 80%; margin-left: 0.2em"
+      >
+        <a href="#" @click.prevent="route('dashboard')">
+          <img
+            src="./assets/Entity_full.png"
+            alt=""
+            style="height: 5vh; opacity: 80%"
+          />
+        </a>
+      </b-navbar-brand>
+      <b-collapse id="nav-collapse" is-nav style="width: 30%">
+        <b-navbar-nav class="ml-auto">
+          <!-- <a class="mr-4" href="#" @click.prevent="route('playgroundDashboard')"
           style="color:grey; margin-top:0.8em;" title="SSI Playground" v-if="selectedDashboard === $config.DashboardTypes.DeveloperDashboard">
           <i class="fa fa-gamepad" style="font-size:36px;"></i>
-        </a>
+        </a> -->
 
-        <a class="mr-4" href="#" @click.prevent="route('dashboard')"
-          style="color:grey; margin-top:0.8em;" title="Developer Dashboard"  v-if="selectedDashboard === $config.DashboardTypes.SSIPlayground">
-          <i class="fa fa-code" style="font-size:36px;"></i>
-        </a>
-
-        <a class="mr-3" href="https://docs.hypersign.id/entity-studio/introduction" target="blank" 
-          style="color:grey; margin-top:0.8em;" title="Documentation">
-          <i class='fas fa-book-open' style='font-size:36px'></i>
-        </a>
-
-        <b-nav-item-dropdown right v-if="showIcon" title="Profile">
-          <template #button-content>
-            <i class='fas fa-user-circle' style='font-size:40px; color: grey'></i>  
-          </template>
-          
-          <div style="display:inline;">
-          <div class="hov"
-          style="display:flex;"
-          :title="userDetails.email"
+          <a
+            class="mr-4"
+            href="#"
+            @click.prevent="route('dashboard')"
+            style="color: grey; margin-top: 0.8em"
+            title="Developer Dashboard"
+            v-if="selectedDashboard === $config.DashboardTypes.SSIPlayground"
           >
-          {{shorten(userDetails.email)}}
-          <i class="far fa-copy mt-1"
-          @click="copyToClip(userDetails.email,'Email')"></i>
-          </div><hr>
+            <i class="fa fa-code" style="font-size: 36px"></i>
+          </a>
 
-          <div class="hov" style="display:flex;"
-            :title="userDetails.did">
-            {{shorten(userDetails.did)}}
-            <i class="far fa-copy"
-            @click="copyToClip(userDetails.did,'DID')"></i>
-          </div><hr>
-          <div class="hov" @click="logoutAll()"
-          title="Logout">
-          Logout <i class="fas fa-sign-out-alt"
-            style="cursor:pointer; font-size:1.3rem;"                        
-          ></i>
-          </div>
-          </div>
-        </b-nav-item-dropdown>
-      </b-navbar-nav>
-    </b-collapse>
-  </b-navbar>
+          <a
+            class="mr-3"
+            href="https://docs.hypersign.id/entity-studio/developer-dashboard"
+            target="blank"
+            style="color: grey; margin-top: 0.8em"
+            title="Documentation"
+          >
+            <i class="fas fa-book-open" style="font-size: 36px"></i>
+          </a>
 
-   <div :class="[
-      isSidebarCollapsed 
-          ? 'container-collapsed-not'
-          : 'container-collapsed',
-    ]">
-    
-    <router-view class="container containerData"/>
-  </div>
-    <notifications group="foo" />
-    <sidebar-menu class="sidebar-wrapper" v-if="showSideNavbar" @toggle-collapse="onToggleCollapse" :collapsed="isSidebarCollapsed" :theme="'white-theme'" width="220px"
-      :menu="getSideMenu()"
-      >
-      <div slot="header" style="background:#363740">
-          <div class="mt-3">
-            <div>
-            <center><img v-if="!isSidebarCollapsed" :src="`${getProfileIcon(selectedOrg? selectedOrg.name: '')}`" alt="avatar" width="130px" style="" /></center>
-            <center><img v-if="isSidebarCollapsed" :src="`${getProfileIcon(selectedOrg? selectedOrg.name: '')}`" class="mr-1" alt="center" width="35px"/></center>
+          <b-nav-item-dropdown right v-if="showIcon" title="Profile">
+            <template #button-content>
+              <i
+                class="fas fa-user-circle"
+                style="font-size: 40px; color: grey"
+              ></i>
+            </template>
+
+            <div style="display: inline">
+              <div class="hov" style="display: flex" :title="userDetails.email">
+                {{ shorten(userDetails.email) }}
+                <i
+                  class="far fa-copy mt-1"
+                  @click="copyToClip(userDetails.email, 'Email')"
+                ></i>
+              </div>
+              <hr />
+
+              <div class="hov" style="display: flex" :title="userDetails.did">
+                {{ shorten(userDetails.did) }}
+                <i
+                  class="far fa-copy"
+                  @click="copyToClip(userDetails.did, 'DID')"
+                ></i>
+              </div>
+              <hr />
+              <div class="hov" @click="logoutAll()" title="Logout">
+                Logout
+                <i
+                  class="fas fa-sign-out-alt"
+                  style="cursor: pointer; font-size: 1.3rem"
+                ></i>
+              </div>
             </div>
-            <center><p class="mt-3 orgNameCss">{{ selectedOrg? selectedOrg.name: '' }}</p></center>
+          </b-nav-item-dropdown>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
+
+    <div
+      :class="[
+        isSidebarCollapsed ? 'container-collapsed-not' : 'container-collapsed',
+      ]"
+    >
+      <router-view class="container containerData" />
+    </div>
+    <notifications group="foo" />
+    <sidebar-menu
+      class="sidebar-wrapper"
+      v-if="showSideNavbar"
+      @toggle-collapse="onToggleCollapse"
+      :collapsed="isSidebarCollapsed"
+      :theme="'white-theme'"
+      width="220px"
+      :menu="getSideMenu()"
+    >
+      <div slot="header" style="background: #363740">
+        <div class="mt-3">
+          <div>
+            <center>
+              <img
+                v-if="!isSidebarCollapsed"
+                :src="`${getProfileIcon(selectedOrg ? selectedOrg.name : '')}`"
+                alt="avatar"
+                width="130px"
+                style=""
+              />
+            </center>
+            <center>
+              <img
+                v-if="isSidebarCollapsed"
+                :src="`${getProfileIcon(selectedOrg ? selectedOrg.name : '')}`"
+                class="mr-1"
+                alt="center"
+                width="35px"
+              />
+            </center>
           </div>
+          <center>
+            <p class="mt-3 orgNameCss">
+              {{ selectedOrg ? selectedOrg.name : "" }}
+            </p>
+          </center>
         </div>
-      </sidebar-menu>
+      </div>
+    </sidebar-menu>
   </div>
 </template>
 
@@ -157,22 +211,19 @@ cursor: pointer;
   padding: 0px !important;
 }
 .navStyle {
-  background: #FFFFFF;
+  background: #ffffff;
   margin-bottom: 1%;
   padding: 5px !important;
   padding-left: 1.5%;
   text-align: left;
-  box-shadow:
-    rgba(0, 0, 0, 0.1) 0px 2px 2px 0px,
-    rgba(0, 0, 0, 0.02) 0px 3px 1px -2px,
-    rgba(0, 0, 0, 0.01) 0px 1px 5px 0px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 2px 0px,
+    rgba(0, 0, 0, 0.02) 0px 3px 1px -2px, rgba(0, 0, 0, 0.01) 0px 1px 5px 0px;
 }
 .orgNameCss {
   overflow-wrap: break-word;
   color: white;
   font-weight: bold;
 }
-
 
 #nav {
   padding: 30px;
@@ -202,11 +253,11 @@ cursor: pointer;
 }
 
 .marginLeft {
-  margin-left: 13%
+  margin-left: 13%;
 }
 
 .marginRight {
-  margin-right: 12%
+  margin-right: 12%;
 }
 #view.collapsed {
   padding-left: 50px;
@@ -217,9 +268,9 @@ cursor: pointer;
 .sidebar-wrapper {
   min-width: 70px;
   margin-top: 65px;
-  box-shadow: 0 0 15px 0 rgba(34,41,47,.05);
+  box-shadow: 0 0 15px 0 rgba(34, 41, 47, 0.05);
 }
-.v-sidebar-menu.vsm_white-theme .vsm--mobile-bg{
+.v-sidebar-menu.vsm_white-theme .vsm--mobile-bg {
   background: #905ab0;
 }
 .vsm--mobile-bg {
@@ -232,12 +283,12 @@ cursor: pointer;
 .v-sidebar-menu.vsm_white-theme .vsm--header {
   color: #000 !important;
 }
-.v-sidebar-menu.vsm_white-theme .vsm--link{
+.v-sidebar-menu.vsm_white-theme .vsm--link {
   color: #000 !important;
 }
-.v-sidebar-menu.vsm_white-theme .vsm--link_level-1 .vsm--link:hover{
+.v-sidebar-menu.vsm_white-theme .vsm--link_level-1 .vsm--link:hover {
   color: #000 !important;
-    background: #905ab0 !important;
+  background: #905ab0 !important;
 }
 .v-sidebar-menu.vsm_white-theme .vsm--link_level-1 .vsm--icon {
   background-color: transparent !important;
@@ -245,116 +296,123 @@ cursor: pointer;
 }
 </style>
 
-
 <script>
-import UtilsMixin from './mixins/utils';
-import EventBus from './eventbus'
-import HfButtons from "./components/element/HfButtons.vue"
-import { mapActions, mapMutations, mapGetters, mapState } from 'vuex';
+import UtilsMixin from "./mixins/utils";
+import EventBus from "./eventbus";
+import HfButtons from "./components/element/HfButtons.vue";
+import { mapActions, mapMutations, mapGetters, mapState } from "vuex";
 export default {
   components: { HfButtons },
   computed: {
     ...mapGetters("playgroundStore", ["userDetails", "getSelectedOrg"]),
     ...mapState({
-      showMainSideNavBar: state =>  state.mainStore.showMainSideNavBar,
-      selectedDashboard: state => state.globalStore.selectedDashboard,
+      showMainSideNavBar: (state) => state.mainStore.showMainSideNavBar,
+      selectedDashboard: (state) => state.globalStore.selectedDashboard,
     }),
     selectedOrg() {
       return this.getSelectedOrg;
     },
     showSideNavbar() {
-      return this.$store.state.playgroundStore.showSideNavbar && this.showMainSideNavBar
+      return (
+        this.$store.state.playgroundStore.showSideNavbar &&
+        this.showMainSideNavBar
+      );
     },
-
   },
   data() {
     return {
-      collapsed:true,
-      showIcon:false,
-      isSidebarCollapsed:true,
-      authToken: localStorage.getItem('authToken'),
+      collapsed: true,
+      showIcon: false,
+      isSidebarCollapsed: true,
+      authToken: localStorage.getItem("authToken"),
       schema_page: 1,
-      authRoutes: ['register', 'PKIIdLogin'],
-      user: {}
-    }
+      authRoutes: ["register", "PKIIdLogin"],
+      user: {},
+    };
   },
 
   mounted() {
-    EventBus.$on('clearAppData',()=>{
-      this.authToken = null
-      this.showIcon = false})
-    EventBus.$on('closeSideNav',()=>{
-      this.isSidebarCollapsed = true
-    })
-    if(localStorage.getItem('user')){
-    const usrStr = localStorage.getItem('user')
-    this.user = JSON.parse(usrStr);
+    EventBus.$on("clearAppData", () => {
+      this.authToken = null;
+      this.showIcon = false;
+    });
+    EventBus.$on("closeSideNav", () => {
+      this.isSidebarCollapsed = true;
+    });
+    if (localStorage.getItem("user")) {
+      const usrStr = localStorage.getItem("user");
+      this.user = JSON.parse(usrStr);
     }
-   if(localStorage.getItem('selectedOrg')){
-    const selectedOrgId = localStorage.getItem('selectedOrg')
-    this.selectAnOrg(selectedOrgId)
-    this.getList(selectedOrgId)
-    this.getCredList(selectedOrgId)
-    this.fetchTemplates(selectedOrgId)
-   }
-   EventBus.$on("initializeStore",this.initializeStore)
-   this.initializeStore()
+    if (localStorage.getItem("selectedOrg")) {
+      const selectedOrgId = localStorage.getItem("selectedOrg");
+      this.selectAnOrg(selectedOrgId);
+      this.getList(selectedOrgId);
+      this.getCredList(selectedOrgId);
+      this.fetchTemplates(selectedOrgId);
+    }
+    EventBus.$on("initializeStore", this.initializeStore);
+    this.initializeStore();
   },
   methods: {
     ...mapActions("mainStore", ["fetchAppsListFromServer"]),
     ...mapMutations("mainStore", ["resetMainStore"]),
-    ...mapActions("playgroundStore", ['insertAschema', "insertAcredential", "fetchAllOrgsAction"]),
-    ...mapMutations("playgroundStore", ["insertAnOrg", "insertApresentationTemplate",  'selectAnOrg', 'shiftContainer', 'resetStore']),
-    route(name){
-      this.$router.push({ name })
+    ...mapActions("playgroundStore", [
+      "insertAschema",
+      "insertAcredential",
+      "fetchAllOrgsAction",
+    ]),
+    ...mapMutations("playgroundStore", [
+      "insertAnOrg",
+      "insertApresentationTemplate",
+      "selectAnOrg",
+      "shiftContainer",
+      "resetStore",
+    ]),
+    route(name) {
+      this.$router.push({ name });
     },
-    copyToClip(textToCopy,contentType) {
-        if (textToCopy) {
-            navigator.clipboard
-                .writeText(textToCopy)
-                .then(() => {
-                    this.notifySuccess(
-                        `${contentType} copied!`
-                    );
-                })
-                .catch((err) => {
-                    this.notifyErr(
-                        'Error while copying',
-                        err
-                    );
-                });
-        }
+    copyToClip(textToCopy, contentType) {
+      if (textToCopy) {
+        navigator.clipboard
+          .writeText(textToCopy)
+          .then(() => {
+            this.notifySuccess(`${contentType} copied!`);
+          })
+          .catch((err) => {
+            this.notifyErr("Error while copying", err);
+          });
+      }
     },
     getProfileIcon(name) {
-      return "https://avatars.dicebear.com/api/identicon/"+name+".svg"
+      return "https://avatars.dicebear.com/api/identicon/" + name + ".svg";
     },
     logoutAll() {
-      this.showIcon = false
-      this.$router.push('/login')
-      this.logout()
+      this.showIcon = false;
+      this.$router.push("/login");
+      this.logout();
     },
     onToggleCollapse(collapsed) {
       if (collapsed) {
         this.isSidebarCollapsed = true;
-        this.shiftContainer(false)        
+        this.shiftContainer(false);
       } else {
         this.isSidebarCollapsed = false;
-        this.shiftContainer(true)        
+        this.shiftContainer(true);
       }
     },
     initializeStore() {
-      this.authToken = localStorage.getItem('authToken'); 
+      this.authToken = localStorage.getItem("authToken");
       if (this.authToken) {
-       this.showIcon = true
-       // TODO: This should only execute when playground is selected, otherwise not...
-       this.fetchAllOrgs();
-       
-       this.fetchAppsListFromServer();
-      }else{
+        this.showIcon = true;
+        // TODO: This should only execute when playground is selected, otherwise not...
+        this.fetchAllOrgs();
+
+        this.fetchAppsListFromServer();
+      } else {
         console.log("else");
       }
     },
-    
+
     getSideMenu() {
       const menu = [
         {
@@ -382,8 +440,8 @@ export default {
           title: "Verification",
           icon: "fa fa-check",
         },
-      ]
-      return menu
+      ];
+      return menu;
     },
 
     fetchAllOrgs() {
@@ -391,79 +449,79 @@ export default {
     },
 
     fetchTemplates(selectedOrgDid) {
-      const url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.PRESENTATION_TEMPLATE_EP}/org/${selectedOrgDid}/`
+      const url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.PRESENTATION_TEMPLATE_EP}/org/${selectedOrgDid}/`;
       const headers = {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${this.authToken}`
-
-      }
+        Authorization: `Bearer ${this.authToken}`,
+      };
       fetch(url, {
-        headers
-      }).then(response => response.json()).then(json => {
-        json.data.forEach(template => {
-          this.insertApresentationTemplate(template)
-        })
+        headers,
       })
+        .then((response) => response.json())
+        .then((json) => {
+          json.data.forEach((template) => {
+            this.insertApresentationTemplate(template);
+          });
+        });
     },
 
     async getList(selectedOrgDid) {
       let url = "";
-      let options = {}
-        url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.SCHEMA_LIST_EP}/${selectedOrgDid}/?page=${this.schema_page}&limit=10`
+      let options = {};
+      url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.SCHEMA_LIST_EP}/${selectedOrgDid}/?page=${this.schema_page}&limit=10`;
 
-        options = {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${this.authToken}`
-          }
-        }
+      options = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.authToken}`,
+        },
+      };
       const resp = await fetch(url, options);
       const j = await resp.json();
-        if (j && j.status == 500) {
+      if (j && j.status == 500) {
         return this.notifyErr(`Error:  ${j.error}`);
       }
-      const schemaList = j.data.schemaList
-        schemaList.forEach(schema => {
-          this.insertAschema(schema)
-        })
+      const schemaList = j.data.schemaList;
+      schemaList.forEach((schema) => {
+        this.insertAschema(schema);
+      });
     },
 
     async getCredList(selectedOrgDid) {
       let url = "";
-      let options = {}
-        url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.CRED_LIST_EP}/${selectedOrgDid}`;
+      let options = {};
+      url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.CRED_LIST_EP}/${selectedOrgDid}`;
 
-        options = {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${this.authToken}`
-          }
-        }
+      options = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.authToken}`,
+        },
+      };
       const resp = await fetch(url, options);
       const j = await resp.json();
-        if (j && j.status == 500) {
+      if (j && j.status == 500) {
         return this.notifyErr(`Error:  ${j.error}`);
       }
-      const credList = j.data.credList
-      credList.forEach(credential => {
-          this.insertAcredential(credential)
-        })
+      const credList = j.data.credList;
+      credList.forEach((credential) => {
+        this.insertAcredential(credential);
+      });
     },
     logout() {
-      this.authToken = null
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('user')
-      localStorage.removeItem("credentials")
-      localStorage.removeItem("userData")
-      this.isSidebarCollapsed=true,
-      this.collapsed= true
-      localStorage.removeItem('selectedOrg')
-      this.resetStore()
-      this.resetMainStore()
+      this.authToken = null;
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
+      localStorage.removeItem("credentials");
+      localStorage.removeItem("userData");
+      (this.isSidebarCollapsed = true), (this.collapsed = true);
+      localStorage.removeItem("selectedOrg");
+      this.resetStore();
+      this.resetMainStore();
     },
   },
-  mixins: [UtilsMixin]
-}
+  mixins: [UtilsMixin],
+};
 </script>
