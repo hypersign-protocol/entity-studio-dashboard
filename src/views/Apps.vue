@@ -80,14 +80,26 @@
               >Application Id<span style="color: red">*</span>:
             </strong></label
           >
-          <input
-            type="text"
-            class="form-control"
-            id="orgDid"
-            v-model="appModel.appId"
-            aria-describedby="orgNameHelp"
-            disabled
-          />
+
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="orgDid"
+              v-model="appModel.appId"
+              aria-describedby="orgNameHelp"
+              disabled
+            />
+            <div class="input-group-append">
+              <span class="input-group-text" id="basic-addon2">
+                <i
+                  class="far fa-copy mt-1"
+                  @click="copyToClip(appModel.appId, 'Application Id')"
+                >
+                </i>
+              </span>
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
@@ -146,14 +158,26 @@
         <div class="form-group" v-if="edit === true">
           <tool-tip infoMessage="Your tenant URL"></tool-tip>
           <label for="tenant"><strong>Tenant URL: </strong></label>
-          <input
-            type="text"
-            class="form-control"
-            id="tenant"
-            v-model="appModel.tenantUrl"
-            aria-describedby="orgNameHelp"
-            disabled
-          />
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="tenant"
+              v-model="appModel.tenantUrl"
+              aria-describedby="orgNameHelp"
+              disabled
+            />
+            <div class="input-group-append">
+              <span class="input-group-text" id="basic-addon2">
+                <i
+                  class="far fa-copy mt-1"
+                  @click="copyToClip(appModel.tenantUrl, 'Tenant URL')"
+                >
+                </i>
+              </span>
+            </div>
+          </div>
+
           <!-- <small
             ><a
               :href="`https://explorer.hypersign.id/hypersign-testnet/account/${appModel.walletAddress}`"
@@ -166,19 +190,30 @@
         <div class="form-group" v-if="edit === true">
           <tool-tip infoMessage="Your wallet address"></tool-tip>
           <label for="orgDid"><strong>Wallet Address: </strong></label>
-          <input
-            type="text"
-            class="form-control"
-            id="orgDid"
-            v-model="appModel.walletAddress"
-            aria-describedby="orgNameHelp"
-            disabled
-          />
+          <div class="input-group mb-1">
+            <input
+              type="text"
+              class="form-control"
+              id="orgDid"
+              v-model="appModel.walletAddress"
+              aria-describedby="orgNameHelp"
+              disabled
+            />
+            <div class="input-group-append">
+              <span class="input-group-text" id="basic-addon2">
+                <i
+                  class="far fa-copy mt-1"
+                  @click="copyToClip(appModel.walletAddress, 'Wallet address')"
+                >
+                </i>
+              </span>
+            </div>
+          </div>
           <small
             ><a
               :href="`https://explorer.hypersign.id/hypersign-testnet/account/${appModel.walletAddress}`"
               target="_blank"
-              >Click here to see wallet balance</a
+              >Click here to view wallet balance</a
             ></small
           >
         </div>

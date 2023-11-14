@@ -2,9 +2,10 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import config from '../config'
 import UtilsMixin from '../mixins/utils.js'
+import { sanitizeUrl } from '../utils/common.js'
 
 const { apiServer } = config;
-const apiServerBaseUrl = apiServer.host + apiServer.basePath;
+const apiServerBaseUrl = sanitizeUrl(apiServer.host) + apiServer.basePath;
 Vue.use(Vuex)
 
 const mainStore = {
