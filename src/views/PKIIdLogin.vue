@@ -87,57 +87,84 @@ h5 span {
   text-align: center;
 }
 
-.QRRefresh{
-  width:100%; 
-  align-content:center; 
-  height:100%; 
+.QRRefresh {
+  width: 100%;
+  align-content: center;
+  height: 100%;
   cursor: pointer;
   margin-top: 14%;
 }
 
 .button-theme {
-background-color: #905ab0;
+  background-color: #905ab0;
   border-collapse: #905ab0;
   color: #fff;
   border: 0;
 }
 
-.event-card{
-  border:0;
+.event-card {
+  border: 0;
   border-radius: 10px;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   cursor: pointer;
 }
-.align-center{
+.align-center {
   margin-left: auto;
   margin-right: auto;
   display: block;
 }
 </style>
 <template>
-<div style="justify-content: center; padding-top:3%">
-    <img class="align-center" style="margin-bottom: 20px" height="60px" src="../assets/Entity_full.png" />
-    <b-card no-body class="loginContent event-card ">
-      <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>
+  <div style="justify-content: center; padding-top: 3%">
+    <img
+      class="align-center"
+      style="margin-bottom: 20px"
+      height="60px"
+      src="../assets/Entity_full.png"
+    />
+    <b-card no-body class="loginContent event-card">
+      <loading
+        :active.sync="isLoading"
+        :can-cancel="true"
+        :is-full-page="fullPage"
+      ></loading>
       <h4>Admin Login</h4>
-      <div class="row" style="margin-top:3%">
+      <div class="row" style="margin-top: 3%">
         <div v-if="QRRefresh" class="QRRefresh">
-          <i @click="reloadQR" class="fas fa-redo" style="font-size: xx-large; color: gray;"></i>
-          <p><label style="font-size:small; color:grey; margin-top:1%">
+          <i
+            @click="reloadQR"
+            class="fas fa-redo"
+            style="font-size: xx-large; color: gray"
+          ></i>
+          <p>
+            <label style="font-size: small; color: grey; margin-top: 1%">
               Session expired. Click to reload.
-            </label></p>
+            </label>
+          </p>
         </div>
         <form class="col-md-12" v-else>
-           <div class="form-group">
-            <vue-qr v-if="qr_data != ''" margin="1" :text="qr_data" :size="200" :logoSrc="src2"
-              logoBackgroundColor="white" logoCornerRadius="2"></vue-qr>
-            <label style="font-size:small; color:grey; margin-top:1%">Scan QR code using Hypersign Mobile App</label>
+          <div class="form-group">
+            <vue-qr
+              v-if="qr_data != ''"
+              margin="1"
+              :text="qr_data"
+              :size="200"
+              :logoSrc="src2"
+              logoBackgroundColor="white"
+              logoCornerRadius="2"
+            ></vue-qr>
+            <label style="font-size: small; color: grey; margin-top: 1%"
+              >Scan QR code using Hypersign Mobile App</label
+            >
             <div>
               <!-- <p style="font-size:small;"> Don’t have the app yet? <a href="#">Get it now</a></p> -->
-              <span style="font-size: small; color:grey; padding: 10px">
+              <span style="font-size: small; color: grey; padding: 10px">
                 Get the app on
-                <a href="https://play.google.com/store/apps/details?id=com.hypersign.cordova"
-                  target="__blank">Android</a>
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.hypersign.cordova"
+                  target="__blank"
+                  >Android</a
+                >
                 or
                 <a :href="$config.webWalletAddress" target="__blank">Web</a>
               </span>
@@ -146,15 +173,19 @@ background-color: #905ab0;
 
           <h5><span>OR</span></h5>
 
-          <div class="mb-2 ">
-            <a v-if="this.value != ''" class="btn btn-hypersign  button-theme"  href="#" @click.prevent="openWallet()">
-              <div style="font-size: smaller; padding: 10px;">
+          <div class="mb-2">
+            <a
+              v-if="this.value != ''"
+              class="btn btn-hypersign button-theme"
+              href="#"
+              @click.prevent="openWallet()"
+            >
+              <div style="font-size: smaller; padding: 10px">
                 Click To Login
               </div>
             </a>
           </div>
         </form>
-
       </div>
     </b-card>
   </div>
@@ -172,11 +203,11 @@ export default {
   components: {
     QrcodeVue,
     Loading,
-    VueQr
+    VueQr,
   },
   data() {
     return {
-      qr_data:"",
+      qr_data: "",
       src2: require("../assets/icon.png"),
       QRRefresh: false,
       active: 0,
@@ -196,11 +227,10 @@ export default {
       privateKey:
         "3isrtEJ4gt1ZHkdUYYph1WFAtzfqAL5WM6Hh1NC2hmWnDfBypXjt5oUFdAqQdiess2vqqQ3iF6x4fDVuvLw454sn",
       did: "did:hs:892325a4-75c9-465c-882b-91e3ca5143c3",
-
     };
   },
   created() {
-    EventBus.$emit("clearAppData");       
+    EventBus.$emit("clearAppData");
     localStorage.clear();
     document.title = `${config.app.name} - Login`;
     // take it in the env
@@ -215,18 +245,17 @@ export default {
       if (messageData.op == "init") {
         _this.isLoading = false;
         /// Sending provider from here........
-        messageData.data['provider'] = 'google';
+        messageData.data["provider"] = "google";
         _this.value = JSON.stringify(messageData.data);
-        _this.qr_data = `${_this.$config.webWalletAddress}/deeplink?url=${_this.value}`
-        console.log(_this.qr_data);
+        _this.qr_data = `${_this.$config.webWalletAddress}/deeplink?url=${_this.value}`;
       } else if (messageData.op == "end") {
         _this.connection.close();
 
-        const authorizationToken = messageData.data.hypersign.data.accessToken
-        const refreshToken = messageData.data.hypersign.data.refreshToken
+        const authorizationToken = messageData.data.hypersign.data.accessToken;
+        const refreshToken = messageData.data.hypersign.data.refreshToken;
         localStorage.setItem("authToken", authorizationToken);
-        localStorage.setItem("refreshToken", refreshToken)
-        EventBus.$emit("initializeStore",'login');
+        localStorage.setItem("refreshToken", refreshToken);
+        EventBus.$emit("initializeStore", "login");
 
         if (localStorage.getItem("authToken") != null) {
           if (this.walletWindow) {
@@ -249,22 +278,21 @@ export default {
     };
     this.connection.onerror = function (error) {
       console.log("Websocket connection error ", error);
-    }
-
+    };
   },
   mounted() {
     this.clean();
   },
   methods: {
-    reloadQR(){
-      window.location.reload()
+    reloadQR() {
+      window.location.reload();
     },
     push(path) {
-      this.$router.push(path)
+      this.$router.push(path);
     },
     openWallet() {
       if (this.value != "") {
-        const link = `${this.$config.webWalletAddress}/deeplink?url=${this.value}`
+        const link = `${this.$config.webWalletAddress}/deeplink?url=${this.value}`;
         this.walletWindow = window.open(
           link,
           "popUpWindow",
@@ -294,7 +322,7 @@ export default {
         text: msg,
       });
     },
-    gotosubpage(id){
+    gotosubpage(id) {
       this.$router.push(`${id}`);
     },
     ///////////////////////////////////////////////////////////////////// Commenting below code since no use//////////////////////////////
