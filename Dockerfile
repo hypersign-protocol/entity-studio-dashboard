@@ -1,11 +1,13 @@
 FROM node:14 as build-stage
+
+RUN apt-get update && apt-get install -y git
+RUN git clone https://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@github.com/hypersign-protocol/studio-frontend.git /app
+
 WORKDIR /app
 
-COPY package*json ./
+RUN git checkout new-studio-server-integration
 
 RUN npm install
-
-COPY . .
 
 # Build the Vue.js app for production
 ARG VUE_APP_TITLE
