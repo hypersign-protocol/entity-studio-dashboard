@@ -27,6 +27,7 @@
     "gh-pages": "^1.2.0",
     "jvjr-docker-env": "^1.0.1",
     "lds-sdk": "^4.0.1",
+    "loadsh": "^0.0.4",
     "mdbvue": "^6.7.1",
     "node-fetch": "^2.6.0",
     "qrcode.vue": "^1.7.0",
