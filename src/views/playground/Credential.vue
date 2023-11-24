@@ -826,6 +826,7 @@ export default {
         console.log(e);
       } finally {
         this.isLoading = false;
+        this.clearAll();
       }
     },
     showInputField(type) {
