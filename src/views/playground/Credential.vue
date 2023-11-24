@@ -130,7 +130,7 @@ h5 span {
                       <input
                         type="text"
                         class="form-control"
-                        placeholder="Issuer did (did:hs:...)"
+                        placeholder="Issuer Did"
                         v-model="issuerDid"
                         disabled
                       />
@@ -142,7 +142,7 @@ h5 span {
                     ></tool-tip>
                     <label for="forselectschema"
                       ><strong
-                        >Select Schema<span style="color: red">*</span>:</strong
+                        >SchemaId<span style="color: red">*</span>:</strong
                       ></label
                     >
                     <!-- <input list="selectOptions" id="forselectschema" name="forselectschema"/>                     -->
@@ -163,6 +163,7 @@ h5 span {
                         v-for="browser in selectOptions"
                         :key="browser"
                         :value="browser.value"
+                        class="form-control"
                       ></option>
                     </datalist>
                     <!-- <hf-select-drop-down
