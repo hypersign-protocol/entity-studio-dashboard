@@ -3,23 +3,25 @@ import EnvProvider from 'jvjr-docker-env'
 const hsdk = require('lds-sdk')
 const config = {
     studioServer: {
-        SCHEMA_SSE:`${process.env.VUE_APP_SSE}api/v1/schema/sse/`,
-        CRED_SSE:`${process.env.VUE_APP_SSE}api/v1/credential/sse/`,
-        ORG_SSE:`${process.env.VUE_APP_SSE}api/v1/org/sse/`,
+        SCHEMA_SSE: `${process.env.VUE_APP_SSE}api/v1/schema/sse/`,
+        CRED_SSE: `${process.env.VUE_APP_SSE}api/v1/credential/sse/`,
+        ORG_SSE: `${process.env.VUE_APP_SSE}api/v1/org/sse/`,
         BASE_URL: process.env.VUE_APP_STUDIO_SERVER_BASE_URL, // EnvProvider.value('STUDIO_SERVER_BASE_URL'),
-        ACCPCT_CRED_EP: process.env.VUE_APP_ACCPCT_CRED_EP|| "api/v1/credential/send",
-        SAVE_SCHEMA_EP: process.env.VUE_APP_STUDIO_SERVER_SAVE_SCHEMA ||"api/v1/schema",
+        ACCPCT_CRED_EP: process.env.VUE_APP_ACCPCT_CRED_EP || "api/v1/credential/send",
+        SAVE_SCHEMA_EP: process.env.VUE_APP_STUDIO_SERVER_SAVE_SCHEMA || "api/v1/schema",
         CRED_LIST_EP: process.env.VUE_APP_STUDIO_SERVER_CRED_LIST_EP || "api/v1/credential/org",
         SCHEMA_LIST_EP: process.env.VUE_APP_SCHEMA_LIST_EP || 'api/v1/schema',
         CRED_ISSUE_EP: process.env.VUE_APP_STUDIO_SERVER_CRED_ISSUE_EP || "api/v1/credential",
         AUTH_CHALLENGE_EP: EnvProvider.value('STUDIO_SERVER_AUTH_CHALLENGE_EP') || "api/auth/challenge",
         AUTH_LOGIN_EP: EnvProvider.value('STUDIO_SERVER_AUTH_LOGIN_EP') || "api/auth/login",
-        PRESENTATION_TEMPLATE_EP:process.env.VUE_APP_PRESENTATION_TEMPLATE_EP
+        PRESENTATION_TEMPLATE_EP: process.env.VUE_APP_PRESENTATION_TEMPLATE_EP
     },
     nodeServer: {
         BASE_URL: process.env.VUE_APP_NODE_SERVER_BASE_URL,
         BASE_URL_REST: process.env.VUE_APP_NODE_SERVER_BASE_URL_REST || 'https://api.jagrat.hypersign.id/',
-        SCHEMA_GET_REST:process.env.VUE_APP_SCHEMA_GET_EP_REST || 'hypersign-protocol/hidnode/ssi/schema/',
+        SCHEMA_GET_REST: process.env.VUE_APP_SCHEMA_GET_EP_REST || 'hypersign-protocol/hidnode/ssi/schema/',
+        EXPLORER: process.env.VUE_APP_EXPLORER_BASE_URL || "https://explorer.hypersign.id/",
+
         NETWORK_STATUS_EP: EnvProvider.value('NODE_SERVER_NETWORK_STATUS_EP') || "net_info",
         SCHEMA_LIST_EP: EnvProvider.value('NODE_SERVER_SCHEMA_LIST_EP') || "api/schema/list",
         SCHEMA_GET_EP: EnvProvider.value('NODE_SERVER_SCHEMA_GET_EP') || "api/schema/get",
@@ -43,20 +45,20 @@ const config = {
     }
 
 }
-const websocketUrl= process.env.VUE_APP_STUDIO_SERVER_BASE_WS
- //const webWalletAddress="https://wallet-stage.hypersign.id"
-const webWalletAddress=process.env.VUE_APP_WEB_WALLET_ADDRESS;//"http://localhost:4999/chrome/popup/popup#"
+const websocketUrl = process.env.VUE_APP_STUDIO_SERVER_BASE_WS
+//const webWalletAddress="https://wallet-stage.hypersign.id"
+const webWalletAddress = process.env.VUE_APP_WEB_WALLET_ADDRESS;//"http://localhost:4999/chrome/popup/popup#"
 const options = { nodeUrl: config.nodeServer.BASE_URL, didScheme: "did:hs" }
 const hypersignSDK = {
     did: hsdk.did(options),
     credential: hsdk.credential(options)
 }
-config['appName']='Studio'
+config['appName'] = 'Studio'
 config['hypersignSDK'] = hypersignSDK
-config['websocketUrl']=websocketUrl
-config['webWalletAddress']=webWalletAddress
+config['websocketUrl'] = websocketUrl
+config['webWalletAddress'] = webWalletAddress
 
-const DashboardTypes =  Object.freeze({
+const DashboardTypes = Object.freeze({
     SSIPlayground: "SSIPlayground",
     DeveloperDashboard: "DeveloperDashboard",
 })
