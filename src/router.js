@@ -31,6 +31,11 @@ const router = new Router({
       requiresAuth: true
     },
     {
+      path: '/dashboard',
+      redirect: '/studio/playground/dashboard',
+      requiresAuth: true
+    },
+    {
       path: '/studio/dashboard',
       redirect: '/studio/playground/dashboard',
       requiresAuth: true
@@ -123,9 +128,7 @@ const router = new Router({
     {
       path: "/404",
       name: "PageNotFound",
-
-      component: () =>
-        import('./views/404.vue'),
+      component: () => import('./views/404.vue'),
       meta: {
         title: `${config.app.name} - 404`
       }
