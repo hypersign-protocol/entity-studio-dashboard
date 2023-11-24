@@ -17,18 +17,28 @@ import VerifyPresentation from './views/playground/VerifyPresentation.vue'
 
 Vue.use(Router)
 
-const router =  new Router({
+const router = new Router({
   mode: 'hash',
   routes: [
     {
       path: '/',
       redirect: '/studio',
-      requiresAuth:true,
+      requiresAuth: true,
     },
     {
       path: '/studio',
-      redirect: '/studio/dashboard',
-      requiresAuth:true
+      redirect: '/studio/playground/dashboard',
+      requiresAuth: true
+    },
+    {
+      path: '/dashboard',
+      redirect: '/studio/playground/dashboard',
+      requiresAuth: true
+    },
+    {
+      path: '/studio/dashboard',
+      redirect: '/studio/playground/dashboard',
+      requiresAuth: true
     },
     {
       path: '/login',
@@ -37,7 +47,12 @@ const router =  new Router({
     {
       path: '/studio/playground',
       redirect: '/studio/playground/dashboard',
-      requiresAuth:true
+      requiresAuth: true
+    },
+    {
+      path: '/studio/dashboard',
+      redirect: '/studio/playground/dashboard',
+      requiresAuth: true
     },
     {
       path: '/studio/login',
@@ -50,8 +65,8 @@ const router =  new Router({
       component: Dashboard,
       meta: {
         requiresAuth: true,
-           title: `${config.app.name} - Dashboard`
-      } 
+        title: `${config.app.name} - Dashboard`
+      }
     },
     {
       path: '/studio/playground/org',
@@ -59,83 +74,78 @@ const router =  new Router({
       component: Org,
       meta: {
         requiresAuth: true
-      } 
+      }
     },
     {
       path: '/studio/playground/schema',
       name: 'playgroundSchema',
       component: Schema,
-      beforeEnter:guardRouteIfOrgNotSelected,
+      beforeEnter: guardRouteIfOrgNotSelected,
       meta: {
         requiresAuth: true,
         title: `${config.app.name} - Schema`
-           }
+      }
     },
     {
       path: '/studio/playground/credential',
       name: 'playgroundCredential',
       component: Credential,
-      beforeEnter:guardRouteIfOrgNotSelected,
+      beforeEnter: guardRouteIfOrgNotSelected,
       meta: {
         requiresAuth: true,
         title: `${config.app.name} - Credential`
-      } 
+      }
     },
     {
       path: '/studio/playground/presentation',
       name: 'playgroundPresentation',
       component: Presentation,
-      beforeEnter:guardRouteIfOrgNotSelected,
+      beforeEnter: guardRouteIfOrgNotSelected,
       meta: {
         requiresAuth: true,
-         title: `${config.app.name} - Presentation`
-      } 
+        title: `${config.app.name} - Presentation`
+      }
     },
     {
       path: '/studio/playground/presentation/verify',
       name: 'playgroundVerifyPresentation',
       component: VerifyPresentation,
-      beforeEnter:guardRouteIfOrgNotSelected,
+      beforeEnter: guardRouteIfOrgNotSelected,
       meta: {
         requiresAuth: true,
-         title: `${config.app.name} - VerifyPresentation`
-      } 
+        title: `${config.app.name} - VerifyPresentation`
+      }
     },
-    {
-      path: '/studio/dashboard',
-      name: 'dashboard',
-      component: MainDashboard,
-      meta: {
-        requiresAuth: true,
-           title: `${config.app.name} - Dashboard`
-      } 
-    },
+    // {
+    //   path: '/studio/dashboard',
+    //   name: 'dashboard',
+    //   component: MainDashboard,
+    //   meta: {
+    //     requiresAuth: true,
+    //     title: `${config.app.name} - Dashboard`
+    //   }
+    // },
     {
       path: "/404",
       name: "PageNotFound",
-
-      component: () =>
-        import ('./views/404.vue'),
+      component: () => import('./views/404.vue'),
       meta: {
         title: `${config.app.name} - 404`
       }
     },
   ]
 })
-function guardRouteIfOrgNotSelected(to, from, next)
-{
- let isOrgSelected= false;
-if(localStorage.getItem('selectedOrg'))
-  isOrgSelected = true;
- else
-  isOrgSelected= false; if(isOrgSelected) 
- {
-  next();
- } 
- else
- {
-  next({name:'dashboard'});
- }
+function guardRouteIfOrgNotSelected(to, from, next) {
+  let isOrgSelected = false;
+  if (localStorage.getItem('selectedOrg'))
+    isOrgSelected = true;
+  else
+    isOrgSelected = false; if (isOrgSelected) {
+      next();
+    }
+  else {
+    next({ name: 'dashboard' });
+  }
 }
 
 router.beforeEach((to, from, next) => {
@@ -145,43 +155,43 @@ router.beforeEach((to, from, next) => {
     return router.push('/404')
   }
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    document.title= to.meta.title
+    document.title = to.meta.title
     const authToken = localStorage.getItem('authToken')
-    if(authToken){
+    if (authToken) {
       const url = `${config.studioServer.BASE_URL}api/v2/protected`
-      fetch(url,{
+      fetch(url, {
         headers: {
           Authorization: `Bearer ${authToken}`,
-      },
-      method: "POST",
+        },
+        method: "POST",
       }).then(res => res.json())
-      .then(json => {
-        if(json.status == 403){
+        .then(json => {
+          if (json.status == 403) {
+            next({
+              path: '/studio/login',
+              params: { nextUrl: to.fullPath }
+            })
+          } else {
+            localStorage.setItem("user", JSON.stringify(json.message));
+            store.commit('playgroundStore/addUserDetailsToProfile', json.message)
+            next()
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+          store.commit('mainStore/setMainSideNavBar', false)
           next({
             path: '/studio/login',
-            params: { nextUrl:  to.fullPath}
-          })  
-        }else{
-          localStorage.setItem("user", JSON.stringify(json.message));
-          store.commit('playgroundStore/addUserDetailsToProfile',json.message)
-          next()
-        }
-      })
-      .catch((e)=> {
-        console.log(e);
-        store.commit('mainStore/setMainSideNavBar',false)
-        next({
-          path: '/studio/login',
-          params: { nextUrl:  to.fullPath}
+            params: { nextUrl: to.fullPath }
+          })
         })
-      })
-    }else{
+    } else {
       next({
         path: '/studio/login',
-        params: { nextUrl:  to.fullPath}
+        params: { nextUrl: to.fullPath }
       })
     }
-  }else{
+  } else {
     next()
   }
 })

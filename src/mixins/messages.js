@@ -38,7 +38,7 @@ const SCHEMA = {
 const CREDENTIAL = {
     EMPTY_ISSUER_DID: "Please enter Issuer DID",
     EMPTY_HOLDER_DID: "Please enter Subject Did",
-    SELECT_SCHEMA: "Please select atleat one schema",
+    SELECT_SCHEMA: "Please select atleast one schema",
     INVALID_DID: "Please enter a valid did"
 }
 
