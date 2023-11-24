@@ -188,7 +188,11 @@ h5 span {
                   </div>
                   <div
                     class="form-group"
-                    v-if="isEdit === false && issueCredentialType != ''"
+                    v-if="
+                      isEdit === false &&
+                      issueCredentialType != '' &&
+                      selectedSchema != ''
+                    "
                   >
                     <tool-tip infoMessage="Schema Type"></tool-tip>
                     <label for="fordid"><strong>Type:</strong></label>
