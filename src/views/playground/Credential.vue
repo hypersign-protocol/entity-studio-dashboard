@@ -104,14 +104,23 @@ h5 span {
                     </div>
                     <div class="form-group" v-if="isEdit===false">
                       <tool-tip infoMessage="Select Schema to issue credential"></tool-tip>
-                      <label for="forselectschema"><strong>Select Schema<span style="color: red">*</span>:</strong></label>                      
+                      <label for="forselectschema"><strong>Select Schema<span style="color: red">*</span>:</strong></label>  
+                      <!-- <input list="selectOptions" id="forselectschema" name="forselectschema"/>                     -->
                       <!-- <b-form-select v-model="selected" :options="selectOptions"
                         @change="OnSchemaSelectDropDownChange($event)" size="md" class="mt-3">
                       </b-form-select> -->
-                      <hf-select-drop-down
+                          <input list="schema" class="form-control" placeholder="Please enter or select a schema"
+                        v-model="selectedSchema"
+                          @input="OnSchemaSelectDropDownChange(selectedSchema)"
+      @change="OnSchemaSelectDropDownChange(selectedSchema)"/>
+                        <!-- @input="OnSchemaSelectDropDownChange(this.selectedSchema)" /> -->
+                        <datalist id="schema">
+      <option v-for="browser in selectOptions" :key="browser" :value="browser.value"></option>
+    </datalist>
+                      <!-- <hf-select-drop-down
                       :options="selectOptions"
                        @selected="e =>{OnSchemaSelectDropDownChange(e)}"
-                      ></hf-select-drop-down>                
+                      ></hf-select-drop-down>                 -->
                       <span class="goschema" v-if="selectOptions.length === 1" @click="goToSchema()">Create Schema</span>                
                     </div>
                     <div class="form-group" v-for="attr in issueCredAttributes" :key="attr.name">
@@ -356,6 +365,7 @@ import message from '../../mixins/messages'
 import Datepicker from 'vuejs-datetimepicker'
 import VueQr from "vue-qr"
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
+import { config } from '../../config'
 export default {
   name: "Credential",
   components: { HfPopUp, Loading, StudioSideBar, HfButtons, HfSelectDropDown, ToolTip, Datepicker, VueQr },
@@ -382,6 +392,7 @@ export default {
         {text:true, value:true},
         {text:false, value:false},
       ],
+      selectedSchema:'',
       currentStatus:null,
       vcId:'',
       issuerDid:'',
@@ -646,14 +657,34 @@ export default {
         
       // }
     },
-    OnSchemaSelectDropDownChange(event) {  
+    onSchemaInputChange(){
+      console.log('inside onSchemaInput')
+      console.log(this.selectedSchema)
+     // this.selected= selected
+     this.OnSchemaSelectDropDownChange(this.selectedSchema)
+    },
+   async OnSchemaSelectDropDownChange(event) {
+      console.log("inside OnSchemaSelectDropDownChange ==========================")  
+      console.log(event)
       this.selected = null
       this.selected = event;
       if (event) {
         this.issueCredAttributes = [];        
-        const selectedSchema = this.findSchemaBySchemaID(event);
-        const schemaMap =  selectedSchema.schemaDetails.schema.properties;
-        const requiredFields = selectedSchema.schemaDetails.schema.required  
+        let selectedSchemas = this.findSchemaBySchemaID(event);
+        console.log(selectedSchemas,"bfjfgjgk")
+        if (!selectedSchemas){
+          console.log('inside selected schema')
+
+          const url=`https://api.jagrat.hypersign.id/hypersign-protocol/hidnode/ssi/schema/${event}`
+          console.log(url)
+          const data= await fetch(url)
+          selectedSchemas=(await data.json()).schema[0]
+          selectedSchemas['schemaDetails']=selectedSchemas
+          console.log(selectedSchemas)
+        }
+        console.log(selectedSchemas,"fghjkl;lknbvbnm,/")
+        const schemaMap =  selectedSchemas.schemaDetails.schema.properties;
+        const requiredFields = selectedSchemas.schemaDetails.schema.required  
         for (const e of Object.entries(schemaMap)) {
           let dataToPush = {
             id: event,
@@ -679,23 +710,10 @@ export default {
             default:
               this.notifyErr('invalid type')
           }
-          // if(e[1].type === 'boolean') {
-          //   dataToPush['value'] = false
-          // } else {
-          //   dataToPush['value'] = ""
-          // }
+         
           this.issueCredAttributes.push(dataToPush);
         }
-        // this.issueCredAttributes.map((x)=>{
-        //   requiredFields.filter((y)=>{
-        //    if(x.name === y){
-        //     x['required'] = true
-        //    }
-        //    else {
-        //     x['required'] = false
-        //    }
-        //   })
-        // })
+       
         this.issueCredAttributes.map((x)=>{
           if(requiredFields.includes(x.name)){
             x['required'] = true
@@ -707,6 +725,8 @@ export default {
         this.issueCredAttributes = [];
       }
     },
+
+    
     forceFileDownload(data, fileName) {
       const url = window.URL.createObjectURL(new Blob([data]));
       const link = document.createElement("a");
