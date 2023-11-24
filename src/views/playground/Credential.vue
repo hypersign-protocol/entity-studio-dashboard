@@ -771,6 +771,8 @@ export default {
       this.vcId = "";
       this.preStatusSelect = "";
       this.statusReason = "";
+      this.selectedSchema = "";
+      this.issueCredentialType = "";
     },
     async updateCredStatus() {
       try {
@@ -1189,6 +1191,7 @@ export default {
         this.notifyErr(`Error: ${e.message}`);
       } finally {
         this.isLoading = false;
+        this.clearAll();
       }
     },
     clearAll() {
@@ -1196,6 +1199,8 @@ export default {
       this.holderDid = "";
       this.expiryDateTime = null;
       this.issueCredAttributes = [];
+      this.selectedSchema = "";
+      this.issueCredentialType = "";
       EventBus.$emit("resetOption", this.selected);
     },
   },
