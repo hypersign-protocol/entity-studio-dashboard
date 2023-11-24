@@ -842,8 +842,10 @@ export default {
       return spaced.charAt(0).toUpperCase() + spaced.slice(1);
     },
     removeUrl(url) {
-      const chars = url.split("credential/");
-      return chars[0];
+      if (url) {
+        const chars = url.split("credential/");
+        return chars[0];
+      }
     },
     goToSchema() {
       this.$router.push({ name: "playgroundSchema" });

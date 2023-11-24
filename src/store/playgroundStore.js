@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import config from '../config'
 import UtilsMixin from '../mixins/utils.js'
 
@@ -194,7 +195,7 @@ const playgroundStore = {
         updateAcredential(state, payload) {
             let index = state.vcList.findIndex(x => x._id === payload._id);
             if (index >= 0) {
-                Object.assign(state.vcList[index], { ...payload });
+                Vue.set(state.vcList, index, payload);
             } else {
                 state.vcList.push(payload);
             }
