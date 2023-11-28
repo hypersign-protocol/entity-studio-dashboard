@@ -12,8 +12,6 @@ const config = {
         CRED_LIST_EP: process.env.VUE_APP_STUDIO_SERVER_CRED_LIST_EP || "api/v1/credential/org",
         SCHEMA_LIST_EP: process.env.VUE_APP_SCHEMA_LIST_EP || 'api/v1/schema',
         CRED_ISSUE_EP: process.env.VUE_APP_STUDIO_SERVER_CRED_ISSUE_EP || "api/v1/credential",
-        AUTH_CHALLENGE_EP: EnvProvider.value('STUDIO_SERVER_AUTH_CHALLENGE_EP') || "api/auth/challenge",
-        AUTH_LOGIN_EP: EnvProvider.value('STUDIO_SERVER_AUTH_LOGIN_EP') || "api/auth/login",
         PRESENTATION_TEMPLATE_EP: process.env.VUE_APP_PRESENTATION_TEMPLATE_EP || "api/v1/presentation/template"
     },
     nodeServer: {
@@ -29,13 +27,12 @@ const config = {
         DID_RESOLVE_EP: EnvProvider.value('NODE_SERVER_DID_RERSOLVE_EP') || "hypersign-protocol/hidnode/ssi/did/"
     },
     explorer: {
-        BASE_URL: EnvProvider.value('EXPLORER_BASE_URL') || 'https://explorer.hypersign.id/hypersign-testnet/',
-        NEW_DID_EP: EnvProvider.value('EXPLORER_NEW_DID_EP') || "newdid"
+        BASE_URL: process.env.VUE_APP_EXPLORER_BASE_URL || 'https://explorer.hypersign.id/hypersign-testnet/',
     },
     app: {
-        name: EnvProvider.value('TITLE') || "Hypersign Studio",
-        decription: EnvProvider.value('DESC'),
-        version: EnvProvider.value('VERSION') || "v1.0.0",
+        name: process.env.VUE_APP_TITLE || "Hypersign Studio",
+        decription: process.env.VUE_APP_DESC || '',
+        version: process.env.VUE_APP_VERSION || "v1.0.0",
         buttonBgColor: process.env.VUE_APP_BTN_BACKGROUND || "#f1b319",
         buttonTextColor: process.env.VUE_APP_BTN_TXT_COLOR || "black",
     },
