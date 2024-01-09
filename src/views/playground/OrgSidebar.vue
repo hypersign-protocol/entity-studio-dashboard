@@ -544,7 +544,7 @@ export default {
         isAdd: true,
 
         name: "",
-        domain: "https://entity.hypersign.id",
+        domain: "http://localhost:9001",
         // logo: "",
         // region: "",
         network: "",

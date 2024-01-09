@@ -132,7 +132,6 @@ export default {
         url = `${this.$config.studioServer.BASE_URL}api/v1/org`;
         method = "POST";
       }
-
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.authToken}`,

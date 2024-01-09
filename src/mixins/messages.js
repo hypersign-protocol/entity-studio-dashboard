@@ -27,6 +27,7 @@ const SCHEMA = {
     NO_SPACE: "There should not be space in attribute name",
     NAME_CAMELCASE: "Name should be camelCase",
     EMPTY_SCHEMA_NAME: "Please enter Schema name",
+    EMPTY_SCHEMA_DES: "Please enter Schema Description",
     INVALID_SCHEMA_NAME: " Enter valid Schema name",
     EMPTY_SCHEMA_ATTRIBUTE: "Atleast one attribute is required",
     EMPTY_SCHEMA_ATTRIBUTE_NAME: "Please provide attribute name",

@@ -25,6 +25,9 @@ const playgroundStore = {
                 schemasCount: 0,
                 templatesCount: 0,
             }
+        },
+        page:{
+            schema:1
         }
     },
     getters: {
@@ -218,8 +221,10 @@ const playgroundStore = {
             if (schemaId) {
 
                 const url = `${config.nodeServer.BASE_URL_REST}${config.nodeServer.SCHEMA_GET_REST}${schemaId}:`
+                console.log(url);
                 fetch(url).then(response => response.json()).then(json => {
-                    const shcemaDetial = json.schema[0];
+                    const shcemaDetial = json.credentialSchemas[0].credentialSchemaDocument
+                    console.log(shcemaDetial);
                     if (shcemaDetial.schema.properties) {
                         let propertiesStr = shcemaDetial.schema.properties;
                         const props = JSON.parse(propertiesStr)
@@ -268,7 +273,7 @@ const playgroundStore = {
             state.authToken = localStorage.getItem('authToken');
             // fetch all schemas
             {
-                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${state.selectedOrgDid}/?page=1&limit=10`
+                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${state.selectedOrgDid}/?page=${state.page.schema}&limit=10`
 
                 const options = {
                     method: "GET",
@@ -293,7 +298,65 @@ const playgroundStore = {
 
             }
         },
+        fetchSchemasNext({ commit, getters, state, dispatch }) {
+            state.authToken = localStorage.getItem('authToken');
+            // fetch all schemas
+            {
+                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${state.selectedOrgDid}/?page=${++state.page.schema}&limit=10`
 
+                const options = {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${state.authToken}`
+                    }
+                }
+                fetch(url, {
+                    headers: options.headers
+                }).then(response => response.json()).then(json => {
+                    if (json && json.data.schemaList.length !== 0) {
+                        state.schemaList = []
+                        json.data.schemaList.forEach(schema => {
+                            dispatch('upsertAschemaAction', schema)
+                        })
+                    } else {
+                        dispatch('fetchSchemasPrev')
+                        state.schemaList = []
+                    }
+                })
+
+
+            }
+        },
+        fetchSchemasPrev({ commit, getters, state, dispatch }) {
+            state.authToken = localStorage.getItem('authToken');
+            // fetch all schemas
+            {
+                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${state.selectedOrgDid}/?page=${state.page.schema<1?1:--state.page.schema}&limit=10`
+
+                const options = {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${state.authToken}`
+                    }
+                }
+                fetch(url, {
+                    headers: options.headers
+                }).then(response => response.json()).then(json => {
+                    if (json && json.data.schemaList.length !== 0) {
+                        state.schemaList = []
+                        json.data.schemaList.forEach(schema => {
+                            dispatch('upsertAschemaAction', schema)
+                        })
+                    } else {
+                        state.schemaList = []
+                    }
+                })
+
+
+            }
+        },
         fetchCredentialsForOrg({ commit, getters, state, dispatch }) {
             state.authToken = localStorage.getItem('authToken');
             //fetct all credentials
