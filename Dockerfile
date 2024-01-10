@@ -6,7 +6,8 @@ COPY ./package.json .
 
 RUN npm install
 
-# Build the Vue.js app for production
+COPY . .
+
 ENV VUE_APP_TITLE='__VUE_APP_TITLE__'
 
 ENV VUE_APP_DESC='__VUE_APP_DESC__'
