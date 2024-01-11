@@ -326,7 +326,7 @@ export default {
         }
     },
     getProfileIcon(name) {
-      return "https://avatars.dicebear.com/api/identicon/"+name+".svg"
+      return "https://api.dicebear.com/7.x/identicon/svg?seed="+name
     },
     logoutAll() {
       this.showIcon = false
