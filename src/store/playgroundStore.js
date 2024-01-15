@@ -430,11 +430,11 @@ const playgroundStore = {
                     const url = `${config.nodeServer.BASE_URL_REST}hypersign-protocol/hidnode/ssi/schema/${payload}`;
                     console.log(url);
                     const data = await fetch(url);
-                    const selectedSchemas = (await data.json()).schema[0];
+                    const selectedSchemas = (await data.json()).credentialSchemas[0];
                     if (!selectedSchemas) {
                         return reject(new Error('Invalid schemaID or not found'))
                     }
-                    selectedSchemas.schema.properties = selectedSchemas.schema.properties ? JSON.parse(selectedSchemas.schema.properties) : selectedSchemas.schema.properties;
+                    selectedSchemas.schema.properties = selectedSchemas.credentialSchemaDocument.schema.properties ? JSON.parse(selectedSchemas.credentialSchemaDocument.schema.properties) : selectedSchemas.credentialSchemaDocument.schema.properties;
                     const schema = {}
                     schema["schemaDetails"] = selectedSchemas
                     return resolve(schema)

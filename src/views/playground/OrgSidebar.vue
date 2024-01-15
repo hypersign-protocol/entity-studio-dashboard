@@ -321,7 +321,7 @@ export default {
       controllerValue: "",
       orgStore: {
         name: "",
-        domain: "https://entity.hypersign.id",
+        domain: "https://entity.studio.hypersign.id",
         // logo: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%3Fid%3DOIP.5EZ51foyo3QBV2FHnKq1cwHaEc%26pid%3DApi&f=1",
         // region: "US EAST",
         network: "Jagrat",
@@ -544,7 +544,7 @@ export default {
         isAdd: true,
 
         name: "",
-        domain: "http://localhost:9001",
+        domain: "https://entity.studio.hypersign.id",
         // logo: "",
         // region: "",
         network: "",
