@@ -140,6 +140,7 @@
     <div class="row scroll" v-if="orgList.length > 0">
       <div class="col-lg-4" v-for="eachOrg in orgList" :key="eachOrg._id">
         <b-card
+          @click="switchOrg(eachOrg._id)"
           :title="truncate(eachOrg.name, 20)"
           tag="article"
           style="max-width: 30rem; margin-top: 10px; height: 13rem"
@@ -167,7 +168,7 @@
               >
               <span
                 v-if="eachOrg.status === 'Registered'"
-                @click="copyToClip(eachOrg.orgDid, 'Org DID')"
+                @click.stop="copyToClip(eachOrg.orgDid, 'Org DID')"
                 ><i class="far fa-copy"></i
               ></span>
             </li>
@@ -225,7 +226,7 @@
               <div class="pl-2" v-if="eachOrg.status === 'Registered'">
                 <i
                   class="fas fa-pencil-alt"
-                  @click="editOrg(eachOrg._id)"
+                  @click.stop="editOrg(eachOrg._id)"
                   title="Click to edit this event"
                   style="cursor: pointer"
                 ></i>
@@ -387,7 +388,7 @@ export default {
       }
     },
     getProfileIcon(name) {
-      return "https://api.dicebear.com/7.x/identicon/svg?seed="+name;
+      return "https://api.dicebear.com/7.x/identicon/svg?seed=" + name;
     },
     ssePopulateOrg(id, store) {
       const sse = new EventSource(`${this.$config.studioServer.ORG_SSE}${id}`);

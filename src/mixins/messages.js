@@ -7,7 +7,7 @@ const ORGANIZATION = {
 
 const APPLICATION = {
     INVALID_APP_NAME: "Please enter a valid application name",
-    APP_CREATE_SUCCESS: "App created successfully",    
+    APP_CREATE_SUCCESS: "App created successfully",
     APP_UPDATE_SUCCESS: "App updated successfully",
     APP_NEW_SECRET_KEY_SUCCESS: "API secret key is generated successfully",
     CHAR_EXCEED_APP_NAME: "App name cannot be greater than 50 characters",
@@ -27,6 +27,7 @@ const SCHEMA = {
     NO_SPACE: "There should not be space in attribute name",
     NAME_CAMELCASE: "Name should be camelCase",
     EMPTY_SCHEMA_NAME: "Please enter Schema name",
+    NOT_PASCALCASE_SCHEMA_NAME: "Schema name should be in PascalCase",
     EMPTY_SCHEMA_DES: "Please enter Schema Description",
     INVALID_SCHEMA_NAME: " Enter valid Schema name",
     EMPTY_SCHEMA_ATTRIBUTE: "Atleast one attribute is required",
