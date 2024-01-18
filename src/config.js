@@ -1,4 +1,3 @@
-import EnvProvider from 'jvjr-docker-env'
 
 const hsdk = require('lds-sdk')
 const config = {
@@ -20,11 +19,7 @@ const config = {
         SCHEMA_GET_REST: process.env.VUE_APP_SCHEMA_GET_EP_REST || 'hypersign-protocol/hidnode/ssi/schema/',
         EXPLORER: process.env.VUE_APP_EXPLORER_BASE_URL || "https://explorer.hypersign.id/hypersign-testnet/",
 
-        NETWORK_STATUS_EP: EnvProvider.value('NODE_SERVER_NETWORK_STATUS_EP') || "net_info",
-        SCHEMA_LIST_EP: EnvProvider.value('NODE_SERVER_SCHEMA_LIST_EP') || "api/schema/list",
-        SCHEMA_GET_EP: EnvProvider.value('NODE_SERVER_SCHEMA_GET_EP') || "api/schema/get",
-        SCHEMA_CREATE_EP: EnvProvider.value('NODE_SERVER_SCHEMA_CREATE_EP') || "api/schema/create",
-        DID_RESOLVE_EP: EnvProvider.value('NODE_SERVER_DID_RERSOLVE_EP') || "hypersign-protocol/hidnode/ssi/did/"
+      
     },
     explorer: {
         BASE_URL: process.env.VUE_APP_EXPLORER_BASE_URL || 'https://explorer.hypersign.id/hypersign-testnet/',

@@ -161,7 +161,7 @@ h5 span {
                     <datalist id="schema">
                       <option
                         v-for="browser in selectOptions"
-                        :key="browser"
+                        :key="browser.selected"
                         :value="browser.value"
                         class="form-control"
                       ></option>
@@ -413,6 +413,7 @@ h5 span {
           </thead>
           <tbody>
             <tr v-for="row in vcList" :key="row._id">
+              <!-- {{ row }} -->
               <td>
                 <div v-if="row.vc">
                   <a
@@ -464,17 +465,17 @@ h5 span {
               </td>
               <td>
                 {{
-                  row.credStatus
-                    ? new Date(row.credStatus.issuanceDate).toLocaleString(
-                        "en-us"
-                      )
+                  row.credentialStatus
+                    ? new Date(
+                        row.credentialStatus.credentialStatusDocument.issuanceDate
+                      ).toLocaleString("en-us")
                     : "-"
                 }}
               </td>
               <td>
                 {{
                   row.credStatus
-                    ? new Date(row.credStatus.expirationDate).toLocaleString(
+                    ? new Date(row.credentialStatus.credentialStatusDocument.expirationDate).toLocaleString(
                         "en-us"
                       )
                     : "-"
@@ -483,38 +484,34 @@ h5 span {
               <!-- <td>{{ row.credStatus ?  row.credStatus.credentialHash : "-"}}</td>  -->
               <!-- <td> {{ row.credStatus ? row.credStatus.claim.currentStatus : row.status}}</td> -->
 
-              <td v-if="row.credStatus && row.credStatus.claim">
-                <span v-if="row.credStatus.claim.currentStatus == 'Live'">
+              <td v-if=" row.credentialStatus!==undefined">
+                <span v-if="row.credentialStatus.credentialStatusDocument.revoked ==false && row.credentialStatus.credentialStatusDocument.suspended ==false ">
                   <b-badge pill variant="success" class="mr-2">{{
-                    row.credStatus.claim.currentStatus
+                    "Registerd"
                   }}</b-badge>
                 </span>
-                <span v-if="row.credStatus.claim.currentStatus == 'Expired'">
+                <span v-if="row.credentialStatus.credentialStatusDocument.revoked ==true ">
                   <b-badge pill variant="secondary" class="mr-2">{{
-                    row.credStatus.claim.currentStatus
+                    "Revoked"
                   }}</b-badge>
                 </span>
-                <span v-if="row.credStatus.claim.currentStatus == 'Suspended'">
+                <span v-if="row.credentialStatus.credentialStatusDocument.suspended ==true ">
                   <b-badge pill variant="warning" class="mr-2">{{
-                    row.credStatus.claim.currentStatus
+                    "Suspended"
                   }}</b-badge>
                 </span>
-                <span v-if="row.credStatus.claim.currentStatus == 'Revoked'">
-                  <b-badge pill variant="danger" class="mr-2">{{
-                    row.credStatus.claim.currentStatus
-                  }}</b-badge>
-                </span>
+            
               </td>
               <td v-else>-</td>
 
               <td>
-                {{ row.credStatus ? row.credStatus.claim.statusReason : "-" }}
+                {{ row.credentialStatus ? row.credentialStatus.credentialStatusDocument.remarks : "-" }}
               </td>
-              <td v-if="row.credStatus">
+              <td v-if="row.credentialStatus">
                 <div style="display: flex">
                   <i
                     class="fa fa-paper-plane mr-2"
-                    v-if="row.credStatus.claim.currentStatus === 'Live'"
+                    v-if="row.credentialStatus.credentialStatusDocument.suspended === false  &&  row.credentialStatus.credentialStatusDocument.revoked === false"
                     @click="generateCred(`${row._id}`)"
                     title="Click to send this vc"
                     style="float: left; cursor: pointer"
@@ -715,8 +712,7 @@ export default {
     ]),
     noEdit(row) {
       if (
-        row.credStatus.claim.currentStatus === "Revoked" ||
-        row.credStatus.claim.currentStatus === "Expired"
+        row.credentialStatus.credentialStatusDocument.revoked === true 
       ) {
         return false;
       } else {

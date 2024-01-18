@@ -151,10 +151,10 @@
                 </div>
                 <div class="form-group">
                   <tool-tip infoMessage="Description for the schema"></tool-tip>
-                  <label for="schDescription"><strong>Description:</strong></label>                  
+                  <label for="schDescription"><strong>Description<span style="color: red">*</span>:</strong></label>                  
 
                   <textarea type="text" class="form-control" id="schDescription" v-model="credentialDescription"  rows="5" cols="20" aria-describedby="orgNameHelp"
-                  placeholder="Enter Description for this schema"></textarea>
+                  placeholder="Enter Description for this schema"  ></textarea>
                 </div>
                 <div class="form-group card">
                   <b-card-header header-tag="header" class="p-1 border-0 accordin-header theme-color" role="tab">
@@ -335,8 +335,8 @@
             </tr>
           </tbody>
         </table>
-        <!-- <button  @click="fetchSchemasPrev()" class="btn btn-outline-warning btn-sm">Prev</button> 
-        <button class="btn btn-outline-warning btn-sm"  @click="fetchSchemasNext()"  > Next </button> -->
+        <button  @click="fetchSchemasPrev()" class="btn btn-outline-warning btn-sm">Prev</button> 
+        <button class="btn btn-outline-warning btn-sm"  @click="fetchSchemasNext()"  > Next </button>
       </div>
     </div>
   </div>
@@ -434,7 +434,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions('playgroundStore', ['upsertAschemaAction', 'fetchSchemasForOrg']),
+    ...mapActions('playgroundStore', ['upsertAschemaAction', 'fetchSchemasForOrg','fetchSchemasNext','fetchSchemasPrev']),
     ...mapMutations('playgroundStore',['updateSideNavStatus', 'increaseOrgDataCount']),
     handleClick(id) {
       this.flash = id
@@ -614,6 +614,8 @@ export default {
           return this.notifyErr(message.SCHEMA.INVALID_SCHEMA_NAME)
         } else if (this.attributes.length == 0) {
           return this.notifyErr(message.SCHEMA.EMPTY_SCHEMA_ATTRIBUTE)
+        }else if (isEmpty(this.credentialDescription)) {
+          return this.notifyErr(message.SCHEMA.EMPTY_SCHEMA_DES)
         }
         const url = `${this.$config.studioServer.BASE_URL}${this.$config.studioServer.SAVE_SCHEMA_EP}`;
         const {orgDid}=this.getSelectedOrg;
