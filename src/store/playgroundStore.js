@@ -26,8 +26,8 @@ const playgroundStore = {
                 templatesCount: 0,
             }
         },
-        page:{
-            schema:1
+        page: {
+            schema: 1
         }
     },
     getters: {
@@ -332,7 +332,7 @@ const playgroundStore = {
             state.authToken = localStorage.getItem('authToken');
             // fetch all schemas
             {
-                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${state.selectedOrgDid}/?page=${state.page.schema<1?1:--state.page.schema}&limit=10`
+                const url = `${config.studioServer.BASE_URL}${config.studioServer.SCHEMA_LIST_EP}/${state.selectedOrgDid}/?page=${state.page.schema < 1 ? 1 : --state.page.schema}&limit=10`
 
                 const options = {
                     method: "GET",
@@ -421,22 +421,20 @@ const playgroundStore = {
 
         findOrFetchSchemaBySchemaID({ commit, getters, state, dispatch }, payload) {
             return new Promise(async (resolve, reject) => {
-                console.log('SchemaId ', payload)
                 const cachedSchema = getters.findSchemaBySchemaID(payload)
                 if (cachedSchema) {
                     return resolve(cachedSchema)
                 } else {
                     // here 
                     const url = `${config.nodeServer.BASE_URL_REST}hypersign-protocol/hidnode/ssi/schema/${payload}`;
-                    console.log(url);
                     const data = await fetch(url);
                     const selectedSchemas = (await data.json()).credentialSchemas[0];
                     if (!selectedSchemas) {
                         return reject(new Error('Invalid schemaID or not found'))
                     }
-                    selectedSchemas.schema.properties = selectedSchemas.credentialSchemaDocument.schema.properties ? JSON.parse(selectedSchemas.credentialSchemaDocument.schema.properties) : selectedSchemas.credentialSchemaDocument.schema.properties;
+                    selectedSchemas.credentialSchemaDocument.schema.properties = selectedSchemas.credentialSchemaDocument.schema.properties ? JSON.parse(selectedSchemas.credentialSchemaDocument.schema.properties) : selectedSchemas.credentialSchemaDocument.schema.properties;
                     const schema = {}
-                    schema["schemaDetails"] = selectedSchemas
+                    schema["schemaDetails"] = selectedSchemas.credentialSchemaDocument
                     return resolve(schema)
                 }
             })

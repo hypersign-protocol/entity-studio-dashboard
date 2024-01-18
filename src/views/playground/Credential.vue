@@ -66,7 +66,7 @@ h5 span {
         <!-- <Info :message="description" /> -->
         <div class="form-group" style="display: flex">
           <h3 v-if="vcList.length > 0" class="mt-4" style="text-align: left">
-            Credentials
+            Credentials Status
           </h3>
           <h3 v-else class="mt-4" style="text-align: left">
             Issue your first credential!
@@ -78,14 +78,16 @@ h5 span {
             @executeAction="openSlider()"
           ></hf-buttons>
         </div>
-        <StudioSideBar :title="isEdit ? 'Edit Credential' : 'Issue Credential'">
+        <StudioSideBar
+          :title="isEdit ? 'Edit Credential Status' : 'Issue Credential'"
+        >
           <div class="container">
             <div class="form-group row">
               <div class="col-md-12">
                 <form style="padding: 5px">
                   <div class="form-group" v-if="isEdit === true">
                     <tool-tip infoMessage="Your VC Id"></tool-tip>
-                    <label for="fordid"><strong>VC ID:</strong></label>
+                    <label for="fordid"><strong>Credential ID:</strong></label>
                     <input
                       type="text"
                       class="form-control"
@@ -151,20 +153,21 @@ h5 span {
                       </b-form-select> -->
                     <input
                       list="schema"
-                      class="form-control"
+                      class="custom-select custom-select custom-select-md form-control"
                       placeholder="Double click to select your schemaId Or Enter a schemaId"
                       v-model="selectedSchema"
                       @input="OnSchemaSelectDropDownChange(selectedSchema)"
                       @change="OnSchemaSelectDropDownChange(selectedSchema)"
                     />
-
                     <datalist id="schema">
                       <option
                         v-for="browser in selectOptions"
                         :key="browser.selected"
                         :value="browser.value"
                         class="form-control"
-                      ></option>
+                      >
+                        {{ browser.text }}
+                      </option>
                     </datalist>
                     <!-- <hf-select-drop-down
                       :options="selectOptions"
@@ -402,8 +405,8 @@ h5 span {
               <th>Credential Id</th>
               <th>Type</th>
               <th>Subject DID</th>
-              <th>Issuance Date</th>
-              <th>Expiration Date</th>
+              <!-- <th>Issuance Date</th>
+              <th>Expiration Date</th> -->
               <!-- <th>Credential Hash</th> -->
               <th>Status</th>
               <th>Status Reason</th>
@@ -426,8 +429,8 @@ h5 span {
                   <i
                     class="far fa-copy ml-1"
                     style="cursor: pointer"
-                    title="Click to copy VC Id"
-                    @click="copyToClip(removeUrl(row.vc.id), 'VC Id')"
+                    title="Click to copy Credential Id"
+                    @click="copyToClip(removeUrl(row.vc.id), 'Credential Id')"
                   ></i>
                 </div>
                 <span v-else>-</span>
@@ -463,7 +466,7 @@ h5 span {
                   ></i>
                 </div>
               </td>
-              <td>
+              <!-- <td>
                 {{
                   row.credentialStatus
                     ? new Date(
@@ -475,43 +478,69 @@ h5 span {
               <td>
                 {{
                   row.credStatus
-                    ? new Date(row.credentialStatus.credentialStatusDocument.expirationDate).toLocaleString(
-                        "en-us"
-                      )
+                    ? new Date(
+                        row.credentialStatus.credentialStatusDocument.expirationDate
+                      ).toLocaleString("en-us")
                     : "-"
                 }}
-              </td>
+              </td> -->
               <!-- <td>{{ row.credStatus ?  row.credStatus.credentialHash : "-"}}</td>  -->
               <!-- <td> {{ row.credStatus ? row.credStatus.claim.currentStatus : row.status}}</td> -->
 
-              <td v-if=" row.credentialStatus!==undefined">
-                <span v-if="row.credentialStatus.credentialStatusDocument.revoked ==false && row.credentialStatus.credentialStatusDocument.suspended ==false ">
+              <td v-if="row.credentialStatus !== undefined">
+                <span
+                  v-if="
+                    row.credentialStatus.credentialStatusDocument.revoked ==
+                      false &&
+                    row.credentialStatus.credentialStatusDocument.suspended ==
+                      false
+                  "
+                >
                   <b-badge pill variant="success" class="mr-2">{{
-                    "Registerd"
+                    "Live"
                   }}</b-badge>
                 </span>
-                <span v-if="row.credentialStatus.credentialStatusDocument.revoked ==true ">
+                <span
+                  v-if="
+                    row.credentialStatus.credentialStatusDocument.revoked ==
+                    true
+                  "
+                >
                   <b-badge pill variant="secondary" class="mr-2">{{
                     "Revoked"
                   }}</b-badge>
                 </span>
-                <span v-if="row.credentialStatus.credentialStatusDocument.suspended ==true ">
+                <span
+                  v-if="
+                    row.credentialStatus.credentialStatusDocument.suspended ==
+                    true
+                  "
+                >
                   <b-badge pill variant="warning" class="mr-2">{{
                     "Suspended"
                   }}</b-badge>
                 </span>
-            
               </td>
+
               <td v-else>-</td>
 
               <td>
-                {{ row.credentialStatus ? row.credentialStatus.credentialStatusDocument.remarks : "-" }}
+                {{
+                  row.credentialStatus
+                    ? row.credentialStatus.credentialStatusDocument.remarks
+                    : "-"
+                }}
               </td>
               <td v-if="row.credentialStatus">
                 <div style="display: flex">
                   <i
                     class="fa fa-paper-plane mr-2"
-                    v-if="row.credentialStatus.credentialStatusDocument.suspended === false  &&  row.credentialStatus.credentialStatusDocument.revoked === false"
+                    v-if="
+                      row.credentialStatus.credentialStatusDocument
+                        .suspended === false &&
+                      row.credentialStatus.credentialStatusDocument.revoked ===
+                        false
+                    "
                     @click="generateCred(`${row._id}`)"
                     title="Click to send this vc"
                     style="float: left; cursor: pointer"
@@ -711,52 +740,79 @@ export default {
       "updateSideNavStatus",
     ]),
     noEdit(row) {
-      if (
-        row.credentialStatus.credentialStatusDocument.revoked === true 
-      ) {
+      if (row.credentialStatus.credentialStatusDocument.revoked === true) {
         return false;
       } else {
         return true;
       }
     },
     editCred(cred) {
+      console.log(JSON.stringify(cred));
       this.clearEdit();
       this.isEdit = true;
       this.$root.$emit("bv::toggle::collapse", "sidebar-right");
       this.holderDid = cred.subjectDid;
       this.issuerDid = cred.issuerDid;
-      this.credHash = cred.credStatus.credentialHash;
-      this.expiryDateTime = cred.credStatus.expirationDate;
-      this.issuanceDate = cred.credStatus.issuanceDate;
-      this.preStatusSelect = cred.credStatus.claim.currentStatus;
-      this.statusReason = cred.credStatus.claim.statusReason;
-      switch (cred.credStatus.claim.currentStatus) {
-        case "Live":
-          this.selectedStatus = "LIVE";
-          this.credStatusOptions = [
-            { text: "Live", value: "LIVE", disabled: true },
-            { text: "Suspend", value: "SUSPENDED" },
-            { text: "Revoke", value: "REVOKED" },
-          ];
-          break;
-        case "Suspended":
-          this.selectedStatus = "SUSPENDED";
-          this.credStatusOptions = [
-            { text: "Suspended", value: "SUSPENDED", disabled: true },
-            { text: "Live", value: "LIVE" },
-            { text: "Revoke", value: "REVOKED" },
-          ];
-          break;
-        case "Revoked":
-          this.selectedStatus = "REVOKED";
-          break;
-        case "Expired":
-          this.selectedStatus = "EXPIRED";
-          break;
-        default:
-          this.notifyError("Invalid credential status");
+      this.credHash =
+        cred.credentialStatus.credentialStatusDocument.credentialMerkleRootHash;
+
+      const { expirationDate, issuanceDate } = cred.vc;
+      console.log({ expirationDate, issuanceDate });
+      this.expiryDateTime = expirationDate;
+      this.issuanceDate = issuanceDate;
+      const { revoked, suspended, remarks } =
+        cred.credentialStatus.credentialStatusDocument;
+      this.statusReason = remarks;
+
+      if (!revoked && !suspended) {
+        this.selectedStatus = "LIVE";
+        this.currentStatus = "LIVE";
+        this.credStatusOptions = [
+          { text: "Live", value: "LIVE", disabled: true },
+          { text: "Suspend", value: "SUSPENDED" },
+          { text: "Revoke", value: "REVOKED" },
+        ];
+      } else if (!suspended) {
+        this.selectedStatus = "SUSPENDED";
+        this.currentStatus = "SUSPENDED";
+        this.credStatusOptions = [
+          { text: "Suspended", value: "SUSPENDED", disabled: true },
+          { text: "Live", value: "LIVE" },
+          { text: "Revoke", value: "REVOKED" },
+        ];
+      } else {
+        this.selectedStatus = "REVOKED";
       }
-      this.currentStatus = cred.credStatus.claim.currentStatus;
+
+      this.preStatusSelect = this.selectedStatus;
+      // switch (cred.credStatus.claim.currentStatus) {
+      //   case "Live":
+      //     this.selectedStatus = "LIVE";
+      //     this.credStatusOptions = [
+      //       { text: "Live", value: "LIVE", disabled: true },
+      //       { text: "Suspend", value: "SUSPENDED" },
+      //       { text: "Revoke", value: "REVOKED" },
+      //     ];
+      //     break;
+      //   case "Suspended":
+      //     this.selectedStatus = "SUSPENDED";
+      //     this.credStatusOptions = [
+      //       { text: "Suspended", value: "SUSPENDED", disabled: true },
+      //       { text: "Live", value: "LIVE" },
+      //       { text: "Revoke", value: "REVOKED" },
+      //     ];
+      //     break;
+      //   case "Revoked":
+      //     this.selectedStatus = "REVOKED";
+      //     break;
+      //   case "Expired":
+      //     this.selectedStatus = "EXPIRED";
+      //     break;
+      //   default:
+      //     this.notifyError("Invalid credential status");
+      // }
+      // this.currentStatus = cred.credStatus.claim.currentStatus;
+
       this.vcId = cred.vc.id;
     },
     clearEdit() {
