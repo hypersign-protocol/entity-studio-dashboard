@@ -307,11 +307,7 @@ h5 span {
                     <input
                       type="text"
                       class="form-control"
-                      :v-model="
-                        new Date(issuanceDate).toLocaleString('en-us', {
-                          timeZone: 'UTC',
-                        })
-                      "
+                      v-model="issuanceDateUTC"
                       disabled
                     />
                   </div>
@@ -323,11 +319,7 @@ h5 span {
                     <input
                       type="text"
                       class="form-control"
-                      :v-model="
-                        new Date(expiryDateTime).toLocaleString('en-us', {
-                          timeZone: 'UTC',
-                        })
-                      "
+                      v-model="expirationDateUTC"
                       disabled
                     />
                   </div>
@@ -653,6 +645,12 @@ export default {
     isContainerShift() {
       return this.containerShift;
     },
+    issuanceDateUTC(){
+      return new Date(this.issuanceDate).toLocaleString('en-us', { timeZone: 'UTC'})
+    },
+    expirationDateUTC(){
+      return new Date(this.expiryDateTime).toLocaleString('en-us', { timeZone: 'UTC'})
+    }
   },
   data() {
     return {
@@ -776,7 +774,7 @@ export default {
         this.selectedStatus = "SUSPENDED";
         this.currentStatus = "SUSPENDED";
         this.credStatusOptions = [
-          { text: "Suspended", value: "SUSPENDED", disabled: true },
+          { text: "Suspend", value: "SUSPENDED", disabled: true },
           { text: "Live", value: "LIVE" },
           { text: "Revoke", value: "REVOKED" },
         ];
@@ -832,14 +830,19 @@ export default {
         this.isLoading = true;
         //check for status check
         switch (this.preStatusSelect) {
-          case "Live":
+          case "LIVE":
             if (this.selectedStatus === "LIVE") {
               return this.notifyErr("Credential already Live");
             }
             break;
-          case "Suspended":
+          case "SUSPENDED":
             if (this.selectedStatus === "SUSPENDED") {
               return this.notifyErr("Credential already Suspended");
+            }
+            break;
+          case "REVOKED":
+            if (this.selectedStatus === "REVOKED") {
+              return this.notifyErr("Credential already Revoked");
             }
             break;
           default:
