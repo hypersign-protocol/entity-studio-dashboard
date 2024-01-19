@@ -1,6 +1,10 @@
-# studio-frontend
+# Entity Studio Frontend
+
+Frontend for SSI Playground to learn and understand SSI				
 
 ## Manual
+
+Node 14+
 
 ### Install
 
