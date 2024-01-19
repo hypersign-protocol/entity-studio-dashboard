@@ -297,7 +297,7 @@ h5 span {
                       infoMessage="Credential Hash of the issued credential"
                     ></tool-tip>
                     <label for="fordid"
-                      ><strong>Credential Hash:</strong></label
+                      ><strong>Merkle Root Hash:</strong></label
                     >
                     <input
                       type="text"
