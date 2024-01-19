@@ -425,17 +425,22 @@ const playgroundStore = {
                 if (cachedSchema) {
                     return resolve(cachedSchema)
                 } else {
-                    // here 
-                    const url = `${config.nodeServer.BASE_URL_REST}hypersign-protocol/hidnode/ssi/schema/${payload}`;
-                    const data = await fetch(url);
-                    const selectedSchemas = (await data.json()).credentialSchemas[0];
-                    if (!selectedSchemas) {
-                        return reject(new Error('Invalid schemaID or not found'))
+                    try {
+                        // here 
+                        const url = `${config.nodeServer.BASE_URL_REST}hypersign-protocol/hidnode/ssi/schema/${payload}`;
+                        const data = await fetch(url);
+                        const selectedSchemas = (await data.json()).credentialSchemas[0];
+                        if (!selectedSchemas) {
+                            return reject(new Error('Invalid schemaID or not found'))
+                        }
+                        selectedSchemas.credentialSchemaDocument.schema.properties = selectedSchemas.credentialSchemaDocument.schema.properties ? JSON.parse(selectedSchemas.credentialSchemaDocument.schema.properties) : selectedSchemas.credentialSchemaDocument.schema.properties;
+                        const schema = {}
+                        schema["schemaDetails"] = selectedSchemas.credentialSchemaDocument
+                        return resolve(schema)
+                    } catch (e) {
+                        return reject(new Error(e.message))
                     }
-                    selectedSchemas.credentialSchemaDocument.schema.properties = selectedSchemas.credentialSchemaDocument.schema.properties ? JSON.parse(selectedSchemas.credentialSchemaDocument.schema.properties) : selectedSchemas.credentialSchemaDocument.schema.properties;
-                    const schema = {}
-                    schema["schemaDetails"] = selectedSchemas.credentialSchemaDocument
-                    return resolve(schema)
+
                 }
             })
         }

@@ -104,12 +104,18 @@ h5 span {
                         >Subject DID<span style="color: red">*</span>:</strong
                       ></label
                     >
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Issued To (did:hs:...)"
-                      v-model="holderDid"
-                    />
+                    <div class="input-group mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Issued To (did:hs:...)"
+                        v-model="holderDid"
+                      />
+
+                      <div class="input-group-append" @click="getSelfDIDAsSubject()">
+                        <button class="btn btn-outline-secondary" type="button">Self</button>
+                      </div>  
+                    </div>
                   </div>
                   <div v-else>
                     <div class="form-group">
@@ -154,7 +160,7 @@ h5 span {
                     <input
                       list="schema"
                       class="custom-select custom-select custom-select-md form-control"
-                      placeholder="Double click to select your schemaId Or Enter a schemaId"
+                      placeholder="Click to select your SchemaId Or Enter a SchemaId"
                       v-model="selectedSchema"
                       @input="OnSchemaSelectDropDownChange(selectedSchema)"
                       @change="OnSchemaSelectDropDownChange(selectedSchema)"
@@ -239,7 +245,7 @@ h5 span {
                     ></b-form-radio-group>
                     <input
                       v-if="attr.type === 'integer'"
-                      type="text"
+                      type="number"
                       class="form-control"
                       id="schemaName"
                       v-model="attr.value"
@@ -248,7 +254,8 @@ h5 span {
                     />
                     <input
                       v-if="attr.type == 'number'"
-                      type="text"
+                      type="number"
+                      step="0.01"
                       class="form-control"
                       id="schemaName"
                       v-model="attr.value"
@@ -737,6 +744,9 @@ export default {
       "increaseOrgDataCount",
       "updateSideNavStatus",
     ]),
+    getSelfDIDAsSubject(){
+      this.holderDid = this.user.id
+    },
     noEdit(row) {
       if (row.credentialStatus.credentialStatusDocument.revoked === true) {
         return false;
