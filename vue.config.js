@@ -6,6 +6,6 @@ module.exports = {
     config.plugins.delete("prefetch");
   },
   devServer: {
-    port: 9002
+    port: 9001
   }
 }

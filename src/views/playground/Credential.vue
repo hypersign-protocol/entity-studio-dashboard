@@ -112,9 +112,14 @@ h5 span {
                         v-model="holderDid"
                       />
 
-                      <div class="input-group-append" @click="getSelfDIDAsSubject()">
-                        <button class="btn btn-outline-secondary" type="button">Self</button>
-                      </div>  
+                      <div
+                        class="input-group-append"
+                        @click="getSelfDIDAsSubject()"
+                      >
+                        <button class="btn btn-outline-secondary" type="button">
+                          Self
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <div v-else>
@@ -360,7 +365,11 @@ h5 span {
                     <tool-tip
                       infoMessage="Status Reason for the status change"
                     ></tool-tip>
-                    <label for="fordid"><strong>Status Reason:</strong></label>
+                    <label for="fordid"
+                      ><strong
+                        >Status Reason<span style="color: red">*</span>:</strong
+                      ></label
+                    >
                     <input
                       type="text"
                       class="form-control"
@@ -652,12 +661,16 @@ export default {
     isContainerShift() {
       return this.containerShift;
     },
-    issuanceDateUTC(){
-      return new Date(this.issuanceDate).toLocaleString('en-us', { timeZone: 'UTC'})
+    issuanceDateUTC() {
+      return new Date(this.issuanceDate).toLocaleString("en-us", {
+        timeZone: "UTC",
+      });
     },
-    expirationDateUTC(){
-      return new Date(this.expiryDateTime).toLocaleString('en-us', { timeZone: 'UTC'})
-    }
+    expirationDateUTC() {
+      return new Date(this.expiryDateTime).toLocaleString("en-us", {
+        timeZone: "UTC",
+      });
+    },
   },
   data() {
     return {
@@ -744,8 +757,8 @@ export default {
       "increaseOrgDataCount",
       "updateSideNavStatus",
     ]),
-    getSelfDIDAsSubject(){
-      this.holderDid = this.user.id
+    getSelfDIDAsSubject() {
+      this.holderDid = this.user.id;
     },
     noEdit(row) {
       if (row.credentialStatus.credentialStatusDocument.revoked === true) {
@@ -838,6 +851,9 @@ export default {
     async updateCredStatus() {
       try {
         this.isLoading = true;
+        if (this.statusReason == "") {
+          return this.notifyErr("Staus Reason cannot be empty");
+        }
         //check for status check
         switch (this.preStatusSelect) {
           case "LIVE":
@@ -1229,6 +1245,7 @@ export default {
           orgDid: this.selectedOrgDid,
         };
         this.QrData.data = creadData;
+        console.log(this.QrData);
         fetch(url, {
           method: "POST",
           headers,
@@ -1242,6 +1259,7 @@ export default {
                 "Credential creation initiated. Please approve the trancation from your wallet"
               );
               this.upsertAcredentialAction(creadRecord);
+              QR_DATA.data.fields = creadData.fields;
               const URL = `${
                 this.$config.webWalletAddress
               }/deeplink?url=${JSON.stringify(QR_DATA)}`;

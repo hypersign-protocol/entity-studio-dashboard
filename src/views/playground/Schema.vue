@@ -520,7 +520,6 @@ export default {
       options: [
         { text: "Select Type", value: null },
         { text: "string", value: "string" },
-        { text: "integer", value: "integer" },
         { text: "number", value: "number" },
         { text: "boolean", value: "boolean" },
         { text: "date-time", value: "date" },
